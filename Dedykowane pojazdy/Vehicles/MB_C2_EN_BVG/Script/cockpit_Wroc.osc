@@ -1,0 +1,6711 @@
+'##############
+'Cockpit-Script
+'##############
+
+'Simuliert alle unmittelbar mit dem Armaturenbrett zusammenh�ngenden Funktionen
+
+'(c) 23.10.2009 R�diger H�lsmann
+'(c) 15.04.2010 Marcel Kuhnt
+
+'Script Version: 1.0
+'Omsi release: 1.0
+
+'Needs:
+'- antrieb
+'- engine
+'- bremse
+'- lights
+'- wiper?
+'- doors
+
+
+'Revision History:
+'- R�diger H�lsmann	09.06.2009	Last Change				
+'- Marcel Kuhnt		13.06.2009	Added Gearbox switches			
+'- Marcel Kuhnt		13.06.2009	Moved some switchvars to other scripts	
+'- R�diger H�lsmann	19.06.2009	Added Openable Window Triggers
+'- R�diger H�lsmann	23.10.2009	Added Battery and kinderwagen light
+'- Marcel Kuhnt		26.10.2009	Radio switchable with Motork�hlung (replaced with cassette player)
+'- R�diger H�lsmann	28.10.2009	Added driver door
+'- R�diger H�lsmann	16.12.2009	Added driver curtain
+'- R�diger H�lsmann	18.12.2009	Bugfix driver curtain
+'- Marcel Kuhnt		15.04.2010	Traegheit debugged
+'- R�diger H�lsmann	13.05.2010	Engine temperature
+'- R�diger H�lsmann	03.06.2010	Automatic battery switch on key insertion (For standard-II-buses)
+'- R�diger H�lsmann	08.06.2010	Automatic battery switch made optional, Auxiliary heating switchable by button or switch
+'- R�diger H�lsmann	23.06.2010	Added mouse-clickable wiper lever on wheel console
+'- R�diger H�lsmann	08.07.2010	Wiper lever: Improved usability 
+'- R�diger H�lsmann	18.07.2010	Wiper lever: soundfix for keyboard operation and new ignition key algorithm 
+'- R�diger H�lsmann	16.09.2010	Auxheat Switch Bugfix
+'- R�diger H�lsmann	18.09.2010	Imported microphone switch
+'- R�diger H�lsmann	17.10.2010	Added pressure warning needle
+'- R�diger H�lsmann	23.10.2010	Added old-style gear button functionality
+'- R�diger H�lsmann	06.11.2010	Gear-button "1" functionality removed for old-style gear buttons
+'- R�diger H�lsmann	16.11.2010	Heating sliders
+'- R�diger H�lsmann	23.11.2010	Central lubrication, cabin heater sound
+'- R�diger H�lsmann	23.12.2010	Included 10 "multi-purpose" dummy switches
+'- R�diger H�lsmann	29.12.2010	ASR switch
+'- R�diger H�lsmann	04.01.2011	"D-only" gear selector function
+'- R�diger H�lsmann	05.01.2011	fog lamp switch, high beam lever animation, clock debugged
+'- R�diger H�lsmann	07.01.2011	Wiper lever sound and function debugges, availybility of several cockpit functions depending on bus type (via constfile)
+'- R�diger H�lsmann	16.01.2011	Support for wiper turn-switch
+'- R�diger H�lsmann	18.01.2011	Old-style gear button sounds
+'- R�diger H�lsmann	26.01.2011	Invertable driver door
+'- R�diger H�lsmann	26.01.2011	Thermometer
+
+'------------------------------------------------------------------------------------------
+
+
+
+
+
+
+
+'----------------------
+'	Trigger
+'----------------------
+
+
+' Modding_Modus 0 = weg 1 = Fahrplan 2 = Modding
+
+{trigger:rozklad_wyjmij}
+1 (S.L.rozklad)
+{end}
+
+{trigger:rozklad_schowaj}
+0 (S.L.rozklad)
+{end}
+
+{trigger:Fahrplan_C2}
+1 (S.L.Fahrplan_C2)
+1 (S.L.Modding_Modus)
+{end}
+
+{trigger:Fahrplan_C2_zurueck}
+0 (S.L.Fahrplan_C2)
+0 (S.L.Modding_Modus)
+{end}
+
+{trigger:Fahrplan_C2_Modding}
+1 (S.L.Fahrplan_C2)
+2 (S.L.Modding_Modus)
+{end}
+
+{trigger:Modding_Fehler}
+0 (S.L.Modding_Menue_Timer)
+"Einstellung nicht verfuegbar" (S.$.Modding_Text)
+{end}
+
+{trigger:grosse_Klima}
+0 (S.L.Klima_Variante)
+
+(L.L.Klima_Variante) 0 =
+{if}
+	(L.L.neue_Decke) 0 =
+	{if}
+	1 (S.L.Klima_Gross)
+	{else}
+	2 (S.L.Klima_Gross)
+	{endif}
+0 (S.L.Klima_Klein)
+"Klima Gross" (S.$.Modding_Text)
+{else}
+	(L.L.neue_Decke) 0 =
+	{if}
+	1 (S.L.Klima_Klein)
+	{else}
+	2 (S.L.Klima_Klein)
+	{endif}
+0 (S.L.Klima_Gross)
+"Klima Klein" (S.$.Modding_Text)
+{endif}
+{end}
+
+{trigger:kleine_Klima}
+1 (S.L.Klima_Variante)
+
+(L.L.Klima_Variante) 0 =
+{if}
+	(L.L.neue_Decke) 0 =
+	{if}
+	1 (S.L.Klima_Gross)
+	{else}
+	2 (S.L.Klima_Gross)
+	{endif}
+0 (S.L.Klima_Klein)
+"Klima Gross" (S.$.Modding_Text)
+{else}
+	(L.L.neue_Decke) 0 =
+	{if}
+	1 (S.L.Klima_Klein)
+	{else}
+	2 (S.L.Klima_Klein)
+	{endif}
+0 (S.L.Klima_Gross)
+"Klima Klein" (S.$.Modding_Text)
+{endif}
+{end}
+
+{trigger:kein_Hybrid}
+0 (S.L.Hybrid) (S.L.Hybridschriftzug_vorne)
+{end}
+
+{trigger:Hybrid}
+1 (S.L.Hybrid)
+{end}
+
+
+{trigger:kein_Hybridschriftzug}
+0 (S.L.Hybridschriftzug_vorne)
+{end}
+
+{trigger:Hybridschriftzug}
+(L.L.Hybrid)
+{if}
+1 (S.L.Hybridschriftzug_vorne)
+{endif}
+{end}
+
+{trigger:Hybridschriftzug_2}
+1 (S.L.Hybridschriftzug_vorne)
+{end}
+
+
+{trigger:kein_Abbiegeassi}
+0 (S.L.Abbiegeassistent)
+{end}
+
+{trigger:Abbiegeassi}
+1 (S.L.Abbiegeassistent)
+{end}
+
+{trigger:kurzer_Spiegel}
+1 (S.L.Aussenspiegel)
+{end}
+
+{trigger:langer_Spiegel}
+0 (S.L.Aussenspiegel)
+{end}
+
+{trigger:lange_Hoerner}
+1 (S.L.Hoerner)
+{end}
+
+{trigger:kurze_Hoerner}
+0 (S.L.Hoerner)
+{end}
+
+{trigger:UEfront}
+1 (S.L.Front_Stadt_UE)
+{end}
+
+{trigger:Stadtfront}
+0 (S.L.Front_Stadt_UE)
+{end}
+
+{trigger:Matrix_Variante_1}
+0 (S.L.Matrix_Variante)
+{end}
+
+{trigger:Matrix_Variante_2}
+1 (S.L.Matrix_Variante)
+{end}
+
+{trigger:Matrix_Variante_3}
+2 (S.L.Matrix_Variante)
+{end}
+
+{trigger:Matrix_Variante_3}
+2 (S.L.Matrix_Variante)
+{end}
+
+
+{trigger:Wagennummer}
+(L.L.Wagennummer_vis) ! (S.L.Wagennummer_vis) 
+{end}
+
+
+
+{trigger:Repaint_zurueck}
+(L.L.Colorscheme) 1 - (S.L.Colorscheme)
+{end}
+
+{trigger:Repaint_vor}
+(L.L.Colorscheme) 1 + (S.L.Colorscheme)
+{end}
+
+
+
+{trigger:alte_Decke}
+0 (S.L.neue_Decke)
+0 (S.L.Lawo_Innenanzeige_Uhrzeit_vis_alteDecke) (S.L.Lawo_Innenanzeige_Uhrzeit_vis_neueDecke)
+(L.L.Klima_Variante) 0 =
+{if}
+	(L.L.neue_Decke) 0 =
+	{if}
+	1 (S.L.Klima_Gross)
+	{else}
+	2 (S.L.Klima_Gross)
+	{endif}
+0 (S.L.Klima_Klein)
+{else}
+	(L.L.neue_Decke) 0 =
+	{if}
+	1 (S.L.Klima_Klein)
+	{else}
+	2 (S.L.Klima_Klein)
+	{endif}
+0 (S.L.Klima_Gross)
+{endif}
+{end}
+
+{trigger:neue_Decke}
+1 (S.L.neue_Decke)
+0 (S.L.Lawo_Innenanzeige_Uhrzeit_vis_alteDecke) (S.L.Lawo_Innenanzeige_Uhrzeit_vis_neueDecke)
+(L.L.Klima_Variante) 0 =
+{if}
+	(L.L.neue_Decke) 0 =
+	{if}
+	1 (S.L.Klima_Gross)
+	{else}
+	2 (S.L.Klima_Gross)
+	{endif}
+0 (S.L.Klima_Klein)
+{else}
+	(L.L.neue_Decke) 0 =
+	{if}
+	1 (S.L.Klima_Klein)
+	{else}
+	2 (S.L.Klima_Klein)
+	{endif}
+0 (S.L.Klima_Gross)
+{endif}
+{end}
+
+{trigger:neue_Decke_2}
+2 (S.L.neue_Decke)
+0 (S.L.Lawo_Innenanzeige_Uhrzeit_vis_alteDecke) (S.L.Lawo_Innenanzeige_Uhrzeit_vis_neueDecke)
+(L.L.Klima_Variante) 0 =
+{if}
+	(L.L.neue_Decke) 0 =
+	{if}
+	1 (S.L.Klima_Gross)
+	{else}
+	2 (S.L.Klima_Gross)
+	{endif}
+0 (S.L.Klima_Klein)
+{else}
+	(L.L.neue_Decke) 0 =
+	{if}
+	1 (S.L.Klima_Klein)
+	{else}
+	2 (S.L.Klima_Klein)
+	{endif}
+0 (S.L.Klima_Gross)
+{endif}
+{end}
+
+
+
+{trigger:blinker_warn_toggle}
+	(L.L.lights_sw_warnblinker) ! (S.L.lights_sw_warnblinker) 
+	{if}
+		(M.L.lights_calc_geberfaktor)
+		(M.L.lights_startblinkgeber)
+	{endif}
+		(T.L.ev_VDV_Warnblinker)
+1 (S.L.warnblinker_taster)
+{end}
+
+{trigger:blinker_warn_toggle_off}
+0 (S.L.warnblinker_taster)
+{end}
+
+
+
+
+{trigger:automatic_R}
+
+0 (S.L.cockpit_gangN)
+	(C.L.cockpit_gangwahltaster_alt)
+	{if}
+		(L.L.cockpit_gang2) (L.L.cockpit_gang3) ||
+		{if}
+			(L.L.antrieb_getr_gangvorwahl) 1 <= !
+				{if}
+					(L.S.getTime) (C.L.antrieb_gangwahlzeit) (C.L.antrieb_neutralwahlzeit) - - (S.L.antrieb_getr_gangwahlzeitpunkt)
+				{endif}
+			1 (S.L.antrieb_getr_gangvorwahl)
+		{endif}
+		(L.L.cockpit_gangR_toggle) ! (S.L.cockpit_gangR_toggle)
+		(L.L.cockpit_gangR) !
+		{if}
+			1 (S.L.cockpit_gang_r-frei)
+		{endif}
+		(L.L.cockpit_gangR_toggle) (L.L.cockpit_gang2_toggle) ! (L.L.cockpit_gang3_toggle) ! && &&
+		{if}
+			(L.S.getTime) (S.L.antrieb_getr_gangwahlzeitpunkt)
+			(L.L.brake) 0.1 >
+			{if}
+			0 (S.L.antrieb_getr_gangvorwahl)
+			{endif}
+		{endif}
+		(L.L.cockpit_gangR) 1 = !
+		{if}
+			(L.L.cockpit_gangR_toggle)
+			{if}
+				(T.L.ev_gangwahltaster_old_on)
+			{else}
+				(T.L.ev_gangwahltaster_old_off)
+			{endif}
+		{endif}
+		1 (S.L.cockpit_gangR)	
+	{else}
+		(L.L.antrieb_getr_gangvorwahl) 1 <= 
+		(L.L.cockpit_gang3) 0 = &&
+		{if}
+			(L.L.antrieb_getr_gangvorwahl) 0 = !
+			{if}
+				(T.L.ev_gangwahltaster)
+				(L.S.getTime) (S.L.antrieb_getr_gangwahlzeitpunkt)
+			{endif}
+			
+			(L.L.brake) 0.1 >
+			{if}
+			0 (S.L.antrieb_getr_gangvorwahl)
+			{endif}
+				
+			1 (S.L.cockpit_gangR)
+		{endif}
+	{endif}
+
+{end}
+
+{trigger:automatic_R_off}
+	(C.L.cockpit_gangwahltaster_alt)
+	{if}
+		(L.L.cockpit_gangR_toggle) 
+		{if}
+			0.7 (S.L.cockpit_gangR)
+			0 (S.L.cockpit_gang_r-frei)	
+		{else}
+			(L.L.cockpit_gang3_toggle) (L.L.cockpit_gang2_toggle) ! &&
+			{if}
+				(L.S.getTime) (S.L.antrieb_getr_gangwahlzeitpunkt)
+				4 (S.L.antrieb_getr_gangvorwahl)
+			{else}
+				(L.L.cockpit_gang2_toggle) 
+				{if}
+					(L.S.getTime) (S.L.antrieb_getr_gangwahlzeitpunkt)
+					3 (S.L.antrieb_getr_gangvorwahl)
+				{else}
+
+					(L.S.getTime) (C.L.antrieb_gangwahlzeit) (C.L.antrieb_neutralwahlzeit) - - (S.L.antrieb_getr_gangwahlzeitpunkt)
+					1 (S.L.antrieb_getr_gangvorwahl)
+				{endif}
+				
+			{endif}
+			0 (S.L.cockpit_gangR) 0 (S.L.cockpit_gang_r-frei)	
+		{endif}
+	{else}
+		(L.L.cockpit_gangR) 1 =
+		{if}
+			0.7 (S.L.cockpit_gangR)
+		{endif}
+	{endif}
+{end}
+
+
+
+{trigger:automatic_R_mouse}
+
+0 (S.L.cockpit_gangN)
+	(C.L.cockpit_gangwahltaster_alt)
+	{if}
+		(L.L.cockpit_gang2) (L.L.cockpit_gang3) ||
+		{if}
+			(L.L.antrieb_getr_gangvorwahl) 1 <= !
+				{if}
+					(L.S.getTime) (C.L.antrieb_gangwahlzeit) (C.L.antrieb_neutralwahlzeit) - - (S.L.antrieb_getr_gangwahlzeitpunkt)
+				{endif}
+			1 (S.L.antrieb_getr_gangvorwahl)
+		{endif}
+		(L.L.cockpit_gangR_toggle) ! (S.L.cockpit_gangR_toggle)
+		(L.L.cockpit_gangR) 1 = !
+		{if}
+			(L.L.cockpit_gangR_toggle)
+			{if}
+				(T.L.ev_gangwahltaster_old_on)
+			{else}
+				(T.L.ev_gangwahltaster_old_off)
+			{endif}
+		{endif}
+		1 (S.L.cockpit_gangR)	
+	{else}
+		(L.L.antrieb_getr_gangvorwahl) 1 <= 
+		{if}
+			(L.L.antrieb_getr_gangvorwahl) 0 = !
+			{if}
+				(T.L.ev_gangwahltaster)
+				(L.S.getTime) (S.L.antrieb_getr_gangwahlzeitpunkt)
+			{endif}
+			(L.L.brake) 0.1 >
+			{if}
+			0 (S.L.antrieb_getr_gangvorwahl)
+			{endif}
+	
+			1 (S.L.cockpit_gangR)
+		{endif}
+	{endif}
+{end}
+
+{trigger:automatic_R_mouse_off}
+	(C.L.cockpit_gangwahltaster_alt)
+	{if}
+		(L.L.cockpit_gangR_toggle) 
+		{if}
+			0.7 (S.L.cockpit_gangR)
+		{else}
+			(L.L.cockpit_gang3_toggle) (L.L.cockpit_gang2_toggle) ! &&
+			{if}
+				(L.S.getTime) (S.L.antrieb_getr_gangwahlzeitpunkt)
+				4 (S.L.antrieb_getr_gangvorwahl)
+			{else}
+				(L.L.cockpit_gang2_toggle) 
+				{if}
+					(L.S.getTime) (S.L.antrieb_getr_gangwahlzeitpunkt)
+					3 (S.L.antrieb_getr_gangvorwahl)
+				{else}
+
+					(L.S.getTime) (C.L.antrieb_gangwahlzeit) (C.L.antrieb_neutralwahlzeit) - - (S.L.antrieb_getr_gangwahlzeitpunkt)
+					1 (S.L.antrieb_getr_gangvorwahl)
+				{endif}
+				
+			{endif}
+			0 (S.L.cockpit_gangR)			
+		{endif}
+	{else}
+		(L.L.cockpit_gangR) 1 =
+		{if}
+			0.7 (S.L.cockpit_gangR)
+		{endif}
+	{endif}
+{end}
+
+
+{trigger:automatic_N}
+
+		(L.L.cockpit_gangR) 0.5 >
+		(L.L.cockpit_gang3) 0.5 > ||
+		{if}
+			(T.L.ev_gangwahltaster_N)
+		{endif}
+		(L.L.antrieb_getr_gangvorwahl) 1 = !
+			{if}
+				(L.S.getTime) (C.L.antrieb_gangwahlzeit) (C.L.antrieb_neutralwahlzeit) -  - (S.L.antrieb_getr_gangwahlzeitpunkt)
+			{endif}
+		1 (S.L.antrieb_getr_gangvorwahl) (S.L.cockpit_gangN)
+		0 (S.L.cockpit_gangR) (S.L.cockpit_gang1) (S.L.cockpit_gang2) (S.L.cockpit_gang3)
+{end}
+
+
+{trigger:automatic_N_off}
+	(C.L.Voith_ZF)
+	{if}
+		1 (S.L.cockpit_gangN)
+	{else}
+		0 (S.L.cockpit_gangN)
+	{endif}
+{end}
+
+
+'{trigger:automatic_1}
+'	(L.L.antrieb_getr_gangvorwahl) 0 > (C.L.cockpit_gangwahltaster_alt) ! &&
+'	(C.L.cockpit_gear_D_only) ! &&
+'	{if}
+'		(L.L.antrieb_getr_gangvorwahl) 2 = !
+'		{if}
+'			(T.L.ev_gangwahltaster)
+'			(L.S.getTime) (S.L.antrieb_getr_gangwahlzeitpunkt)
+'		{endif}
+'		2 (S.L.antrieb_getr_gangvorwahl)
+'		1 (S.L.cockpit_gang1)
+'		0 (S.L.cockpit_gang2) (S.L.cockpit_gang3)
+'	{endif}
+'
+'{end}
+
+
+'{trigger:automatic_1_off}
+'	(L.L.cockpit_gang1) 1 =
+'	{if}
+'		0.7 (S.L.cockpit_gang1)
+'	{endif}
+'{end}
+
+
+'{trigger:automatic_2}
+'	(C.L.cockpit_gangwahltaster_alt)
+'	{if}
+'		(L.L.cockpit_gangR)
+'		{if}
+'			(L.L.antrieb_getr_gangvorwahl) 1 = !
+'				{if}
+'					(L.S.getTime) (C.L.antrieb_gangwahlzeit) (C.L.antrieb_neutralwahlzeit) - - (S.L.antrieb_getr_gangwahlzeitpunkt)
+'				{endif}
+'			1 (S.L.antrieb_getr_gangvorwahl)
+'		{else}
+'			(L.L.antrieb_getr_gangvorwahl) 3 = !
+'			{if}
+'				(L.S.getTime) (S.L.antrieb_getr_gangwahlzeitpunkt)
+'			{endif}
+'			3 (S.L.antrieb_getr_gangvorwahl)
+'		{endif}
+'		(L.L.cockpit_gang2_toggle) ! (S.L.cockpit_gang2_toggle)
+'		(L.L.cockpit_gang2) 1 = !
+'		{if}
+'			(L.L.cockpit_gang2_toggle)
+'			{if}
+'				(T.L.ev_gangwahltaster_old_on)
+'			{else}
+'				(T.L.ev_gangwahltaster_old_off)
+'			{endif}
+'		{endif}
+'		1 (S.L.cockpit_gang2)
+'	{else}
+'		(L.L.antrieb_getr_gangvorwahl) 0 >
+'		(C.L.cockpit_gear_D_only) ! &&
+'		{if}
+'			(L.L.antrieb_getr_gangvorwahl) 3 = !
+'			{if}
+'				(T.L.ev_gangwahltaster)
+'				(L.S.getTime) (S.L.antrieb_getr_gangwahlzeitpunkt)
+'			{endif}
+'			3 (S.L.antrieb_getr_gangvorwahl)
+'			1 (S.L.cockpit_gang2)
+'			0 (S.L.cockpit_gang1) (S.L.cockpit_gang3)
+'		{endif}
+'	{endif}
+'{end}
+
+
+'{trigger:automatic_2_off}
+'	(C.L.cockpit_gangwahltaster_alt)
+'	{if}
+'		(L.L.cockpit_gang2_toggle) 
+'		{if}
+'			0.7 (S.L.cockpit_gang2)
+'		{else}
+'			(L.L.cockpit_gang3_toggle) (L.L.cockpit_gangR_toggle) ! &&
+'			{if}
+'				(L.S.getTime) (S.L.antrieb_getr_gangwahlzeitpunkt)
+'				4 (S.L.antrieb_getr_gangvorwahl)
+'			{else}
+'				(L.S.getTime) (C.L.antrieb_gangwahlzeit) (C.L.antrieb_neutralwahlzeit) - - (S.L.antrieb_getr_gangwahlzeitpunkt)
+'				1 (S.L.antrieb_getr_gangvorwahl)
+'			{endif}
+'			0 (S.L.cockpit_gang2)			
+'		{endif}
+'	{else}
+'		(L.L.cockpit_gang2) 1 =
+'		{if}
+'			0.7 (S.L.cockpit_gang2)
+'		{endif}
+'	{endif}
+'{end}
+
+
+{trigger:automatic_D}
+0 (S.L.cockpit_gangN)
+
+	(C.L.cockpit_gangwahltaster_alt)
+	{if}
+		(L.L.cockpit_gangR)
+		{if}
+
+			(L.S.getTime) (C.L.antrieb_gangwahlzeit) (C.L.antrieb_neutralwahlzeit) - - (S.L.antrieb_getr_gangwahlzeitpunkt)
+			1 (S.L.antrieb_getr_gangvorwahl)
+		{else}
+			(L.L.cockpit_gang2_toggle) !
+			{if}
+				(L.S.getTime) (S.L.antrieb_getr_gangwahlzeitpunkt)
+				(L.L.brake) 0.1 >
+				{if}
+					4 (S.L.antrieb_getr_gangvorwahl)
+				{endif}
+			{endif}
+		{endif}
+		(L.L.cockpit_gang3_toggle) ! (S.L.cockpit_gang3_toggle)
+		(L.L.cockpit_gang3) 1 = !
+		{if}
+			(L.L.cockpit_gang3_toggle)
+			{if}
+				(T.L.ev_gangwahltaster_old_on)
+			{else}
+				(T.L.ev_gangwahltaster_old_off)
+			{endif}
+		{endif}
+		1 (S.L.cockpit_gang3)
+	{else}
+		(L.L.antrieb_getr_gangvorwahl) 0 >
+		(L.L.cockpit_gangR) 0 = &&
+		{if}
+			(L.L.antrieb_getr_gangvorwahl) 4 = !
+			{if}
+				(T.L.ev_gangwahltaster)
+				(L.S.getTime) (S.L.antrieb_getr_gangwahlzeitpunkt)
+			{endif}
+			(L.L.brake) 0.1 >
+			{if}
+				4 (S.L.antrieb_getr_gangvorwahl)
+			{endif}
+			1 (S.L.cockpit_gang3)
+			0 (S.L.cockpit_gang1) (S.L.cockpit_gang2)	
+		
+		{endif}
+	{endif}
+
+{end}
+
+
+{trigger:automatic_D_off}
+	(C.L.cockpit_gangwahltaster_alt)
+	{if}
+		(L.L.cockpit_gang3_toggle) 
+		{if}
+			0.7 (S.L.cockpit_gang3)
+		{else}
+			(L.L.cockpit_gang2_toggle) (L.L.cockpit_gangR_toggle) ! &&
+			{if}
+				(L.S.getTime) (S.L.antrieb_getr_gangwahlzeitpunkt)
+				3 (S.L.antrieb_getr_gangvorwahl)
+			{else}	
+				(L.S.getTime) (C.L.antrieb_gangwahlzeit) (C.L.antrieb_neutralwahlzeit) - - (S.L.antrieb_getr_gangwahlzeitpunkt)
+				1 (S.L.antrieb_getr_gangvorwahl)
+			{endif}
+			0 (S.L.cockpit_gang3)
+		{endif}
+	{else}
+		(L.L.cockpit_gang3) 1 =
+		{if}
+			0.7 (S.L.cockpit_gang3)
+		{endif}	
+	{endif}
+{end}
+
+
+{trigger:automatic_r-frei}
+	1 (S.L.cockpit_gang_r-frei)
+	(L.L.cockpit_gangR_toggle) (L.L.cockpit_gang2_toggle) ! (L.L.cockpit_gang3_toggle) ! && &&
+	{if}
+		(L.S.getTime) (S.L.antrieb_getr_gangwahlzeitpunkt)
+		0 (S.L.antrieb_getr_gangvorwahl)
+	{endif}
+{end}
+
+{trigger:automatic_r-frei_off}
+	0 (S.L.cockpit_gang_r-frei)
+{end}
+	
+
+{trigger:horn}
+	
+		(L.L.cockpit_hupe) ! (L.L.elec_busbar_main) &&
+		{if}
+			(T.L.ev_hupe_an)
+		{endif}
+		1 (S.L.cockpit_hupe)
+	
+{end}
+
+{trigger:horn_off}	
+	
+		(L.L.cockpit_hupe) (L.L.elec_busbar_main) &&
+		{if}
+			(T.L.ev_hupe_aus)
+		{endif}
+		0 (S.L.cockpit_hupe)	
+	
+{end}
+
+{trigger:horn_swheel}
+	
+		(L.L.cockpit_hupe_swheel) ! (L.L.elec_busbar_main) &&
+		{if}
+			(T.L.ev_hupe_an)
+		{endif}
+		1 (S.L.cockpit_hupe_swheel)
+	
+{end}
+
+{trigger:horn_swheel_off}	
+	
+		(L.L.cockpit_hupe_swheel) (L.L.elec_busbar_main) &&
+		{if}
+			(T.L.ev_hupe_aus)
+		{endif}
+		0 (S.L.cockpit_hupe_swheel)	
+	
+{end}
+
+{trigger:cp_motorkuehlung_toggle}
+	(C.L.cockpit_has_coolingswitch)
+	{if}
+		(L.L.cp_motorkuehlung_sw) ! (S.L.cp_motorkuehlung_sw) s1
+		(M.L.kippschaltersound)
+	{endif}
+{end}
+
+{trigger:light_cabin_up}
+
+    (L.L.light_cabin_anim) -1 =
+    {if}
+        0 (S.L.light_cabin_anim)
+        0 (S.L.cp_fahrerlicht_sw)
+        (T.L.ev_VDV_off)
+    {endif}
+
+{end}
+
+{trigger:light_cabin_down}
+
+    (L.L.light_cabin_anim) -1 =
+    {if}
+        0 (S.L.light_cabin_anim)
+        0 (S.L.cp_fahrerlicht_sw)
+        (T.L.ev_VDV_off)
+    {else}
+        -1 (S.L.light_cabin_anim)
+        1 (S.L.cp_fahrerlicht_sw)
+        (T.L.ev_VDV_on)
+    {endif}
+
+{end}
+
+{trigger:Armlehne_1}
+	(L.L.Armlehne_1) ! (S.L.Armlehne_1)
+{end}
+
+{trigger:Armlehne_2}
+	(L.L.Armlehne_2) ! (S.L.Armlehne_2)
+{end}
+
+{trigger:Armlehne_1_Fahrersitz}
+	(L.L.Armlehne_1_Fahrersitz) ! (S.L.Armlehne_1_Fahrersitz)
+{end}
+
+{trigger:Armlehne_2_Fahrersitz}
+	(L.L.Armlehne_2_Fahrersitz) ! (S.L.Armlehne_2_Fahrersitz)
+{end}
+
+
+
+{trigger:light_up}
+	(L.L.light_anim) -1 =
+	{if}
+		0 (S.L.light_anim)
+		0 (S.L.cp_licht_oberdeck_sw)
+		0 (S.L.cp_licht_unterdeck_sw)
+		(T.L.ev_VDV_off)
+	{else}
+		(L.L.light_anim) 0 =
+		{if}
+			1 (S.L.light_anim)
+			1 (S.L.cp_licht_oberdeck_sw)
+			0 (S.L.cp_licht_unterdeck_sw)
+			(T.L.ev_VDV_on)
+		{endif}
+	{endif}
+{end}
+
+
+{trigger:light_down}
+	(L.L.light_anim) 1 =
+	{if}
+		0 (S.L.light_anim)
+		0 (S.L.cp_licht_oberdeck_sw)
+		0 (S.L.cp_licht_unterdeck_sw)
+		(T.L.ev_VDV_off)
+	{else}
+		(L.L.light_anim) 0 =
+		{if}
+			-1 (S.L.light_anim)
+			0 (S.L.cp_licht_oberdeck_sw)
+			1 (S.L.cp_licht_unterdeck_sw)
+			(T.L.ev_VDV_on)
+		{endif}
+	{endif}
+{end}
+
+
+{trigger:light_sos}
+	(L.L.light_sos_anim) ! (S.L.light_sos_anim)
+
+	(L.L.light_sos_anim) (S.L.light_sos)
+
+	(L.L.light_sos_anim) 1 =
+	{if}
+		(T.L.ev_VDV_on)
+	{else}
+		(T.L.ev_VDV_off)
+	{endif}
+{end}
+
+
+{trigger:kw_wipermode_up}
+	(L.L.cp_wischer_einaus_sw) ! (S.L.cp_wischer_einaus_sw) s1
+	{if}
+		2 (S.L.cockpit_wischerhebel_mode) (S.L.cockpit_wischer_drehschalter_mode)
+		2 3 / (S.L.cockpit_wischerhebel) (S.L.cockpit_wischer_drehschalter)
+		(L.L.cp_wischer_intervall_sw) !
+		{if}
+			(T.L.ev_wischerhebel)
+		{endif}
+	{else}
+		(L.L.cp_wischer_intervall_sw) 0 =
+		{if}
+			1 (S.L.cockpit_wischerhebel_mode) (S.L.cockpit_wischer_drehschalter_mode)
+			1 3 / (S.L.cockpit_wischerhebel) 
+			0 (S.L.cockpit_wischer_drehschalter)
+		{else}
+			0 (S.L.cockpit_wischerhebel_mode) (S.L.cockpit_wischer_drehschalter_mode) (S.L.cockpit_wischerhebel) 
+			1 3 / (S.L.cockpit_wischer_drehschalter)
+			(T.L.ev_wischerhebel)
+		{endif}
+	{endif}
+	(C.L.wiper_lever) !
+	{if}
+		l1 (M.L.kippschaltersound)
+	{endif}
+{end}
+
+{trigger:cp_wischer_intervall_toggle}
+	(L.L.cp_wischer_intervall_sw) ! (S.L.cp_wischer_intervall_sw) s1
+	(L.L.cp_wischer_einaus_sw) ! &&
+	{if}
+
+			0 (S.L.cockpit_wischerhebel_mode) (S.L.cockpit_wischer_drehschalter_mode) (S.L.cockpit_wischerhebel)
+			1 3 / (S.L.cockpit_wischer_drehschalter)
+	{else}
+		(L.L.cp_wischer_einaus_sw)
+		{if}
+			2 (S.L.cockpit_wischerhebel_mode) (S.L.cockpit_wischer_drehschalter_mode)
+			2 3 / (S.L.cockpit_wischerhebel) (S.L.cockpit_wischer_drehschalter)
+		{else}
+		1 (S.L.cockpit_wischerhebel_mode) (S.L.cockpit_wischer_drehschalter_mode)
+		1 3 / (S.L.cockpit_wischerhebel) 
+		0 (S.L.cockpit_wischer_drehschalter)
+		{endif}
+
+	{endif}
+	(C.L.wiper_lever) !
+	{if}
+		l1 (M.L.kippschaltersound)
+	{endif}
+{end}
+
+{trigger:cp_wischer_wascher_button}
+	1 (S.L.cp_wischer_wascher_sw) s1
+	(C.L.wiper_lever)
+	{if}
+		(T.L.ev_wischerhebel)
+		1 (S.L.cockpit_wischerhebel_x)
+	{else}
+		l1 (M.L.kippschaltersound)
+	{endif}
+{end}
+
+{trigger:cp_wischer_wascher_button_off}
+	0 (S.L.cp_wischer_wascher_sw) s1
+	(S.L.wiper_wascher_sw)
+	(C.L.wiper_lever)
+	{if}
+		(T.L.ev_wischerhebel)
+		0 (S.L.cockpit_wischerhebel_x)
+	{else}
+		l1 (M.L.kippschaltersound)
+	{endif}
+{end}
+
+{trigger:cp_heizluefter_toggle}
+	(L.L.cp_heizluefter_sw) ! (S.L.cp_heizluefter_sw)
+	(L.L.cp_heizluefter_sw) 1 =
+	{if}
+		(T.L.ev_VDV_on)
+	{else}
+		(T.L.ev_VDV_off)
+	{endif}	
+{end}
+
+{trigger:cp_spiegelheizung_toggle}
+	(L.L.cp_spiegelheizung_sw) ! (S.L.cp_spiegelheizung_sw)
+	(L.L.cp_spiegelheizung_sw) 1 =
+	{if}
+		(T.L.ev_VDV_on)
+	{else}
+		(T.L.ev_VDV_off)
+	{endif}	
+{end}
+
+'By Wizard
+{trigger:cp_ASR_toggle}
+	(L.L.cp_ASR_sw) ! (S.L.cp_ASR_sw)
+
+	(L.L.cp_ASR_sw) 1 =
+	{if}
+		(T.L.ev_VDV_on)
+	{else}
+		(T.L.ev_VDV_off)
+	{endif}	
+{end}
+
+'Seiten_DUMMY_1
+
+{trigger:Seiten_DUMMY_1}
+	1 (S.L.Seiten_DUMMY_1)
+(T.L.ev_VDV_toggle_on)
+
+{end}
+
+{trigger:Seiten_DUMMY_1_off}
+	0 (S.L.Seiten_DUMMY_1)
+(T.L.ev_VDV_toggle_off)
+{end}
+
+
+
+
+{trigger:Seiten_DUMMY_2}
+	(L.L.Seiten_DUMMY_2) ! (S.L.Seiten_DUMMY_2)
+	(L.L.Seiten_DUMMY_2) 1 =
+	{if}
+		(T.L.ev_VDV_on)
+	{else}
+		(T.L.ev_VDV_off)
+	{endif}	
+{end}
+
+
+
+
+
+{trigger:Seiten_DUMMY_3}
+	(L.L.Seiten_DUMMY_3) ! (S.L.Seiten_DUMMY_3)
+	(L.L.Seiten_DUMMY_3) 1 =
+	{if}
+		(T.L.ev_VDV_on)
+		(T.L.ev_Dash_Verstellung_los)
+	{else}
+		(T.L.ev_VDV_off)
+		(T.L.ev_Dash_Verstellung_fest)
+	{endif}	
+{end}
+
+{trigger:Seiten_DUMMY_4}
+	1 (S.L.Seiten_DUMMY_4)
+(T.L.ev_VDV_toggle_on)
+
+{end}
+
+{trigger:Seiten_DUMMY_4_off}
+	0 (S.L.Seiten_DUMMY_4)
+(T.L.ev_VDV_toggle_off)
+{end}
+
+{trigger:Seiten_DUMMY_5}
+	(L.L.Seiten_DUMMY_5) ! (S.L.Seiten_DUMMY_5)
+	(L.L.Seiten_DUMMY_5) 1 =
+	{if}
+		(T.L.ev_VDV_on)
+	{else}
+		(T.L.ev_VDV_off)
+	{endif}	
+{end}
+
+{trigger:Seiten_DUMMY_6_up}
+1 (S.L.Seiten_DUMMY_6_up)
+(T.L.ev_VDV_toggle_on)
+{end}
+
+{trigger:Seiten_DUMMY_6_up_off}
+0 (S.L.Seiten_DUMMY_6_up)
+(T.L.ev_VDV_toggle_off)	
+{end}
+
+{trigger:Seiten_DUMMY_6_down}
+1 (S.L.Seiten_DUMMY_6_down)
+(T.L.ev_VDV_toggle_on)
+{end}
+
+{trigger:Seiten_DUMMY_6_down_off}
+0 (S.L.Seiten_DUMMY_6_down)
+(T.L.ev_VDV_toggle_off)	
+{end}
+
+
+
+
+{trigger:Seiten_DUMMY_7_up}
+1 (S.L.Seiten_DUMMY_7_up)
+
+(L.L.Dachluken_Modus) 3 <
+{if}
+(L.L.Dachluken_Modus) 1 + (S.L.Dachluken_Modus)
+(T.L.ev_dach_auf)
+{else}
+1 (S.L.Dachluken_Modus)
+{endif}
+
+(T.L.ev_VDV_toggle_on)
+{end}
+
+{trigger:Seiten_DUMMY_7_up_off}
+0 (S.L.Seiten_DUMMY_7_up)
+(T.L.ev_VDV_toggle_off)	
+{end}
+
+{trigger:Seiten_DUMMY_7_down}
+1 (S.L.Seiten_DUMMY_7_down)
+
+(L.L.Dachluken_Modus) 0 = !
+{if}
+(T.L.ev_dach_zu)
+0 (S.L.Dachluken_Modus)
+{endif}
+
+(T.L.ev_VDV_toggle_on)
+{end}
+
+{trigger:Seiten_DUMMY_7_down_off}
+0 (S.L.Seiten_DUMMY_7_down)
+(T.L.ev_VDV_toggle_off)	
+{end}
+
+
+{trigger:Seiten_DUMMY_7}
+	(L.L.Seiten_DUMMY_7) ! (S.L.Seiten_DUMMY_7)
+	(L.L.Seiten_DUMMY_7) 1 =
+	{if}
+		(T.L.ev_VDV_on)
+	{else}
+		(T.L.ev_VDV_off)
+	{endif}	
+{end}
+
+
+{trigger:Seiten_DUMMY_8}
+	(L.L.Seiten_DUMMY_8) ! (S.L.Seiten_DUMMY_8)
+	(L.L.Seiten_DUMMY_8) 1 =
+	{if}
+		(T.L.ev_VDV_on)
+	{else}
+		(T.L.ev_VDV_off)
+	{endif}	
+{end}
+
+
+{trigger:Seiten_DUMMY_9}
+	(L.L.Seiten_DUMMY_9) ! (S.L.Seiten_DUMMY_9)
+	(L.L.Seiten_DUMMY_9) 1 =
+	{if}
+		(T.L.ev_VDV_on)
+	{else}
+		(T.L.ev_VDV_off)
+	{endif}	
+{end}
+
+
+{trigger:Seiten_DUMMY_10}
+1 (S.L.Seiten_DUMMY_10)
+(T.L.ev_VDV_toggle_on)
+{end}
+
+{trigger:Seiten_DUMMY_10_off}
+0 (S.L.Seiten_DUMMY_10)
+(T.L.ev_VDV_toggle_off)
+{end}
+
+
+{trigger:Seiten_DUMMY_11}
+	(L.L.Seiten_DUMMY_11) ! (S.L.Seiten_DUMMY_11)
+	(L.L.Seiten_DUMMY_11) 1 =
+	{if}
+		(T.L.ev_VDV_on)
+	{else}
+		(T.L.ev_VDV_off)
+	{endif}	
+{end}
+
+
+{trigger:Seiten_DUMMY_12}
+	(L.L.Seiten_DUMMY_12) ! (S.L.Seiten_DUMMY_12)
+	(L.L.Seiten_DUMMY_12) 1 =
+	{if}
+		(T.L.ev_VDV_on)
+	{else}
+		(T.L.ev_VDV_off)
+	{endif}	
+{end}
+
+{trigger:Seiten_unten_DUMMY_1}
+	(L.L.Seiten_unten_DUMMY_1) ! (S.L.Seiten_unten_DUMMY_1)
+	(L.L.Seiten_unten_DUMMY_1) 1 =
+	{if}
+		(T.L.ev_VDV_on)
+	{else}
+		(T.L.ev_VDV_off)
+	{endif}	
+{end}
+
+{trigger:Seiten_unten_DUMMY_2}
+	(L.L.Seiten_unten_DUMMY_2) ! (S.L.Seiten_unten_DUMMY_2)
+	(L.L.Seiten_unten_DUMMY_2) 1 =
+	{if}
+		(T.L.ev_VDV_on)
+	{else}
+		(T.L.ev_VDV_off)
+	{endif}	
+{end}
+
+{trigger:Seiten_unten_DUMMY_3}
+	(L.L.Seiten_unten_DUMMY_3) ! (S.L.Seiten_unten_DUMMY_3)
+	(L.L.Seiten_unten_DUMMY_3) 1 =
+	{if}
+		(T.L.ev_VDV_on)
+	{else}
+		(T.L.ev_VDV_off)
+	{endif}	
+{end}
+
+{trigger:Seiten_unten_DUMMY_4}
+	(L.L.Seiten_unten_DUMMY_4) ! (S.L.Seiten_unten_DUMMY_4)
+	(L.L.Seiten_unten_DUMMY_4) 1 =
+	{if}
+		(T.L.ev_VDV_on)
+	{else}
+		(T.L.ev_VDV_off)
+	{endif}	
+{end}
+
+{trigger:VDL_DUMMY_1}
+	(L.L.VDL_DUMMY_1) ! (S.L.VDL_DUMMY_1)
+	(L.L.VDL_DUMMY_1) 1 =
+	{if}
+		(T.L.ev_VDV_on)
+	{else}
+		(T.L.ev_VDV_off)
+	{endif}	
+{end}
+
+{trigger:VDL_DUMMY_2}
+	1 (S.L.VDL_DUMMY_2)
+(T.L.ev_VDV_toggle_on)
+
+{end}
+
+{trigger:VDL_DUMMY_2_off}
+	0 (S.L.VDL_DUMMY_2)
+
+(T.L.ev_VDV_toggle_off)
+{end}
+
+
+{trigger:VDL_DUMMY_3}
+	(L.L.VDL_DUMMY_3) ! (S.L.VDL_DUMMY_3)
+	(L.L.VDL_DUMMY_3) 1 =
+	{if}
+		(T.L.ev_VDV_on)
+	{else}
+		(T.L.ev_VDV_off)
+	{endif}	
+{end}
+
+{trigger:VDL_DUMMY_4}
+	(L.L.VDL_DUMMY_4) ! (S.L.VDL_DUMMY_4)
+	(L.L.VDL_DUMMY_4) 1 =
+	{if}
+		(T.L.ev_VDV_on)
+	{else}
+		(T.L.ev_VDV_off)
+	{endif}	
+{end}
+
+{trigger:VDL_DUMMY_5}
+	(L.L.VDL_DUMMY_5) ! (S.L.VDL_DUMMY_5)
+	(L.L.VDL_DUMMY_5) 1 =
+	{if}
+		(T.L.ev_VDV_on)
+	{else}
+		(T.L.ev_VDV_off)
+	{endif}	
+{end}
+
+{trigger:VDL_DUMMY_6}
+	(L.L.VDL_DUMMY_6) ! (S.L.VDL_DUMMY_6)
+	(L.L.VDL_DUMMY_6) 1 =
+	{if}
+		(T.L.ev_VDV_on)
+	{else}
+		(T.L.ev_VDV_off)
+	{endif}	
+{end}
+
+
+{trigger:VDL_DUMMY_7}
+	(L.L.VDL_DUMMY_7) ! (S.L.VDL_DUMMY_7)
+	(L.L.VDL_DUMMY_7) 1 =
+	{if}
+		(T.L.ev_VDV_on)
+	{else}
+		(T.L.ev_VDV_off)
+	{endif}	
+{end}
+
+
+{trigger:VDL_DUMMY_8}
+	(L.L.VDL_DUMMY_8) ! (S.L.VDL_DUMMY_8)
+	(L.L.VDL_DUMMY_8) 1 =
+	{if}
+		(T.L.ev_VDV_on)
+	{else}
+		(T.L.ev_VDV_off)
+	{endif}	
+{end}
+
+
+
+
+
+{trigger:VDL_DUMMY_9}
+	1 (S.L.VDL_DUMMY_9)
+(T.L.ev_VDV_toggle_on)
+
+{end}
+
+{trigger:VDL_DUMMY_9_off}
+	0 (S.L.VDL_DUMMY_9)
+
+(T.L.ev_VDV_toggle_off)
+{end}
+
+{trigger:VDL_DUMMY_10}
+	1 (S.L.VDL_DUMMY_10)
+		(T.L.ev_VDV_on)
+
+{end}
+
+{trigger:VDL_DUMMY_10_off}
+	0 (S.L.VDL_DUMMY_10)
+
+		(T.L.ev_VDV_off)
+{end}
+
+{trigger:Seiten_DUMMY_13}
+	1 (S.L.Seiten_DUMMY_13)
+(T.L.ev_VDV_toggle_on)
+
+{end}
+
+{trigger:Seiten_DUMMY_13_off}
+	0 (S.L.Seiten_DUMMY_13)
+(T.L.ev_VDV_toggle_off)
+{end}
+
+{trigger:Seiten_DUMMY_16}
+	1 (S.L.Seiten_DUMMY_16)
+(T.L.ev_VDV_toggle_on)
+
+{end}
+
+{trigger:Seiten_DUMMY_16_off}
+	0 (S.L.Seiten_DUMMY_16)
+(T.L.ev_VDV_toggle_off)
+{end}
+
+
+{trigger:VDL_DUMMY_12}
+	(L.L.VDL_DUMMY_12) ! (S.L.VDL_DUMMY_12)
+	(L.L.VDL_DUMMY_12) 1 =
+	{if}
+		(T.L.ev_VDV_on)
+	{else}
+		(T.L.ev_VDV_off)
+	{endif}	
+{end}
+
+
+
+{trigger:Taster_Leer}
+
+{end}
+
+{trigger:lights_fahrerlicht_oben}
+	(L.L.lights_fahrerlicht_oben) ! (S.L.lights_fahrerlicht_oben)
+	1 (S.L.lights_fahrerlicht_oben_kipp)
+	(T.L.ev_VDV_toggle_on)
+{end}
+
+{trigger:lights_fahrerlicht_oben_off}
+0 (S.L.lights_fahrerlicht_oben_kipp)
+		(T.L.ev_VDV_toggle_off)
+{end}
+
+
+
+
+
+
+{trigger:VDL_DUMMY_13}
+	(L.L.VDL_DUMMY_13) ! (S.L.VDL_DUMMY_13)
+	(L.L.VDL_DUMMY_13) 1 =
+	{if}
+		(T.L.ev_VDV_on)
+	{else}
+		(T.L.ev_VDV_off)
+	{endif}	
+{end}
+
+
+{trigger:VDL_DUMMY_14}
+	(L.L.VDL_DUMMY_14) ! (S.L.VDL_DUMMY_14)
+	(L.L.VDL_DUMMY_14) 1 =
+	{if}
+		(T.L.ev_VDV_on)
+	{else}
+		(T.L.ev_VDV_off)
+	{endif}	
+{end}
+
+{trigger:VDL_DUMMY_15}
+	(L.L.VDL_DUMMY_15) ! (S.L.VDL_DUMMY_15)
+	(L.L.VDL_DUMMY_15) 1 =
+	{if}
+		(T.L.ev_VDV_on)
+	{else}
+		(T.L.ev_VDV_off)
+	{endif}	
+{end}
+
+{trigger:VDL_DUMMY_16}
+		1 (S.L.VDL_DUMMY_16)
+
+(L.L.cp_fahrertuer_pos) 0 >
+{if}
+{else}
+0 (S.L.cp_fahrertuer_erlaubt)
+0.05 (S.L.cp_fahrertuer_pos)
+{endif}		
+(T.L.ev_VDV_toggle_on)	
+{end}
+
+{trigger:VDL_DUMMY_16_off}
+	0 (S.L.VDL_DUMMY_16)
+(T.L.ev_VDV_toggle_off)
+{end}
+
+{trigger:VDL_DUMMY_17}
+	(L.L.VDL_DUMMY_17) ! (S.L.VDL_DUMMY_17)
+	(L.L.VDL_DUMMY_17) 1 =
+	{if}
+		(T.L.ev_VDV_on)
+	{else}
+		(T.L.ev_VDV_off)
+	{endif}	
+
+
+
+
+{end}
+
+{trigger:VDL_DUMMY_18}
+	(L.L.VDL_DUMMY_18) ! (S.L.VDL_DUMMY_18)
+	(L.L.VDL_DUMMY_18) 1 =
+	{if}
+		(T.L.ev_VDV_on)
+	{else}
+		(T.L.ev_VDV_off)
+	{endif}	
+{end}
+
+
+{trigger:VDL_DUMMY_19}
+	(L.L.VDL_DUMMY_19) ! (S.L.VDL_DUMMY_19)
+	(L.L.VDL_DUMMY_19) 1 =
+	{if}
+		(T.L.ev_VDV_on)
+	{else}
+		(T.L.ev_VDV_off)
+	{endif}	
+{end}
+
+{trigger:VDL_DUMMY_20}
+	(L.L.VDL_DUMMY_20) ! (S.L.VDL_DUMMY_20)
+	(L.L.VDL_DUMMY_20) 1 =
+	{if}
+		(T.L.ev_VDV_on)
+	{else}
+		(T.L.ev_VDV_off)
+	{endif}	
+{end}
+
+{trigger:VDL_DUMMY_21}
+	(L.L.VDL_DUMMY_21) ! (S.L.VDL_DUMMY_21)
+	(L.L.VDL_DUMMY_21) 1 =
+	{if}
+		(T.L.ev_VDV_on)
+	{else}
+		(T.L.ev_VDV_off)
+	{endif}	
+{end}
+
+{trigger:cp_dummy_sw01_toggle}
+	(L.L.cp_dummy_sw01) ! (S.L.cp_dummy_sw01)
+	(L.L.cp_dummy_sw01) 1 =
+	{if}
+		(T.L.ev_VDV_on)
+	{else}
+		(T.L.ev_VDV_off)
+	{endif}	
+{end}
+
+{trigger:cp_dummy_sw02_toggle}
+	(L.L.cp_dummy_sw02) ! (S.L.cp_dummy_sw02)
+	(L.L.cp_dummy_sw02) 1 =
+	{if}
+		(T.L.ev_VDV_on)
+	{else}
+		(T.L.ev_VDV_off)
+	{endif}	
+{end}
+
+
+
+{trigger:Kinderwagen_Schalter_up}
+1 (S.L.Kinderwagen_Schalter_up) (S.L.Kinderwagen_Display)
+
+	(L.L.bremse_halte_sw) 0 =
+	{if}
+	1 (S.L.door_handsteuerung)
+	{endif}
+(T.L.ev_VDV_toggle_on)
+{end}
+
+{trigger:Kinderwagen_Schalter_up_off}
+0 (S.L.Kinderwagen_Schalter_up)
+(T.L.ev_VDV_toggle_off)
+{end}
+
+{trigger:Kinderwagen_Schalter_down}
+1 (S.L.Kinderwagen_Schalter_down)
+0 (S.L.Kinderwagen_Display) 0 (S.L.door_handsteuerung)
+(T.L.ev_VDV_toggle_on)
+{end}
+
+{trigger:Kinderwagen_Schalter_down_off}
+0 (S.L.Kinderwagen_Schalter_down)
+(T.L.ev_VDV_toggle_off)
+{end}
+
+{trigger:cp_dummy_sw04_toggle}
+	(L.L.cp_dummy_sw04) 1 =
+	{if}
+		(T.L.ev_VDV_on)
+	{else}
+		(T.L.ev_VDV_off)
+	{endif}	
+{end}
+
+{trigger:cp_dummy_sw05_toggle}
+	(L.L.cp_dummy_sw05) 1 =
+	{if}
+		(T.L.ev_VDV_on)
+	{else}
+		(T.L.ev_VDV_off)
+	{endif}	
+{end}
+
+{trigger:cp_dummy_sw06_toggle}
+	(L.L.cp_dummy_sw06) ! (S.L.cp_dummy_sw06)
+	(L.L.cp_dummy_sw06) 1 =
+	{if}
+		(T.L.ev_VDV_on)
+	{else}
+		(T.L.ev_VDV_off)
+	{endif}	
+{end}
+
+{trigger:cp_dummy_sw07_toggle}
+	(L.L.cp_dummy_sw07) ! (S.L.cp_dummy_sw07)
+	(L.L.cp_heizluefter_sw) ! (S.L.cp_heizluefter_sw)
+
+	(L.L.cp_dummy_sw07) 1 =
+	{if}
+		(T.L.ev_VDV_on)
+	{else}
+		(T.L.ev_VDV_off)
+	{endif}	
+{end}
+
+{trigger:cp_window_up}
+	-1 (S.L.cp_dummy_sw08)
+
+	(T.L.ev_VDV_toggle_on)
+{end}
+
+{trigger:cp_window_up_off}
+	0 (S.L.cp_dummy_sw08)
+
+	(T.L.ev_VDV_toggle_off)
+{end}
+
+{trigger:cp_window_down}
+	1 (S.L.cp_dummy_sw08)
+
+	(T.L.ev_VDV_toggle_on)
+{end}
+
+{trigger:cp_window_down_off}
+	0 (S.L.cp_dummy_sw08)
+
+	(T.L.ev_VDV_toggle_off)
+{end}
+
+
+{trigger:cp_fahrerrollo_front_up}
+	-1 (S.L.cp_dummy_sw08_frontrollo)
+
+	(T.L.ev_VDV_toggle_on)
+{end}
+
+{trigger:cp_fahrerrollo_front_up_off}
+	0 (S.L.cp_dummy_sw08_frontrollo)
+
+	(T.L.ev_VDV_toggle_off)
+{end}
+
+{trigger:cp_fahrerrollo_front_down}
+	1 (S.L.cp_dummy_sw08_frontrollo)
+
+	(T.L.ev_VDV_toggle_on)
+{end}
+
+{trigger:cp_fahrerrollo_front_down_off}
+	0 (S.L.cp_dummy_sw08_frontrollo)
+
+	(T.L.ev_VDV_toggle_off)
+{end}
+
+
+
+{trigger:cp_fahrerrollo_seiten_up}
+	-1 (S.L.cp_dummy_sw08_seitenrollo)
+
+	(T.L.ev_VDV_toggle_on)
+{end}
+
+{trigger:cp_fahrerrollo_seiten_up_off}
+	0 (S.L.cp_dummy_sw08_seitenrollo)
+
+	(T.L.ev_VDV_toggle_off)
+{end}
+
+{trigger:cp_fahrerrollo_seiten_down}
+	1 (S.L.cp_dummy_sw08_seitenrollo)
+
+	(T.L.ev_VDV_toggle_on)
+{end}
+
+{trigger:cp_fahrerrollo_seiten_down_off}
+	0 (S.L.cp_dummy_sw08_seitenrollo)
+
+	(T.L.ev_VDV_toggle_off)
+{end}
+
+
+{trigger:cp_seitenrollo_manuell_drag}
+
+	(L.L.cp_seitenrollo_manuell_pos) (S.L.cp_seitenrollo_manuell_pos_lastpos)
+
+	1 (S.L.cp_seitenrollo_manuell_dragged)
+	0 (S.L.cp_seitenrollo_manuell_speed)
+	(L.S.mouse_y) -500 / (L.L.cp_seitenrollo_manuell_pos) + -1 max 0 min (S.L.cp_seitenrollo_manuell_pos)
+
+	(L.L.cp_seitenrollo_manuell_pos) (L.L.cp_seitenrollo_manuell_pos_lastpos) - abs (L.S.Timegap) / (S.L.cp_seitenrollo_manuell_speed)
+
+
+
+(L.L.cp_seitenrollo_manuell_pos) -1 =
+(L.L.cp_seitenrollo_manuell_speed) 0 > &&
+{if}
+(T.L.ev_rollo_end_manuell_unten)
+{endif}
+
+(L.L.cp_seitenrollo_manuell_pos) 0 =
+(L.L.cp_seitenrollo_manuell_speed) 0 > &&
+{if}
+(T.L.ev_rollo_end_manuell_oben)
+{endif}
+
+{end}
+
+{trigger:cp_seitenrollo_manuell_off}
+	0 (S.L.cp_seitenrollo_manuell_dragged)
+	(T.L.ev_rollo_end_manuell)
+{end}
+
+
+
+{trigger:cp_dummy_sw09_toggle}
+	(L.L.cp_dummy_sw09) ! (S.L.cp_dummy_sw09)
+	(L.L.cp_dummy_sw09) 1 =
+	{if}
+		(T.L.ev_VDV_on)
+	{else}
+		(T.L.ev_VDV_off)
+	{endif}	
+{end}
+
+{trigger:cp_dummy_sw10_toggle}
+	(L.L.cp_dummy_sw10) ! (S.L.cp_dummy_sw10)
+	(L.L.cp_dummy_sw10) 1 =
+	{if}
+		(T.L.ev_VDV_on)
+	{else}
+		(T.L.ev_VDV_off)
+	{endif}	
+{end}
+
+{trigger:cp_schalter_ASR_off_toggle}
+	(L.L.cp_ASR_off) ! (S.L.cp_ASR_off)
+1 (S.L.cp_ASR_Schalter)
+(T.L.ev_VDV_toggle_on)
+{end}
+
+{trigger:cp_schalter_ASR_off_toggle_off}
+0 (S.L.cp_ASR_Schalter)
+(T.L.ev_VDV_toggle_off)
+{end}
+
+{trigger:cp_dummy_sw11_toggle}
+ (L.L.cp_dummy_sw11) ! (S.L.cp_dummy_sw11)
+	(L.L.cp_dummy_sw11) 1 =
+	{if}
+		(T.L.ev_VDV_on)
+	{else}
+		(T.L.ev_VDV_off)
+	{endif}	
+{end}
+
+{trigger:cp_dummy_sw12_toggle}
+ (L.L.cp_dummy_sw12) ! (S.L.cp_dummy_sw12)
+	(L.L.cp_dummy_sw10) 1 =
+	{if}
+		(T.L.ev_VDV_on)
+	{else}
+		(T.L.ev_VDV_off)
+	{endif}	
+{end}
+
+{trigger:cp_dummy_sw13_toggle}
+ (L.L.cp_dummy_sw13) ! (S.L.cp_dummy_sw13)
+	(L.L.cp_dummy_sw13) 1 =
+	{if}
+		(T.L.ev_VDV_on)
+	{else}
+		(T.L.ev_VDV_off)
+	{endif}	
+{end}
+
+{trigger:cp_dummy_sw14_toggle}
+ (L.L.cp_dummy_sw14) ! (S.L.cp_dummy_sw14)
+	(L.L.cp_dummy_sw14) 1 =
+	{if}
+		(T.L.ev_VDV_on)
+	{else}
+		(T.L.ev_VDV_off)
+	{endif}	
+{end}
+
+
+
+
+{trigger:cp_klimator_sw_drag}
+
+1 (S.L.luefterstaerke)
+0 (S.L.Klima_timer)
+
+	(L.S.mouse_y) -100 / (L.L.cp_klimator_sw) + (S.L.cp_klimator_sw) s0
+	l0 0 <
+	{if}
+		0 (S.L.cp_klimator_sw)
+	{endif}
+	l0 1 >
+	{if}
+		1 (S.L.cp_klimator_sw)
+	{endif}
+{end}
+
+{trigger:cp_klimator_sw_off}
+0 (S.L.luefterstaerke)
+{end}
+
+{trigger:cp_rollo_drag}
+
+	(L.L.cp_rollo_pos) (S.L.cp_rollo_lastpos)
+
+	1 (S.L.cp_rollo_dragged)
+	0 (S.L.cp_rollo_speed)
+	(L.S.mouse_y) 500 / (L.L.cp_rollo_pos) + (S.L.cp_rollo_pos) s0
+	l0 0 <
+	{if}
+		0 (S.L.cp_rollo_pos)
+	{endif}
+	l0 1 >
+	{if}
+		1 (S.L.cp_rollo_pos)
+	{endif}
+
+	(L.L.cp_rollo_pos) (L.L.cp_rollo_lastpos) - abs (L.S.Timegap) / (S.L.cp_rollo_speed)
+
+{end}
+
+{trigger:cp_rollo_off}
+	0 (S.L.cp_rollo_dragged)
+	(T.L.ev_rollo_end)
+{end}
+
+{trigger:cp_rollo_retract}
+	(L.L.cp_rollo_bommel) 0 = (L.L.cp_rollo_pos) &&
+	{if}
+		(T.L.ev_rollo_retract)
+	{endif}
+	1 (S.L.cp_rollo_bommel) (S.L.cp_rollo_retract)
+
+{end}
+
+{trigger:cp_rollo_retract_off}
+	0 (S.L.cp_rollo_bommel) (S.L.cp_rollo_retract) (S.L.cp_rollo_speed)
+{end}
+
+{trigger:cp_rollo1_drag}
+
+ (L.L.cp_rollo1_pos) (S.L.cp_rollo1_lastpos)
+
+ 1 (S.L.cp_rollo1_dragged)
+ 0 (S.L.cp_rollo1_speed)
+
+  0 (S.L.cp_rollo1_pos)
+ l0 1 >
+ {if}
+  0 (S.L.cp_rollo1_pos)
+ {endif}
+
+ (L.L.cp_rollo1_pos) (L.L.cp_rollo1_lastpos) - abs (L.S.Timegap) / (S.L.cp_rollo1_speed)
+
+{end}
+
+{trigger:cp_rollo1_off}
+ 0 (S.L.cp_rollo1_dragged)
+ (T.L.ev_rollo1_end)
+{end}
+
+
+
+{trigger:cp_rollo1_retract}
+ (L.L.cp_rollo1_bommel) 0 = (L.L.cp_rollo1_pos) &&
+ {if}
+  (T.L.ev_rollo1_retract)
+ {endif}
+ 1 (S.L.cp_rollo1_bommel) (S.L.cp_rollo1_retract)
+
+{end}
+
+{trigger:cp_rollo1_retract_off}
+ 0 (S.L.cp_rollo1_bommel) (S.L.cp_rollo1_retract) (S.L.cp_rollo1_speed)
+{end}
+
+'----------------------------------------------
+'������� ������
+'----------------------------------------------
+
+{trigger:cp_kryshka1_opn_drag}
+
+	(L.L.cp_kryshka1_pos) (S.L.cp_kryshka1_lastpos)
+
+	(L.S.mouse_x) -500 / (L.L.cp_kryshka1_pos) + (S.L.cp_kryshka1_pos) s0
+	l0 0 <
+	{if}
+		0 (S.L.cp_kryshka1_pos)
+		(L.L.cp_kryshka1_endanschlag) !
+		{if}
+			(T.L.ev_fahrerfenster_cls)
+		{endif}
+		1 (S.L.cp_kryshka1_endanschlag)
+		
+	{endif}
+	l0 1 >
+	{if}
+		1 (S.L.cp_kryshka1_pos)
+		(L.L.cp_kryshka1_endanschlag) !
+		{if}
+			(T.L.ev_fahrerfenster_opn)
+		{endif}
+		1 (S.L.cp_kryshka1_endanschlag)
+	{endif}
+
+	(L.L.cp_kryshka1_pos) s0 0 > l0 1 < &&
+	{if}
+		0 (S.L.cp_kryshka1_endanschlag)
+	{endif}
+
+
+	(L.L.cp_kryshka1_pos) (L.L.cp_kryshka1_lastpos) - abs (L.S.Timegap) / (S.L.cp_kryshka1_speed)
+{end}
+
+
+{trigger:cp_kryshka1_opn_off}
+	0 (S.L.cp_kryshka1_speed)
+{end}
+
+{trigger:cp_kryshka2_opn_drag}
+
+	(L.L.cp_kryshka2_pos) (S.L.cp_kryshka2_lastpos)
+
+	(L.S.mouse_x) -500 / (L.L.cp_kryshka2_pos) + (S.L.cp_kryshka2_pos) s0
+	l0 0 <
+	{if}
+		0 (S.L.cp_kryshka2_pos)
+		(L.L.cp_kryshka2_endanschlag) !
+		{if}
+			(T.L.ev_fahrerfenster_cls)
+		{endif}
+		1 (S.L.cp_kryshka2_endanschlag)
+		
+	{endif}
+	l0 1 >
+	{if}
+		1 (S.L.cp_kryshka2_pos)
+		(L.L.cp_kryshka2_endanschlag) !
+		{if}
+			(T.L.ev_fahrerfenster_opn)
+		{endif}
+		1 (S.L.cp_kryshka2_endanschlag)
+	{endif}
+
+	(L.L.cp_kryshka2_pos) s0 0 > l0 1 < &&
+	{if}
+		0 (S.L.cp_kryshka2_endanschlag)
+	{endif}
+
+
+	(L.L.cp_kryshka2_pos) (L.L.cp_kryshka2_lastpos) - abs (L.S.Timegap) / (S.L.cp_kryshka2_speed)
+{end}
+
+
+{trigger:cp_kryshka2_opn_off}
+	0 (S.L.cp_kryshka2_speed)
+{end}
+
+{trigger:cp_kryshka3_opn_drag}
+
+	(L.L.cp_kryshka3_pos) (S.L.cp_kryshka3_lastpos)
+
+	(L.S.mouse_x) -500 / (L.L.cp_kryshka3_pos) + (S.L.cp_kryshka3_pos) s0
+	l0 0 <
+	{if}
+		0 (S.L.cp_kryshka3_pos)
+		(L.L.cp_kryshka3_endanschlag) !
+		{if}
+			(T.L.ev_fahrerfenster_cls)
+		{endif}
+		1 (S.L.cp_kryshka3_endanschlag)
+		
+	{endif}
+	l0 1 >
+	{if}
+		1 (S.L.cp_kryshka3_pos)
+		(L.L.cp_kryshka3_endanschlag) !
+		{if}
+			(T.L.ev_fahrerfenster_opn)
+		{endif}
+		1 (S.L.cp_kryshka3_endanschlag)
+	{endif}
+
+	(L.L.cp_kryshka3_pos) s0 0 > l0 1 < &&
+	{if}
+		0 (S.L.cp_kryshka3_endanschlag)
+	{endif}
+
+
+	(L.L.cp_kryshka3_pos) (L.L.cp_kryshka3_lastpos) - abs (L.S.Timegap) / (S.L.cp_kryshka3_speed)
+{end}
+
+
+{trigger:cp_kryshka3_opn_off}
+	0 (S.L.cp_kryshka3_speed)
+{end}
+
+{trigger:cp_kryshka4_opn_drag}
+
+	(L.L.cp_kryshka4_pos) (S.L.cp_kryshka4_lastpos)
+
+	(L.S.mouse_x) -500 / (L.L.cp_kryshka4_pos) + (S.L.cp_kryshka4_pos) s0
+	l0 0 <
+	{if}
+		0 (S.L.cp_kryshka4_pos)
+		(L.L.cp_kryshka4_endanschlag) !
+		{if}
+			(T.L.ev_fahrerfenster_cls)
+		{endif}
+		1 (S.L.cp_kryshka4_endanschlag)
+		
+	{endif}
+	l0 1 >
+	{if}
+		1 (S.L.cp_kryshka4_pos)
+		(L.L.cp_kryshka4_endanschlag) !
+		{if}
+			(T.L.ev_fahrerfenster_opn)
+		{endif}
+		1 (S.L.cp_kryshka4_endanschlag)
+	{endif}
+
+	(L.L.cp_kryshka4_pos) s0 0 > l0 1 < &&
+	{if}
+		0 (S.L.cp_kryshka4_endanschlag)
+	{endif}
+
+
+	(L.L.cp_kryshka4_pos) (L.L.cp_kryshka4_lastpos) - abs (L.S.Timegap) / (S.L.cp_kryshka4_speed)
+{end}
+
+
+{trigger:cp_kryshka4_opn_off}
+	0 (S.L.cp_kryshka4_speed)
+{end}
+
+
+'������ ������� ��� ����. ������� ���� ����������� ������, ����� ��������� �� ����, ����� ����� � ������� ���� ������, ����� Wizard
+
+{trigger:cp_key_rot_drag}
+ 
+ 
+  (L.S.mouse_y) -30 / (L.L.cp_key_rot) + 0 max 1 min (S.L.cp_key_rot) s1
+ 
+'  0: ���������� �������
+'  2: ������� ��������, �� ���������� ���������
+'  3: ������ ���������, ���������� � ��������� ���������
+
+	l1 0.2 <
+		{if}
+			0 (S.L.cp_key_rot_mode) 
+			0 (S.L.elec_busbar_main_sw)
+		{else} 
+			l1 0.8 <
+			{if}
+				1 (S.L.cp_key_rot_mode)
+
+				1 (S.L.elec_busbar_main_sw)
+				0 (S.L.engine_injection_on)
+			
+			{else}
+			l1 0.9 <
+			{if}
+				2 (S.L.cp_key_rot_mode)
+
+			{else}
+'				3 (S.L.cp_key_rot_mode)
+
+				(L.L.engine_on) ! 
+				(L.L.antrieb_getr_gangwahl) 1 = &&
+				(L.L.elec_busbar_main) &&
+				{if}
+					1 (S.L.engine_on) (S.L.engine_injection_on)
+					(T.L.ev_enginestart)
+					300 (S.L.engine_n)
+
+			2 (S.L.cp_key_rot_mode)			
+			{endif}
+		{endif}
+	{endif}
+{endif}
+
+{end}
+
+{trigger:cp_key_rot_off}
+
+ (L.L.cp_key_rot_mode) 3 / (S.L.cp_key_rot)
+
+{end}
+
+{trigger:cp_schluessel_mov_drag}
+
+'	Fallunterscheidung: Schl�ssel in x- oder y-Richtung?
+'	
+'	(L.S.mouse_y) abs (L.S.mouse_x) abs >=
+'	{if}
+'
+'		Zun�chst Translation (Einstecken)
+'
+'		(L.S.mouse_y) 10 / (L.L.cp_schluessel_trans) + 0 max 1 min (S.L.cp_schluessel_trans) s0
+'		
+'		Stufen:
+'		0: Schl�ssel abgezogen
+'		1: Schl�ssel eingesteckt
+'
+'		l0 0.5 <
+'		{if}
+'			0 (S.L.cp_schluessel_trans_mode) (S.L.elec_busbar_main_sw)
+'		{else} 
+'			1 (S.L.cp_schluessel_trans_mode)
+'			1 (S.L.bremse_ABS_selftest)
+'
+'			Wenn beim Einstecken bereits der Stromkreis geschlossen werden soll, ohne Trennschalter:
+'
+'			(C.L.automatic_battery_switch)
+'			{if}
+'				1 (S.L.elec_busbar_main_sw)
+'			{endif}		
+'		{endif}
+'	{else}
+
+'		Sonst Rotation (Lichtschalter)
+
+		(L.S.mouse_x) -20 / (L.L.cp_schluessel_rot) + 0 max 1 min (S.L.cp_schluessel_rot) s1
+
+'		Stufen:
+'		0: Licht aus
+'		1: Standlicht
+'		2: Abblendlicht
+
+		l1 0.2 <
+		{if}
+			0 (S.L.cp_schluessel_rot_mode) 
+		{else} 
+			l1 0.8 <
+			{if}
+				1 (S.L.cp_schluessel_rot_mode) 
+			{else}
+				2 (S.L.cp_schluessel_rot_mode)
+			{endif}
+		{endif}
+'	{endif}
+{end}
+
+
+
+
+{trigger:cp_schluessel_mov_off}
+
+'	Einrasten auf den festen Positionen:
+	(L.L.cp_schluessel_trans_mode) (S.L.cp_schluessel_trans)
+	(L.L.cp_schluessel_rot_mode) 2 / (S.L.cp_schluessel_rot)
+
+{end}
+
+
+
+{trigger:cp_lenkrad_toggle}
+	(L.L.cp_lenkrad_visible) ! (S.L.cp_lenkrad_visible)
+{end}
+
+
+{trigger:kw_batterietrennschalter}
+	1 (S.L.cp_taster_batterietrennschalter)
+
+	(L.L.cp_schluessel_trans)
+	{if}
+		1 (S.L.elec_busbar_main_sw)
+	{endif}
+
+{end}
+
+{trigger:kw_batterietrennschalter_off}
+	0 (S.L.cp_taster_batterietrennschalter)
+{end}
+
+
+
+{trigger:cp_batterietrennschalter_toggle}
+	(L.L.elec_busbar_main_sw) ! (S.L.elec_busbar_main_sw) 
+	(L.L.cp_batterietrennschalter_antirepeat) !
+	{if}
+		(L.L.elec_busbar_main_sw)
+		{if}
+			(T.L.ev_schluessel_steck)
+			1 (S.L.cp_schluessel_trans) (S.L.cp_taster_batterietrennschalter)
+			1 (S.L.bremse_ABS_selftest)
+			0.8 (S.L.cp_key_rot)
+		{else}
+			(T.L.ev_schluessel_steck)
+			0 (S.L.cp_schluessel_trans)
+			0 (S.L.cp_key_rot)
+		{endif}
+		1 (S.L.cp_batterietrennschalter_antirepeat)
+	{endif}
+{end}
+			
+{trigger:cp_batterietrennschalter_toggle_off}
+	0 (S.L.cp_batterietrennschalter_antirepeat) (S.L.cp_taster_batterietrennschalter)
+{end}			
+	
+
+
+
+{trigger:cp_klappfenster_OR1}
+	(L.L.cp_klappfenster_OR1) ! (S.L.cp_klappfenster_OR1) s1
+	(M.L.klappfenstersound)
+{end}
+
+{trigger:cp_klappfenster_OR2}
+	(L.L.cp_klappfenster_OR2) ! (S.L.cp_klappfenster_OR2) s1
+	(M.L.klappfenstersound)
+{end}
+
+{trigger:cp_klappfenster_OR3}
+	(L.L.cp_klappfenster_OR3) ! (S.L.cp_klappfenster_OR3) s1
+	(M.L.klappfenstersound)
+{end}
+
+{trigger:cp_klappfenster_OR4}
+	(L.L.cp_klappfenster_OR4) ! (S.L.cp_klappfenster_OR4) s1
+	(M.L.klappfenstersound)
+{end}
+
+
+{trigger:cp_klappfenster_OL1}
+	(L.L.cp_klappfenster_OL1) ! (S.L.cp_klappfenster_OL1) s1
+	(M.L.klappfenstersound)
+{end}
+
+{trigger:cp_klappfenster_OL2}
+	(L.L.cp_klappfenster_OL2) ! (S.L.cp_klappfenster_OL2) s1
+	(M.L.klappfenstersound)
+{end}
+
+{trigger:cp_klappfenster_OL3}
+	(L.L.cp_klappfenster_OL3) ! (S.L.cp_klappfenster_OL3) s1
+
+	(L.L.cp_klappfenster_OL3) 1 =
+	{if}
+		(T.L.ev_VDV_on)
+		(T.L.ev_dach_auf)
+	{else}
+		(T.L.ev_VDV_off)
+		(T.L.ev_dach_zu)
+	{endif}	
+{end}
+
+{trigger:cp_klappfenster_OL4}
+	(L.L.cp_klappfenster_OL4) ! (S.L.cp_klappfenster_OL4) s1
+	(M.L.klappfenstersound)
+{end}
+
+{trigger:cp_klappfenster_UR1}
+	(L.L.cp_klappfenster_UR1) ! (S.L.cp_klappfenster_UR1) s1
+	(M.L.klappfenstersound)
+{end}
+
+{trigger:cp_klappfenster_UR2}
+	(L.L.cp_klappfenster_UR2) ! (S.L.cp_klappfenster_UR2) s1
+	(M.L.klappfenstersound)
+{end}
+
+{trigger:cp_klappfenster_UR3}
+	(L.L.cp_klappfenster_UR3) ! (S.L.cp_klappfenster_UR3) s1
+	(M.L.klappfenstersound)
+{end}
+
+{trigger:cp_klappfenster_UR4}
+	(L.L.cp_klappfenster_UR4) ! (S.L.cp_klappfenster_UR4) s1
+	(M.L.klappfenstersound)
+{end}
+
+{trigger:cp_klappfenster_UL1}
+	(L.L.cp_klappfenster_UL1) ! (S.L.cp_klappfenster_UL1) s1
+	(M.L.klappfenstersound)
+{end}
+
+{trigger:cp_klappfenster_UL2}
+	(L.L.cp_klappfenster_UL2) ! (S.L.cp_klappfenster_UL2) s1
+	(M.L.klappfenstersound)
+{end}
+
+{trigger:cp_klappfenster_UL3}
+	(L.L.cp_klappfenster_UL3) ! (S.L.cp_klappfenster_UL3) s1
+	(M.L.klappfenstersound)
+{end}
+
+{trigger:cp_klappfenster_UL4}
+	(L.L.cp_klappfenster_UL4) ! (S.L.cp_klappfenster_UL4) s1
+	(M.L.klappfenstersound)
+{end}
+
+
+{trigger:cp_Fahrertuer_drag}
+
+(L.L.cp_fahrertuer_erlaubt) 0 =
+{if}
+
+	1 (S.L.cp_fahrertuer_dragged)
+	(L.L.cp_fahrertuer_pos) (S.L.cp_fahrertuer_lastpos)
+
+	(L.S.mouse_x) 500 / (L.L.cp_fahrertuer_pos) + (S.L.cp_fahrertuer_pos) s0
+	l0 0 <
+	{if}
+		0 (S.L.cp_fahrertuer_pos)		
+	{endif}
+	l0 1 >
+	{if}
+		1 (S.L.cp_fahrertuer_pos)
+	{endif}
+
+	(L.L.cp_fahrertuer_pos) (L.L.cp_fahrertuer_lastpos) - (L.S.Timegap) / (S.L.cp_fahrertuer_speed)
+{endif}
+
+{end}
+
+
+{trigger:cp_Fahrertuer_off}
+	0 (S.L.cp_fahrertuer_dragged)
+{end}
+
+
+
+{trigger:KR_play}
+	(L.L.cockpit_KR_play) 0.1 < 
+	{if}
+		(T.L.ev_kr_play)
+	{endif}
+	1 (S.L.cockpit_KR_play) (S.L.Snd_Radio)
+{end}
+
+
+{trigger:KR_play_off}
+	0.8 (S.L.cockpit_KR_play)
+{end}
+
+{trigger:KR_stop}
+	1 (S.L.cockpit_KR_stop)
+	0 (S.L.cockpit_KR_play) (S.L.Snd_Radio)
+	(T.L.ev_kr_stop)
+{end}
+
+
+{trigger:KR_stop_off}
+	0 (S.L.cockpit_KR_stop)
+{end}
+
+
+{trigger:taster_standheizung}
+
+	(L.L.cp_taster_standheizung_target) ! (S.L.cp_taster_standheizung_target) s1
+
+	1 (S.L.cp_taster_standheizung)
+
+	(C.L.auxheat_via_button) !
+	{if}
+		l1 (M.L.kippschaltersound)
+		l0 (S.L.cp_taster_standheizung)
+	{endif}
+		
+	(L.L.cp_taster_standheizung_target) 1 =
+	{if}
+		(T.L.ev_VDV_on)
+	{else}
+		(T.L.ev_VDV_off)
+	{endif}	
+{end}
+
+{trigger:taster_standheizung_off}
+	
+	(L.L.cp_taster_standheizung_target)
+	{if}
+		0 (S.L.cp_taster_standheizung)
+	{else}
+		0.6 (S.L.cp_taster_standheizung)
+	{endif}
+
+{end}
+
+
+{trigger:taster_nebelschluss}
+
+	(L.L.cp_taster_nebelschluss_target) ! (S.L.cp_taster_nebelschluss_target)
+	1 (S.L.cp_taster_nebelschluss)		
+{end}
+
+{trigger:taster_nebelschluss_off}
+	
+	(L.L.cp_taster_nebelschluss_target)
+	{if}
+		0.6 (S.L.cp_taster_nebelschluss)
+	{else}
+		0 (S.L.cp_taster_nebelschluss)
+	{endif}
+
+{end}
+
+
+{trigger:cp_wiperlever_drag}
+
+'	Fallunterscheidung: Hebel in x- oder y-Richtung?
+
+	(C.L.wiper_lever)
+	{if}
+	
+		(L.S.mouse_y) abs (L.S.mouse_x) abs >=
+		{if}
+			(L.S.mouse_y) -50 / (L.L.cockpit_wischerhebel) + 0 max 1 min (S.L.cockpit_wischerhebel) s0
+		
+'			Stufen:
+'			0: Aus
+'			1: Intervall
+'			2: Langsam
+'			3: Schnell
+
+			l0 0.17 <
+			{if}
+				0 (S.L.cockpit_wischerhebel_mode) (S.L.cp_wischer_intervall_sw) (S.L.cp_wischer_einaus_sw) (S.L.cp_wischer_schnell_sw)
+			{else} 
+				l0 0.5 <
+				{if}
+					1 (S.L.cockpit_wischerhebel_mode) (S.L.cp_wischer_intervall_sw)
+					0 (S.L.cp_wischer_schnell_sw) (S.L.cp_wischer_einaus_sw)
+				{else}
+					l0 0.83 <
+					{if}
+						2 (S.L.cockpit_wischerhebel_mode)
+						1 (S.L.cp_wischer_einaus_sw)
+						0 (S.L.cp_wischer_intervall_sw) (S.L.cp_wischer_schnell_sw)
+					{else}
+						3 (S.L.cockpit_wischerhebel_mode)
+						1 (S.L.cp_wischer_einaus_sw) (S.L.cp_wischer_schnell_sw)
+						0 (S.L.cp_wischer_intervall_sw)
+					{endif}
+				{endif}
+			{endif}
+		{else}
+			(L.S.mouse_x) -50 / (L.L.cockpit_wischerhebel_x) + 0 max 1 min (S.L.cockpit_wischerhebel_x) s1
+
+'			Waschanlage (Hebel nach oben)	
+			l1 0.9 >
+			{if}
+				(L.L.cp_wischer_wascher_sw) !
+				{if}
+					(T.L.ev_wischerhebel)
+				{endif}
+				1 (S.L.cp_wischer_wascher_sw)
+			{else}
+				(L.L.cp_wischer_wascher_sw)
+				{if}
+					(T.L.ev_wischerhebel)
+				{endif}
+				0 (S.L.cp_wischer_wascher_sw)
+			{endif}
+
+		{endif}
+	{endif}
+
+{end}
+
+{trigger:cp_wiperlever_off}
+
+'	Einrasten auf den festen Positionen:
+	(L.L.cockpit_wischerhebel_mode) 3 / (S.L.cockpit_wischerhebel)
+	(L.L.cp_wischer_wascher_sw)
+	{if}
+		(T.L.ev_wischerhebel)
+		0 (S.L.cockpit_wischerhebel_x) (S.L.cp_wischer_wascher_sw)
+	{endif}
+{end}
+
+
+{trigger:cp_wiper_turnswitch_drag}
+
+'	(C.L.wiper_turnswitch)
+'	{if}
+	
+		(L.S.mouse_y) -50 / (L.L.cockpit_wischer_drehschalter) + 0 max 1 min (S.L.cockpit_wischer_drehschalter) s0
+	
+'		Stufen:
+'		0: Intervall
+'		1: Aus
+'		2: Langsam
+'		3: Schnell
+
+		l0 0.17 <
+		{if}
+				0 (S.L.cp_wischer_intervall_sw) (S.L.cp_wischer_einaus_sw) (S.L.cp_wischer_schnell_sw)
+				0 (S.L.cockpit_wischer_drehschalter_mode)	
+		{else} 
+			l0 0.5 <
+			{if}
+			1 (S.L.cp_wischer_intervall_sw)
+			1 (S.L.cockpit_wischer_drehschalter_mode) 
+			0 (S.L.cp_wischer_schnell_sw) (S.L.cp_wischer_einaus_sw)	
+			{else}
+				l0 0.83 <
+				{if}
+					2 (S.L.cockpit_wischer_drehschalter_mode)
+					1 (S.L.cp_wischer_einaus_sw)
+					0 (S.L.cp_wischer_intervall_sw) (S.L.cp_wischer_schnell_sw)
+				{else}
+					3 (S.L.cockpit_wischer_drehschalter_mode)
+					1 (S.L.cp_wischer_einaus_sw) (S.L.cp_wischer_schnell_sw)
+					0 (S.L.cp_wischer_intervall_sw)
+				{endif}
+			{endif}
+		{endif}
+'	{endif}
+
+{end}
+
+{trigger:cp_wiper_turnswitch_off}
+
+'	Einrasten auf den festen Positionen:
+	(L.L.cockpit_wischer_drehschalter_mode) 3 / (S.L.cockpit_wischer_drehschalter)
+{end}
+
+	
+{trigger:cp_microphone}
+	1 (S.L.cp_microphone_sw)
+{end}
+
+{trigger:cp_microphone_off}
+	0 (S.L.cp_microphone_sw)
+{end}
+
+
+{trigger:cp_sun_blind_drag}
+ (L.S.mouse_x) 150 / (L.L.cp_sun_blind_pos) + 0 max 1 min (S.L.cp_sun_blind_pos)
+{end}
+
+{trigger:cp_heizregler_umluft}
+ (L.L.cp_heizregler_umluft_sw) ! (S.L.cp_heizregler_umluft_sw)
+
+ 0 (S.L.cockpit_heizregler_ventilation_mode)
+ 
+ (L.L.cp_heizregler_umluft_sw) 1 = (L.L.elec_busbar_main) &&
+ (S.L.cp_heizregler_umluft_light)
+ 
+{end}
+
+
+{trigger:cp_heizregler_Direkt}
+ (L.L.cp_heizregler_Direkt_sw) ! (S.L.cp_heizregler_Direkt_sw)
+
+ 1 (S.L.cockpit_heizregler_ventilation_mode)
+ 
+ (L.L.cp_heizregler_Direkt_sw) 1 = (L.L.elec_busbar_main) &&
+ (S.L.cp_heizregler_Direkt_light)
+ 
+{end}
+
+{trigger:cp_heizregler_Frischluft}
+ (L.L.cp_heizregler_Frischluft_sw) ! (S.L.cp_heizregler_Frischluft_sw)
+
+ 2 (S.L.cockpit_heizregler_ventilation_mode)
+ 
+ (L.L.cp_heizregler_Frischluft_sw) 1 = (L.L.elec_busbar_main) &&
+ (S.L.cp_heizregler_Frischluft_light)
+ 
+{end}
+
+{trigger:cp_heizregler_defrost_drag}
+	(L.S.mouse_x) -70 / (L.L.cockpit_heizregler_defrost) + 0 max 1 min (S.L.cockpit_heizregler_defrost)
+{end}
+
+{trigger:cp_heizregler_fussraum_drag}
+
+'By MR, modified by Wizard | omnibussimulator.ru
+
+	(L.S.mouse_y) -150 / (L.L.cockpit_heizregler_fussraum) + 0 max 1 min (S.L.cockpit_heizregler_fussraum) s0
+
+		l0 0.1 <
+			{if}
+			0 (S.L.cockpit_heizregler_fussraum_pos)
+			{else}
+		l0 0.25 <
+			{if}
+			1 (S.L.cockpit_heizregler_fussraum_pos)
+			{else}		
+		l0 0.5 <
+			{if}
+			2 (S.L.cockpit_heizregler_fussraum_pos)
+			{else}
+		l0 1 =
+			{if}
+			3 (S.L.cockpit_heizregler_fussraum_pos)
+			
+			{endif}
+			{endif}
+			{endif}
+			{endif}	
+	
+{end}
+
+{trigger:cp_heizregler_fussraum_off}
+
+
+	(L.L.cockpit_heizregler_fussraum_pos) 3 / (S.L.cockpit_heizregler_fussraum)
+
+{end}
+
+'{trigger:cp_heizregler_temp_drag}
+'	(L.S.mouse_y) -150 / (L.L.cockpit_heizregler_temp) + 0 max 1 min (S.L.cockpit_heizregler_temp)
+'{end}
+
+{trigger:cp_heizregler_bug_drag}
+	(L.S.mouse_y) -150 / (L.L.cockpit_heizregler_bug) + 0 max 1 min (S.L.cockpit_heizregler_bug)
+{end}
+
+{trigger:cp_heizregler_umluft_drag}
+	(L.S.mouse_y) -150 / (L.L.cockpit_heizregler_umluft) + 0 max 1 min (S.L.cockpit_heizregler_umluft) s0
+
+'	Stufen:
+'	0: Umluftheizung
+'	1: Direktbel�ftung
+'	2: Frischluftheizung
+
+	l0 0.2 <
+	{if}
+		0 (S.L.cockpit_heizregler_ventilation_mode)
+	{else}
+		l0 0.8 <
+		{if}
+			1 (S.L.cockpit_heizregler_ventilation_mode)
+		{else}
+			2 (S.L.cockpit_heizregler_ventilation_mode)
+		{endif}
+	{endif}
+
+{end}
+
+{trigger:cp_heizregler_umluft_off}
+	(L.L.cockpit_heizregler_ventilation_mode) 2 / (S.L.cockpit_heizregler_umluft)
+
+{end}
+
+'------------------------------------
+'	������ ��� ���������
+'------------------------------------
+{trigger:Pandus_drag}
+
+	1 (S.L.pandus_dragged)
+	(L.L.pandus_pos) (S.L.pandus_lastpos)
+
+	(L.S.mouse_y) -200 / (L.L.pandus_pos) + (S.L.pandus_pos) s0
+	l0 0 <
+	{if}
+		0 (S.L.pandus_pos)		
+	{endif}
+	l0 1 >
+	{if}
+		1 (S.L.pandus_pos)
+	{endif}
+'	������ ��� ������ ������.		
+	(L.L.pandus_pos) 0.4 > (L.L.door_3) &&
+	{if}
+		1 (S.L.pandus_opn)
+		0 (S.L.pandus_cls)
+	{endif}
+	(L.L.pandus_pos) 0.2 < (L.L.door_3) &&
+	{if}
+		1 (S.L.pandus_cls)
+		0 (S.L.pandus_opn)
+	{endif}
+	(L.L.pandus_opn) (L.L.door_3) 0.9 < &&
+	{if}
+		(L.L.pandus_pos) 0.45 < 
+		{if}
+			0.45 (S.L.pandus_pos)
+		{endif}
+	{endif}
+	(L.L.pandus_cls) (L.L.door_3) 0.9 < &&
+	{if}
+		(L.L.pandus_pos) 0.1 > 
+		{if}
+			0.1 (S.L.pandus_pos)
+		{endif}
+	{endif}
+	(L.L.pandus_pos) (L.L.pandus_lastpos) - (L.S.Timegap) / (S.L.pandus_speed)
+{end}
+
+
+{trigger:Pandus_off}
+	0 (S.L.pandus_dragged)
+{end}
+
+{trigger:cp_novitus_key}
+	(L.L.cp_novitus_key_rot) ! (S.L.cp_novitus_key_rot)
+
+{trigger:cp_novitus_kasetka_drag}
+	(L.L.cp_novitus_kasetka_pos) 0 = 
+	(L.L.cp_novitus_key_rot) ! && !
+	{if}
+	(L.S.mouse_y) 200 / (L.L.cp_novitus_kasetka_pos) + 0 max 1 min (S.L.cp_novitus_kasetka_pos)
+	{endif}
+{end}
+
+{trigger:Dashboardverstellung_drag}
+	(L.L.Seiten_DUMMY_3)
+	{if}
+		(L.S.mouse_y) -1000 / (L.L.Dashboardverstellung_y) + 0.2 min -0.1 max (S.L.Dashboardverstellung_y)
+		(L.S.mouse_x) 1000 / (L.L.Dashboardverstellung_x) + 0.15 min -0.15 max (S.L.Dashboardverstellung_x)
+	{endif}
+{end}
+
+'----------------------
+'	Init
+'----------------------
+
+{macro:cockpit_init}
+
+
+	(C.L.Voith_ZF)
+	{if}
+		1 (S.L.cockpit_gangN)
+	{else}
+		0 (S.L.cockpit_gangN)
+	{endif}
+
+	1 (S.L.cp_fahrertuer_erlaubt)
+	-116 (S.L.cockpit_EBus)
+	0 (S.L.cockpit_hupe_volume) (S.L.door_handsteuerung)
+	1 (S.L.cp_lenkrad_visible) 
+
+	(C.L.cockpit_zentralschmierung_dist) random (S.L.cp_zentralschmierung_nextkm)
+
+	0 (S.L.cockpit_wischer_drehschalter) (S.L.cockpit_wischer_drehschalter_mode) 
+
+	1 (S.L.pandus_cls)
+
+	1 (S.L.disp_norm)
+
+	1 (S.L.ele_fenster)	
+
+	"umwelt3.png" (S.$.umweltplakette3)
+	"umwelt4.png" (S.$.umweltplakette4)
+	"vdo_0_m.dds" (S.$.cp_door_mode)
+
+(L.L.Klima_Variante) 0 =
+{if}
+	(L.L.neue_Decke) 0 =
+	{if}
+	1 (S.L.Klima_Gross)
+	{else}
+	2 (S.L.Klima_Gross)
+	{endif}
+0 (S.L.Klima_Klein)
+{else}
+	(L.L.neue_Decke) 0 =
+	{if}
+	1 (S.L.Klima_Klein)
+	{else}
+	2 (S.L.Klima_Klein)
+	{endif}
+0 (S.L.Klima_Gross)
+{endif}
+
+0 (S.L.light_cabin_anim)
+0 (S.L.light_anim)
+0 (S.L.light_sos_anim)
+0 (S.L.light_sos)
+
+(L.$.number) "1063" $=
+(L.$.number) "1064" $= ||
+(L.$.number) "1065" $= ||
+(L.$.number) "1066" $= ||
+(L.$.number) "1067" $= ||
+(L.$.number) "1068" $= ||
+(L.$.number) "1069" $= ||
+(L.$.number) "1070" $= ||
+(L.$.number) "1071" $= ||
+(L.$.number) "1072" $= ||
+(L.$.number) "1073" $= ||
+(L.$.number) "1074" $= ||
+(L.$.number) "1075" $= ||
+(L.$.number) "1076" $= ||
+(L.$.number) "1077" $= ||
+(L.$.number) "1078" $= ||
+(L.$.number) "1079" $= ||
+(L.$.number) "1080" $= ||
+(L.$.number) "1081" $= ||
+(L.$.number) "1082" $= ||
+(L.$.number) "1083" $= ||
+(L.$.number) "1084" $= ||
+(L.$.number) "1085" $= ||
+(L.$.number) "1100" $= ||
+(L.$.number) "1101" $= ||
+(L.$.number) "1102" $= ||
+(L.$.number) "1103" $= ||
+(L.$.number) "1104" $= ||
+(L.$.number) "1105" $= ||
+(L.$.number) "1106" $= ||
+(L.$.number) "1107" $= ||
+(L.$.number) "1108" $= ||
+(L.$.number) "1109" $= ||
+(L.$.number) "1110" $= ||
+(L.$.number) "1111" $= ||
+(L.$.number) "1112" $= ||
+(L.$.number) "1113" $= ||
+(L.$.number) "4935" $= ||
+(L.$.number) "4936" $= ||
+(L.$.number) "4937" $= ||
+(L.$.number) "4938" $= ||
+(L.$.number) "4939" $= ||
+(L.$.number) "4940" $= ||
+(L.$.number) "4941" $= ||
+(L.$.number) "4942" $= ||
+(L.$.number) "4943" $= ||
+(L.$.number) "4944" $= ||
+(L.$.number) "4945" $= ||
+(L.$.number) "4946" $= ||
+(L.$.number) "4947" $= ||
+(L.$.number) "4948" $= ||
+(L.$.number) "4949" $= ||
+(L.$.number) "4950" $= ||
+(L.$.number) "4951" $= ||
+(L.$.number) "4952" $= ||
+(L.$.number) "4953" $= ||
+(L.$.number) "4954" $= ||
+(L.$.number) "4955" $= ||
+(L.$.number) "4956" $= ||
+(L.$.number) "4957" $= ||
+(L.$.number) "4958" $= ||
+(L.$.number) "4959" $= ||
+(L.$.number) "4960" $= ||
+(L.$.number) "4961" $= ||
+(L.$.number) "4962" $= ||
+(L.$.number) "4963" $= ||
+(L.$.number) "4964" $= ||
+(L.$.number) "4965" $= ||
+(L.$.number) "4966" $= ||
+(L.$.number) "4967" $= ||
+(L.$.number) "4968" $= ||
+(L.$.number) "4969" $= ||
+(L.$.number) "4970" $= ||
+(L.$.number) "4971" $= ||
+(L.$.number) "4972" $= ||
+(L.$.number) "4973" $= ||
+(L.$.number) "4974" $= ||
+(L.$.number) "4980" $= ||
+(L.$.number) "4981" $= ||
+(L.$.number) "4982" $= ||
+(L.$.number) "4983" $= ||
+(L.$.number) "4984" $= ||
+(L.$.number) "4985" $= ||
+(L.$.number) "4986" $= ||
+(L.$.number) "4987" $= ||
+(L.$.number) "4988" $= ||
+(L.$.number) "4989" $= ||
+(L.$.number) "4990" $= ||
+(L.$.number) "4991" $= ||
+(L.$.number) "4992" $= ||
+(L.$.number) "4993" $= ||
+(L.$.number) "4994" $= ||
+(L.$.number) "4995" $= ||
+(L.$.number) "4996" $= ||
+(L.$.number) "4997" $= ||
+(L.$.number) "4998" $= ||
+(L.$.number) "4999" $= ||
+(L.$.number) "5000" $= ||
+(L.$.number) "5001" $= ||
+(L.$.number) "5002" $= ||
+(L.$.number) "5003" $= ||
+(L.$.number) "5004" $= ||
+(L.$.number) "5005" $= ||
+(L.$.number) "5006" $= ||
+(L.$.number) "5007" $= ||
+(L.$.number) "5008" $= ||
+(L.$.number) "5009" $= ||
+(L.$.number) "5010" $= ||
+(L.$.number) "5011" $= ||
+(L.$.number) "5012" $= ||
+(L.$.number) "5013" $= ||
+(L.$.number) "5014" $= ||
+(L.$.number) "5015" $= ||
+(L.$.number) "5016" $= ||
+(L.$.number) "5017" $= ||
+(L.$.number) "5018" $= ||
+(L.$.number) "5019" $= ||
+{if}
+1 (S.L.neue_Decke)
+{else}
+(L.$.number) "1114" $=
+(L.$.number) "1115" $= ||
+(L.$.number) "1116" $= ||
+(L.$.number) "1117" $= ||
+(L.$.number) "1118" $= ||
+(L.$.number) "1119" $= ||
+(L.$.number) "1120" $= ||
+(L.$.number) "1121" $= ||
+(L.$.number) "1122" $= ||
+(L.$.number) "1123" $= ||
+(L.$.number) "1124" $= ||
+(L.$.number) "1125" $= ||
+(L.$.number) "1126" $= ||
+(L.$.number) "1127" $= ||
+(L.$.number) "1128" $= ||
+(L.$.number) "1129" $= ||
+(L.$.number) "1130" $= ||
+(L.$.number) "1131" $= ||
+(L.$.number) "1132" $= ||
+(L.$.number) "1133" $= ||
+(L.$.number) "1134" $= ||
+(L.$.number) "1135" $= ||
+(L.$.number) "1136" $= ||
+(L.$.number) "1137" $= ||
+(L.$.number) "1138" $= ||
+(L.$.number) "1139" $= ||
+(L.$.number) "1140" $= ||
+(L.$.number) "1141" $= ||
+(L.$.number) "1142" $= ||
+(L.$.number) "1143" $= ||
+(L.$.number) "1144" $= ||
+(L.$.number) "1145" $= ||
+(L.$.number) "1146" $= ||
+(L.$.number) "1147" $= ||
+(L.$.number) "1148" $= ||
+(L.$.number) "1149" $= ||
+(L.$.number) "1150" $= ||
+(L.$.number) "1151" $= ||
+(L.$.number) "1152" $= ||
+(L.$.number) "1153" $= ||
+(L.$.number) "1154" $= ||
+(L.$.number) "1155" $= ||
+(L.$.number) "1156" $= ||
+(L.$.number) "1157" $= ||
+(L.$.number) "1158" $= ||
+(L.$.number) "1159" $= ||
+(L.$.number) "1160" $= ||
+(L.$.number) "1161" $= ||
+(L.$.number) "1162" $= ||
+(L.$.number) "1163" $= ||
+(L.$.number) "1164" $= ||
+(L.$.number) "1165" $= ||
+(L.$.number) "1166" $= ||
+(L.$.number) "1167" $= ||
+(L.$.number) "1168" $= ||
+(L.$.number) "1169" $= ||
+(L.$.number) "1170" $= ||
+(L.$.number) "1171" $= ||
+(L.$.number) "1172" $= ||
+(L.$.number) "1173" $= ||
+(L.$.number) "1174" $= ||
+(L.$.number) "1175" $= ||
+(L.$.number) "1176" $= ||
+(L.$.number) "1177" $= ||
+(L.$.number) "1178" $= ||
+(L.$.number) "1179" $= ||
+(L.$.number) "1180" $= ||
+(L.$.number) "1181" $= ||
+(L.$.number) "1182" $= ||
+(L.$.number) "1183" $= ||
+(L.$.number) "1184" $= ||
+(L.$.number) "1185" $= ||
+(L.$.number) "1186" $= ||
+(L.$.number) "1187" $= ||
+(L.$.number) "1188" $= ||
+(L.$.number) "1189" $= ||
+(L.$.number) "1190" $= ||
+(L.$.number) "1191" $= ||
+(L.$.number) "1192" $= ||
+(L.$.number) "1193" $= ||
+(L.$.number) "1194" $= ||
+(L.$.number) "1195" $= ||
+(L.$.number) "1196" $= ||
+(L.$.number) "1197" $= ||
+(L.$.number) "1198" $= ||
+(L.$.number) "1199" $= ||
+(L.$.number) "5020" $= ||
+(L.$.number) "5021" $= ||
+(L.$.number) "5022" $= ||
+(L.$.number) "5023" $= ||
+(L.$.number) "5024" $= ||
+(L.$.number) "5025" $= ||
+(L.$.number) "5026" $= ||
+(L.$.number) "5027" $= ||
+(L.$.number) "5028" $= ||
+(L.$.number) "5029" $= ||
+(L.$.number) "5030" $= ||
+(L.$.number) "5031" $= ||
+(L.$.number) "5032" $= ||
+(L.$.number) "5033" $= ||
+(L.$.number) "5034" $= ||
+(L.$.number) "5035" $= ||
+(L.$.number) "5036" $= ||
+(L.$.number) "5037" $= ||
+(L.$.number) "5038" $= ||
+(L.$.number) "5039" $= ||
+(L.$.number) "5040" $= ||
+(L.$.number) "5041" $= ||
+(L.$.number) "5042" $= ||
+(L.$.number) "5043" $= ||
+(L.$.number) "5044" $= ||
+(L.$.number) "5045" $= ||
+(L.$.number) "5046" $= ||
+(L.$.number) "5047" $= ||
+(L.$.number) "5048" $= ||
+(L.$.number) "5049" $= ||
+(L.$.number) "5050" $= ||
+(L.$.number) "5051" $= ||
+(L.$.number) "5052" $= ||
+(L.$.number) "5053" $= ||
+(L.$.number) "5054" $= ||
+(L.$.number) "5055" $= ||
+(L.$.number) "5056" $= ||
+(L.$.number) "5057" $= ||
+(L.$.number) "5058" $= ||
+(L.$.number) "5059" $= ||
+(L.$.number) "5060" $= ||
+(L.$.number) "5061" $= ||
+(L.$.number) "5062" $= ||
+(L.$.number) "5063" $= ||
+(L.$.number) "5064" $= ||
+(L.$.number) "5065" $= ||
+(L.$.number) "5066" $= ||
+(L.$.number) "5067" $= ||
+(L.$.number) "5068" $= ||
+(L.$.number) "5069" $= ||
+(L.$.number) "5070" $= ||
+(L.$.number) "5071" $= ||
+(L.$.number) "5072" $= ||
+(L.$.number) "5073" $= ||
+(L.$.number) "5074" $= ||
+(L.$.number) "5075" $= ||
+(L.$.number) "5076" $= ||
+(L.$.number) "5077" $= ||
+(L.$.number) "5078" $= ||
+(L.$.number) "5079" $= ||
+(L.$.number) "5080" $= ||
+(L.$.number) "5081" $= ||
+(L.$.number) "5082" $= ||
+(L.$.number) "5083" $= ||
+(L.$.number) "5084" $= ||
+(L.$.number) "5085" $= ||
+(L.$.number) "5086" $= ||
+(L.$.number) "5087" $= ||
+(L.$.number) "5088" $= ||
+(L.$.number) "5089" $= ||
+(L.$.number) "5090" $= ||
+(L.$.number) "5091" $= ||
+(L.$.number) "5092" $= ||
+(L.$.number) "5093" $= ||
+(L.$.number) "5094" $= ||
+(L.$.number) "5095" $= ||
+(L.$.number) "5096" $= ||
+(L.$.number) "5097" $= ||
+(L.$.number) "5098" $= ||
+(L.$.number) "5099" $= ||
+(L.$.number) "5100" $= ||
+(L.$.number) "5101" $= ||
+(L.$.number) "5102" $= ||
+(L.$.number) "5103" $= ||
+(L.$.number) "5104" $= ||
+(L.$.number) "5105" $= ||
+(L.$.number) "5106" $= ||
+(L.$.number) "5107" $= ||
+(L.$.number) "5108" $= ||
+(L.$.number) "5109" $= ||
+(L.$.number) "5110" $= ||
+(L.$.number) "5111" $= ||
+(L.$.number) "5112" $= ||
+(L.$.number) "5113" $= ||
+(L.$.number) "5114" $= ||
+(L.$.number) "5115" $= ||
+(L.$.number) "5116" $= ||
+(L.$.number) "5117" $= ||
+(L.$.number) "5118" $= ||
+(L.$.number) "5119" $= ||
+(L.$.number) "5120" $= ||
+(L.$.number) "5121" $= ||
+(L.$.number) "5122" $= ||
+(L.$.number) "5123" $= ||
+(L.$.number) "5124" $= ||
+(L.$.number) "5125" $= ||
+(L.$.number) "5126" $= ||
+(L.$.number) "5127" $= ||
+(L.$.number) "5128" $= ||
+(L.$.number) "5129" $= ||
+(L.$.number) "5130" $= ||
+(L.$.number) "5131" $= ||
+(L.$.number) "5132" $= ||
+(L.$.number) "5133" $= ||
+(L.$.number) "5134" $= ||
+(L.$.number) "5135" $= ||
+(L.$.number) "5136" $= ||
+(L.$.number) "5137" $= ||
+(L.$.number) "5138" $= ||
+(L.$.number) "5139" $= ||
+(L.$.number) "5140" $= ||
+(L.$.number) "5141" $= ||
+(L.$.number) "5142" $= ||
+(L.$.number) "5143" $= ||
+(L.$.number) "5144" $= ||
+(L.$.number) "5145" $= ||
+(L.$.number) "5146" $= ||
+(L.$.number) "5147" $= ||
+(L.$.number) "5148" $= ||
+(L.$.number) "5149" $= ||
+(L.$.number) "5150" $= ||
+(L.$.number) "5151" $= ||
+(L.$.number) "5152" $= ||
+(L.$.number) "5153" $= ||
+(L.$.number) "5154" $= ||
+(L.$.number) "5155" $= ||
+(L.$.number) "5156" $= ||
+(L.$.number) "5157" $= ||
+(L.$.number) "5158" $= ||
+(L.$.number) "5159" $= ||
+(L.$.number) "5160" $= ||
+(L.$.number) "5161" $= ||
+(L.$.number) "5162" $= ||
+(L.$.number) "5163" $= ||
+(L.$.number) "5164" $= ||
+(L.$.number) "5165" $= ||
+(L.$.number) "5166" $= ||
+(L.$.number) "5167" $= ||
+(L.$.number) "5168" $= ||
+(L.$.number) "5169" $= ||
+(L.$.number) "5170" $= ||
+(L.$.number) "5171" $= ||
+(L.$.number) "5172" $= ||
+(L.$.number) "5173" $= ||
+(L.$.number) "5174" $= ||
+(L.$.number) "5175" $= ||
+(L.$.number) "5176" $= ||
+(L.$.number) "5177" $= ||
+(L.$.number) "5178" $= ||
+(L.$.number) "5179" $= ||
+(L.$.number) "5180" $= ||
+(L.$.number) "5181" $= ||
+(L.$.number) "5182" $= ||
+(L.$.number) "5183" $= ||
+(L.$.number) "5184" $= ||
+(L.$.number) "5185" $= ||
+(L.$.number) "5186" $= ||
+(L.$.number) "5187" $= ||
+(L.$.number) "5188" $= ||
+(L.$.number) "5189" $= ||
+(L.$.number) "5190" $= ||
+(L.$.number) "5191" $= ||
+(L.$.number) "5192" $= ||
+(L.$.number) "5193" $= ||
+(L.$.number) "5194" $= ||
+(L.$.number) "5195" $= ||
+(L.$.number) "5196" $= ||
+(L.$.number) "5197" $= ||
+(L.$.number) "5198" $= ||
+(L.$.number) "5199" $= ||
+(L.$.number) "5200" $= ||
+(L.$.number) "5201" $= ||
+(L.$.number) "5202" $= ||
+(L.$.number) "5203" $= ||
+(L.$.number) "5204" $= ||
+(L.$.number) "5205" $= ||
+(L.$.number) "5206" $= ||
+(L.$.number) "5207" $= ||
+(L.$.number) "5208" $= ||
+(L.$.number) "5209" $= ||
+(L.$.number) "5210" $= ||
+(L.$.number) "5211" $= ||
+(L.$.number) "5212" $= ||
+(L.$.number) "5213" $= ||
+(L.$.number) "5214" $= ||
+(L.$.number) "5215" $= ||
+(L.$.number) "5216" $= ||
+(L.$.number) "5217" $= ||
+(L.$.number) "5218" $= ||
+(L.$.number) "5219" $= ||
+(L.$.number) "5220" $= ||
+(L.$.number) "5221" $= ||
+(L.$.number) "5222" $= ||
+(L.$.number) "5223" $= ||
+(L.$.number) "5224" $= ||
+(L.$.number) "5225" $= ||
+(L.$.number) "5226" $= ||
+(L.$.number) "5227" $= ||
+(L.$.number) "5228" $= ||
+(L.$.number) "5229" $= ||
+(L.$.number) "5230" $= ||
+(L.$.number) "5231" $= ||
+(L.$.number) "5232" $= ||
+(L.$.number) "5233" $= ||
+(L.$.number) "5234" $= ||
+(L.$.number) "5235" $= ||
+(L.$.number) "5236" $= ||
+(L.$.number) "5237" $= ||
+(L.$.number) "5238" $= ||
+(L.$.number) "5239" $= ||
+(L.$.number) "5240" $= ||
+(L.$.number) "5241" $= ||
+(L.$.number) "5242" $= ||
+(L.$.number) "5243" $= ||
+(L.$.number) "5244" $= ||
+(L.$.number) "5245" $= ||
+(L.$.number) "5246" $= ||
+(L.$.number) "5247" $= ||
+(L.$.number) "5248" $= ||
+(L.$.number) "5249" $= ||
+(L.$.number) "5250" $= ||
+(L.$.number) "5251" $= ||
+(L.$.number) "5252" $= ||
+(L.$.number) "5253" $= ||
+(L.$.number) "5254" $= ||
+(L.$.number) "5255" $= ||
+(L.$.number) "5256" $= ||
+(L.$.number) "5257" $= ||
+(L.$.number) "5258" $= ||
+(L.$.number) "5259" $= ||
+(L.$.number) "5260" $= ||
+(L.$.number) "5261" $= ||
+(L.$.number) "5262" $= ||
+(L.$.number) "5263" $= ||
+(L.$.number) "5264" $= ||
+(L.$.number) "5265" $= ||
+(L.$.number) "5266" $= ||
+(L.$.number) "5267" $= ||
+(L.$.number) "5268" $= ||
+(L.$.number) "5269" $= ||
+(L.$.number) "5270" $= ||
+(L.$.number) "5271" $= ||
+(L.$.number) "5272" $= ||
+(L.$.number) "5273" $= ||
+(L.$.number) "5274" $= ||
+(L.$.number) "5275" $= ||
+(L.$.number) "5276" $= ||
+(L.$.number) "5277" $= ||
+(L.$.number) "5278" $= ||
+(L.$.number) "5279" $= ||
+(L.$.number) "5280" $= ||
+(L.$.number) "5281" $= ||
+(L.$.number) "5282" $= ||
+(L.$.number) "5283" $= ||
+(L.$.number) "5284" $= ||
+(L.$.number) "5285" $= ||
+(L.$.number) "5286" $= ||
+(L.$.number) "5287" $= ||
+(L.$.number) "5288" $= ||
+(L.$.number) "5289" $= ||
+(L.$.number) "5290" $= ||
+(L.$.number) "5291" $= ||
+(L.$.number) "5292" $= ||
+(L.$.number) "5293" $= ||
+(L.$.number) "5294" $= ||
+(L.$.number) "5295" $= ||
+(L.$.number) "5296" $= ||
+(L.$.number) "5297" $= ||
+(L.$.number) "5298" $= ||
+(L.$.number) "5299" $= ||
+(L.$.number) "5300" $= ||
+(L.$.number) "5301" $= ||
+(L.$.number) "5302" $= ||
+(L.$.number) "5303" $= ||
+(L.$.number) "5304" $= ||
+(L.$.number) "5305" $= ||
+(L.$.number) "5306" $= ||
+(L.$.number) "5307" $= ||
+(L.$.number) "5308" $= ||
+(L.$.number) "5309" $= ||
+(L.$.number) "5310" $= ||
+(L.$.number) "5311" $= ||
+(L.$.number) "5312" $= ||
+(L.$.number) "5313" $= ||
+(L.$.number) "5314" $= ||
+(L.$.number) "5315" $= ||
+(L.$.number) "5316" $= ||
+(L.$.number) "5317" $= ||
+(L.$.number) "5318" $= ||
+(L.$.number) "5319" $= ||
+(L.$.number) "5320" $= ||
+(L.$.number) "5321" $= ||
+(L.$.number) "5322" $= ||
+(L.$.number) "5323" $= ||
+(L.$.number) "5324" $= ||
+(L.$.number) "5325" $= ||
+(L.$.number) "5326" $= ||
+(L.$.number) "5327" $= ||
+(L.$.number) "5328" $= ||
+(L.$.number) "5329" $= ||
+(L.$.number) "5330" $= ||
+(L.$.number) "5331" $= ||
+(L.$.number) "5332" $= ||
+(L.$.number) "5333" $= ||
+(L.$.number) "5334" $= ||
+(L.$.number) "5335" $= ||
+(L.$.number) "5336" $= ||
+(L.$.number) "5337" $= ||
+(L.$.number) "5338" $= ||
+(L.$.number) "5339" $= ||
+(L.$.number) "5340" $= ||
+(L.$.number) "5341" $= ||
+(L.$.number) "5342" $= ||
+(L.$.number) "5343" $= ||
+(L.$.number) "5344" $= ||
+(L.$.number) "5345" $= ||
+(L.$.number) "5346" $= ||
+(L.$.number) "5347" $= ||
+(L.$.number) "5348" $= ||
+(L.$.number) "5349" $= ||
+(L.$.number) "5350" $= ||
+(L.$.number) "5351" $= ||
+(L.$.number) "5352" $= ||
+(L.$.number) "5353" $= ||
+(L.$.number) "5354" $= ||
+(L.$.number) "5355" $= ||
+(L.$.number) "5356" $= ||
+(L.$.number) "5357" $= ||
+(L.$.number) "5358" $= ||
+(L.$.number) "5359" $= ||
+(L.$.number) "5360" $= ||
+(L.$.number) "5361" $= ||
+(L.$.number) "5362" $= ||
+(L.$.number) "5363" $= ||
+(L.$.number) "5364" $= ||
+(L.$.number) "5365" $= ||
+(L.$.number) "5366" $= ||
+(L.$.number) "5367" $= ||
+(L.$.number) "5368" $= ||
+(L.$.number) "5369" $= ||
+(L.$.number) "5370" $= ||
+(L.$.number) "5371" $= ||
+(L.$.number) "5372" $= ||
+(L.$.number) "5373" $= ||
+(L.$.number) "5374" $= ||
+(L.$.number) "5375" $= ||
+(L.$.number) "5376" $= ||
+(L.$.number) "5377" $= ||
+(L.$.number) "5378" $= ||
+(L.$.number) "5379" $= ||
+(L.$.number) "5380" $= ||
+(L.$.number) "5381" $= ||
+(L.$.number) "5382" $= ||
+(L.$.number) "5383" $= ||
+(L.$.number) "5384" $= ||
+(L.$.number) "5385" $= ||
+(L.$.number) "5386" $= ||
+(L.$.number) "5387" $= ||
+(L.$.number) "5388" $= ||
+(L.$.number) "5389" $= ||
+(L.$.number) "5390" $= ||
+(L.$.number) "5391" $= ||
+(L.$.number) "5392" $= ||
+(L.$.number) "5393" $= ||
+(L.$.number) "5394" $= ||
+(L.$.number) "5395" $= ||
+(L.$.number) "5396" $= ||
+(L.$.number) "5397" $= ||
+(L.$.number) "5398" $= ||
+(L.$.number) "5399" $= ||
+(L.$.number) "5400" $= ||
+(L.$.number) "5401" $= ||
+(L.$.number) "5402" $= ||
+(L.$.number) "5403" $= ||
+(L.$.number) "5404" $= ||
+(L.$.number) "5405" $= ||
+(L.$.number) "5406" $= ||
+(L.$.number) "5407" $= ||
+(L.$.number) "5408" $= ||
+(L.$.number) "5409" $= ||
+(L.$.number) "5410" $= ||
+(L.$.number) "5411" $= ||
+(L.$.number) "5412" $= ||
+(L.$.number) "5413" $= ||
+(L.$.number) "5414" $= ||
+(L.$.number) "5415" $= ||
+{if}
+2 (S.L.neue_Decke)
+{else}
+0 (S.L.neue_Decke)
+{endif}
+{endif}
+
+(L.$.number) "1160" $=
+(L.$.number) "1161" $= ||
+(L.$.number) "1162" $= ||
+(L.$.number) "1163" $= ||
+(L.$.number) "1164" $= ||
+(L.$.number) "1165" $= ||
+(L.$.number) "1166" $= ||
+(L.$.number) "1167" $= ||
+(L.$.number) "1168" $= ||
+(L.$.number) "1169" $= ||
+(L.$.number) "1170" $= ||
+(L.$.number) "1171" $= ||
+(L.$.number) "1172" $= ||
+(L.$.number) "1173" $= ||
+(L.$.number) "1174" $= ||
+(L.$.number) "1175" $= ||
+(L.$.number) "1176" $= ||
+(L.$.number) "1177" $= ||
+(L.$.number) "1178" $= ||
+(L.$.number) "1179" $= ||
+(L.$.number) "1180" $= ||
+(L.$.number) "1181" $= ||
+(L.$.number) "1182" $= ||
+(L.$.number) "1183" $= ||
+(L.$.number) "1184" $= ||
+(L.$.number) "1185" $= ||
+(L.$.number) "1186" $= ||
+(L.$.number) "1187" $= ||
+(L.$.number) "1188" $= ||
+(L.$.number) "1189" $= ||
+(L.$.number) "1190" $= ||
+(L.$.number) "1191" $= ||
+(L.$.number) "1192" $= ||
+(L.$.number) "1193" $= ||
+(L.$.number) "1194" $= ||
+(L.$.number) "1195" $= ||
+(L.$.number) "1196" $= ||
+(L.$.number) "1197" $= ||
+(L.$.number) "1198" $= ||
+(L.$.number) "1199" $= ||
+(L.$.number) "5150" $= ||
+(L.$.number) "5151" $= ||
+(L.$.number) "5152" $= ||
+(L.$.number) "5153" $= ||
+(L.$.number) "5154" $= ||
+(L.$.number) "5155" $= ||
+(L.$.number) "5156" $= ||
+(L.$.number) "5157" $= ||
+(L.$.number) "5158" $= ||
+(L.$.number) "5159" $= ||
+(L.$.number) "5160" $= ||
+(L.$.number) "5161" $= ||
+(L.$.number) "5162" $= ||
+(L.$.number) "5163" $= ||
+(L.$.number) "5164" $= ||
+(L.$.number) "5165" $= ||
+(L.$.number) "5166" $= ||
+(L.$.number) "5167" $= ||
+(L.$.number) "5168" $= ||
+(L.$.number) "5169" $= ||
+(L.$.number) "5170" $= ||
+(L.$.number) "5171" $= ||
+(L.$.number) "5172" $= ||
+(L.$.number) "5173" $= ||
+(L.$.number) "5174" $= ||
+(L.$.number) "5175" $= ||
+(L.$.number) "5176" $= ||
+(L.$.number) "5177" $= ||
+(L.$.number) "5178" $= ||
+(L.$.number) "5179" $= ||
+(L.$.number) "5180" $= ||
+(L.$.number) "5181" $= ||
+(L.$.number) "5182" $= ||
+(L.$.number) "5183" $= ||
+(L.$.number) "5184" $= ||
+(L.$.number) "5185" $= ||
+(L.$.number) "5186" $= ||
+(L.$.number) "5187" $= ||
+(L.$.number) "5188" $= ||
+(L.$.number) "5189" $= ||
+(L.$.number) "5190" $= ||
+(L.$.number) "5191" $= ||
+(L.$.number) "5192" $= ||
+(L.$.number) "5193" $= ||
+(L.$.number) "5194" $= ||
+(L.$.number) "5195" $= ||
+(L.$.number) "5196" $= ||
+(L.$.number) "5197" $= ||
+(L.$.number) "5198" $= ||
+(L.$.number) "5199" $= ||
+(L.$.number) "5200" $= ||
+(L.$.number) "5201" $= ||
+(L.$.number) "5202" $= ||
+(L.$.number) "5203" $= ||
+(L.$.number) "5204" $= ||
+(L.$.number) "5205" $= ||
+(L.$.number) "5206" $= ||
+(L.$.number) "5207" $= ||
+(L.$.number) "5208" $= ||
+(L.$.number) "5209" $= ||
+(L.$.number) "5210" $= ||
+(L.$.number) "5211" $= ||
+(L.$.number) "5212" $= ||
+(L.$.number) "5213" $= ||
+(L.$.number) "5214" $= ||
+(L.$.number) "5215" $= ||
+(L.$.number) "5216" $= ||
+(L.$.number) "5217" $= ||
+(L.$.number) "5218" $= ||
+(L.$.number) "5219" $= ||
+(L.$.number) "5220" $= ||
+(L.$.number) "5221" $= ||
+(L.$.number) "5222" $= ||
+(L.$.number) "5223" $= ||
+(L.$.number) "5224" $= ||
+(L.$.number) "5225" $= ||
+(L.$.number) "5226" $= ||
+(L.$.number) "5227" $= ||
+(L.$.number) "5228" $= ||
+(L.$.number) "5229" $= ||
+(L.$.number) "5230" $= ||
+(L.$.number) "5231" $= ||
+(L.$.number) "5232" $= ||
+(L.$.number) "5233" $= ||
+(L.$.number) "5234" $= ||
+(L.$.number) "5235" $= ||
+(L.$.number) "5236" $= ||
+(L.$.number) "5237" $= ||
+(L.$.number) "5238" $= ||
+(L.$.number) "5239" $= ||
+(L.$.number) "5240" $= ||
+(L.$.number) "5241" $= ||
+(L.$.number) "5242" $= ||
+(L.$.number) "5243" $= ||
+(L.$.number) "5244" $= ||
+(L.$.number) "5245" $= ||
+(L.$.number) "5246" $= ||
+(L.$.number) "5247" $= ||
+(L.$.number) "5248" $= ||
+(L.$.number) "5249" $= ||
+(L.$.number) "5250" $= ||
+(L.$.number) "5251" $= ||
+(L.$.number) "5252" $= ||
+(L.$.number) "5253" $= ||
+(L.$.number) "5254" $= ||
+(L.$.number) "5255" $= ||
+(L.$.number) "5256" $= ||
+(L.$.number) "5257" $= ||
+(L.$.number) "5258" $= ||
+(L.$.number) "5259" $= ||
+(L.$.number) "5260" $= ||
+(L.$.number) "5261" $= ||
+(L.$.number) "5262" $= ||
+(L.$.number) "5263" $= ||
+(L.$.number) "5264" $= ||
+(L.$.number) "5265" $= ||
+(L.$.number) "5266" $= ||
+(L.$.number) "5267" $= ||
+(L.$.number) "5268" $= ||
+(L.$.number) "5269" $= ||
+(L.$.number) "5270" $= ||
+(L.$.number) "5271" $= ||
+(L.$.number) "5272" $= ||
+(L.$.number) "5273" $= ||
+(L.$.number) "5274" $= ||
+(L.$.number) "5275" $= ||
+(L.$.number) "5276" $= ||
+(L.$.number) "5277" $= ||
+(L.$.number) "5278" $= ||
+(L.$.number) "5279" $= ||
+(L.$.number) "5280" $= ||
+(L.$.number) "5281" $= ||
+(L.$.number) "5282" $= ||
+(L.$.number) "5283" $= ||
+(L.$.number) "5284" $= ||
+(L.$.number) "5285" $= ||
+(L.$.number) "5286" $= ||
+(L.$.number) "5287" $= ||
+(L.$.number) "5288" $= ||
+(L.$.number) "5289" $= ||
+(L.$.number) "5290" $= ||
+(L.$.number) "5291" $= ||
+(L.$.number) "5292" $= ||
+(L.$.number) "5293" $= ||
+(L.$.number) "5294" $= ||
+(L.$.number) "5295" $= ||
+(L.$.number) "5296" $= ||
+(L.$.number) "5297" $= ||
+(L.$.number) "5298" $= ||
+(L.$.number) "5299" $= ||
+(L.$.number) "5300" $= ||
+(L.$.number) "5301" $= ||
+(L.$.number) "5302" $= ||
+(L.$.number) "5303" $= ||
+(L.$.number) "5304" $= ||
+(L.$.number) "5305" $= ||
+(L.$.number) "5306" $= ||
+(L.$.number) "5307" $= ||
+(L.$.number) "5308" $= ||
+(L.$.number) "5309" $= ||
+(L.$.number) "5310" $= ||
+(L.$.number) "5311" $= ||
+(L.$.number) "5312" $= ||
+(L.$.number) "5313" $= ||
+(L.$.number) "5314" $= ||
+(L.$.number) "5315" $= ||
+(L.$.number) "5316" $= ||
+(L.$.number) "5317" $= ||
+(L.$.number) "5318" $= ||
+(L.$.number) "5319" $= ||
+(L.$.number) "5320" $= ||
+(L.$.number) "5321" $= ||
+(L.$.number) "5322" $= ||
+(L.$.number) "5323" $= ||
+(L.$.number) "5324" $= ||
+(L.$.number) "5325" $= ||
+(L.$.number) "5326" $= ||
+(L.$.number) "5327" $= ||
+(L.$.number) "5328" $= ||
+(L.$.number) "5329" $= ||
+(L.$.number) "5330" $= ||
+(L.$.number) "5331" $= ||
+(L.$.number) "5332" $= ||
+(L.$.number) "5333" $= ||
+(L.$.number) "5334" $= ||
+(L.$.number) "5335" $= ||
+(L.$.number) "5336" $= ||
+(L.$.number) "5337" $= ||
+(L.$.number) "5338" $= ||
+(L.$.number) "5339" $= ||
+(L.$.number) "5340" $= ||
+(L.$.number) "5341" $= ||
+(L.$.number) "5342" $= ||
+(L.$.number) "5343" $= ||
+(L.$.number) "5344" $= ||
+(L.$.number) "5345" $= ||
+(L.$.number) "5346" $= ||
+(L.$.number) "5347" $= ||
+(L.$.number) "5348" $= ||
+(L.$.number) "5349" $= ||
+(L.$.number) "5350" $= ||
+(L.$.number) "5351" $= ||
+(L.$.number) "5352" $= ||
+(L.$.number) "5353" $= ||
+(L.$.number) "5354" $= ||
+(L.$.number) "5355" $= ||
+(L.$.number) "5356" $= ||
+(L.$.number) "5357" $= ||
+(L.$.number) "5358" $= ||
+(L.$.number) "5359" $= ||
+(L.$.number) "5360" $= ||
+(L.$.number) "5361" $= ||
+(L.$.number) "5362" $= ||
+(L.$.number) "5363" $= ||
+(L.$.number) "5364" $= ||
+(L.$.number) "5365" $= ||
+(L.$.number) "5366" $= ||
+(L.$.number) "5367" $= ||
+(L.$.number) "5368" $= ||
+(L.$.number) "5369" $= ||
+(L.$.number) "5370" $= ||
+(L.$.number) "5371" $= ||
+(L.$.number) "5372" $= ||
+(L.$.number) "5373" $= ||
+(L.$.number) "5374" $= ||
+(L.$.number) "5375" $= ||
+(L.$.number) "5376" $= ||
+(L.$.number) "5377" $= ||
+(L.$.number) "5378" $= ||
+(L.$.number) "5379" $= ||
+(L.$.number) "5380" $= ||
+(L.$.number) "5381" $= ||
+(L.$.number) "5382" $= ||
+(L.$.number) "5383" $= ||
+(L.$.number) "5384" $= ||
+(L.$.number) "5385" $= ||
+(L.$.number) "5386" $= ||
+(L.$.number) "5387" $= ||
+(L.$.number) "5388" $= ||
+(L.$.number) "5389" $= ||
+(L.$.number) "5390" $= ||
+(L.$.number) "5391" $= ||
+(L.$.number) "5392" $= ||
+(L.$.number) "5393" $= ||
+(L.$.number) "5394" $= ||
+(L.$.number) "5395" $= ||
+(L.$.number) "5396" $= ||
+(L.$.number) "5397" $= ||
+(L.$.number) "5398" $= ||
+(L.$.number) "5399" $= ||
+(L.$.number) "5400" $= ||
+(L.$.number) "5401" $= ||
+(L.$.number) "5402" $= ||
+(L.$.number) "5403" $= ||
+(L.$.number) "5404" $= ||
+(L.$.number) "5405" $= ||
+(L.$.number) "5406" $= ||
+(L.$.number) "5407" $= ||
+(L.$.number) "5408" $= ||
+(L.$.number) "5409" $= ||
+(L.$.number) "5410" $= ||
+(L.$.number) "5411" $= ||
+(L.$.number) "5412" $= ||
+(L.$.number) "5413" $= ||
+(L.$.number) "5414" $= ||
+(L.$.number) "5415" $= ||
+{if}
+1 (S.L.altesSitzmuster)
+{else}
+0 (S.L.altesSitzmuster)
+{endif}
+
+' Deckenvariante
+(L.L.neue_Decke) 0 =
+{if}
+0 (S.L.Deckenvariante)
+{endif}
+
+(L.L.neue_Decke) 1 =
+{if}
+1 (S.L.Deckenvariante)
+{endif}
+
+(L.L.neue_Decke) 2 =
+(L.L.altesSitzmuster) 0 = &&
+{if}
+2 (S.L.Deckenvariante)
+{endif}
+
+(L.L.neue_Decke) 2 =
+(L.L.altesSitzmuster) 1 = &&
+{if}
+3 (S.L.Deckenvariante)
+{endif}
+
+' Zaehlwagen
+
+(L.$.number) "1000" $=
+(L.$.number) "1100" $= ||
+(L.$.number) "1101" $= ||
+(L.$.number) "1102" $= ||
+(L.$.number) "1103" $= ||
+(L.$.number) "1104" $= ||
+(L.$.number) "1105" $= ||
+(L.$.number) "1106" $= ||
+(L.$.number) "1107" $= ||
+(L.$.number) "1108" $= ||
+(L.$.number) "1109" $= ||
+(L.$.number) "1110" $= ||
+(L.$.number) "1111" $= ||
+(L.$.number) "1112" $= ||
+(L.$.number) "1113" $= ||
+(L.$.number) "1114" $= ||
+(L.$.number) "1115" $= ||
+(L.$.number) "1116" $= ||
+(L.$.number) "1117" $= ||
+(L.$.number) "1118" $= ||
+(L.$.number) "1119" $= ||
+(L.$.number) "1120" $= ||
+(L.$.number) "1121" $= ||
+(L.$.number) "1122" $= ||
+(L.$.number) "1123" $= ||
+(L.$.number) "1124" $= ||
+(L.$.number) "1125" $= ||
+(L.$.number) "1126" $= ||
+(L.$.number) "1127" $= ||
+(L.$.number) "1128" $= ||
+(L.$.number) "1129" $= ||
+(L.$.number) "1130" $= ||
+(L.$.number) "1131" $= ||
+(L.$.number) "1132" $= ||
+(L.$.number) "1133" $= ||
+(L.$.number) "1134" $= ||
+(L.$.number) "1135" $= ||
+(L.$.number) "1136" $= ||
+(L.$.number) "1137" $= ||
+(L.$.number) "1138" $= ||
+(L.$.number) "1139" $= ||
+(L.$.number) "1140" $= ||
+(L.$.number) "1141" $= ||
+(L.$.number) "1142" $= ||
+(L.$.number) "1143" $= ||
+(L.$.number) "1144" $= ||
+(L.$.number) "1145" $= ||
+(L.$.number) "1146" $= ||
+(L.$.number) "1147" $= ||
+(L.$.number) "1148" $= ||
+(L.$.number) "1149" $= ||
+(L.$.number) "1150" $= ||
+(L.$.number) "1151" $= ||
+(L.$.number) "1152" $= ||
+(L.$.number) "1153" $= ||
+(L.$.number) "1154" $= ||
+(L.$.number) "1155" $= ||
+(L.$.number) "1156" $= ||
+(L.$.number) "1160" $= ||
+(L.$.number) "1161" $= ||
+(L.$.number) "1162" $= ||
+(L.$.number) "1163" $= ||
+(L.$.number) "1164" $= ||
+(L.$.number) "1165" $= ||
+(L.$.number) "1166" $= ||
+(L.$.number) "1167" $= ||
+(L.$.number) "1168" $= ||
+(L.$.number) "1169" $= ||
+(L.$.number) "1170" $= ||
+(L.$.number) "1171" $= ||
+(L.$.number) "1172" $= ||
+(L.$.number) "1173" $= ||
+(L.$.number) "1174" $= ||
+(L.$.number) "1175" $= ||
+(L.$.number) "1176" $= ||
+(L.$.number) "1177" $= ||
+(L.$.number) "1178" $= ||
+(L.$.number) "1180" $= ||
+(L.$.number) "1181" $= ||
+(L.$.number) "4980" $= ||
+(L.$.number) "4785" $= ||
+(L.$.number) "4981" $= ||
+(L.$.number) "4982" $= ||
+(L.$.number) "4983" $= ||
+(L.$.number) "4984" $= ||
+(L.$.number) "4985" $= ||
+(L.$.number) "4986" $= ||
+(L.$.number) "4987" $= ||
+(L.$.number) "4988" $= ||
+(L.$.number) "4989" $= ||
+(L.$.number) "4990" $= ||
+(L.$.number) "4991" $= ||
+(L.$.number) "4992" $= ||
+(L.$.number) "4993" $= ||
+(L.$.number) "4994" $= ||
+(L.$.number) "4995" $= ||
+(L.$.number) "4996" $= ||
+(L.$.number) "4997" $= ||
+(L.$.number) "4998" $= ||
+(L.$.number) "4999" $= ||
+(L.$.number) "5000" $= ||
+(L.$.number) "5001" $= ||
+(L.$.number) "5002" $= ||
+(L.$.number) "5003" $= ||
+(L.$.number) "5004" $= ||
+(L.$.number) "5005" $= ||
+(L.$.number) "5006" $= ||
+(L.$.number) "5007" $= ||
+(L.$.number) "5008" $= ||
+(L.$.number) "5009" $= ||
+(L.$.number) "5010" $= ||
+(L.$.number) "5011" $= ||
+(L.$.number) "5012" $= ||
+(L.$.number) "5013" $= ||
+(L.$.number) "5014" $= ||
+(L.$.number) "5015" $= ||
+(L.$.number) "5016" $= ||
+(L.$.number) "5017" $= ||
+(L.$.number) "5018" $= ||
+(L.$.number) "5019" $= ||
+(L.$.number) "5020" $= ||
+(L.$.number) "5021" $= ||
+(L.$.number) "5022" $= ||
+(L.$.number) "5023" $= ||
+(L.$.number) "5024" $= ||
+(L.$.number) "5025" $= ||
+(L.$.number) "5026" $= ||
+(L.$.number) "5027" $= ||
+(L.$.number) "5028" $= ||
+(L.$.number) "5029" $= ||
+(L.$.number) "5030" $= ||
+(L.$.number) "5031" $= ||
+(L.$.number) "5032" $= ||
+(L.$.number) "5033" $= ||
+(L.$.number) "5034" $= ||
+(L.$.number) "5035" $= ||
+(L.$.number) "5036" $= ||
+(L.$.number) "5037" $= ||
+(L.$.number) "5038" $= ||
+(L.$.number) "5039" $= ||
+(L.$.number) "5040" $= ||
+(L.$.number) "5041" $= ||
+(L.$.number) "5042" $= ||
+(L.$.number) "5043" $= ||
+(L.$.number) "5044" $= ||
+(L.$.number) "5045" $= ||
+(L.$.number) "5046" $= ||
+(L.$.number) "5047" $= ||
+(L.$.number) "5048" $= ||
+(L.$.number) "5049" $= ||
+(L.$.number) "5050" $= ||
+(L.$.number) "5051" $= ||
+(L.$.number) "5052" $= ||
+(L.$.number) "5053" $= ||
+(L.$.number) "5054" $= ||
+(L.$.number) "5055" $= ||
+(L.$.number) "5056" $= ||
+(L.$.number) "5057" $= ||
+(L.$.number) "5058" $= ||
+(L.$.number) "5059" $= ||
+(L.$.number) "5060" $= ||
+(L.$.number) "5061" $= ||
+(L.$.number) "5062" $= ||
+(L.$.number) "5063" $= ||
+(L.$.number) "5064" $= ||
+(L.$.number) "5065" $= ||
+(L.$.number) "5066" $= ||
+(L.$.number) "5067" $= ||
+(L.$.number) "5068" $= ||
+(L.$.number) "5069" $= ||
+(L.$.number) "5070" $= ||
+(L.$.number) "5071" $= ||
+(L.$.number) "5072" $= ||
+(L.$.number) "5073" $= ||
+(L.$.number) "5074" $= ||
+(L.$.number) "5075" $= ||
+(L.$.number) "5076" $= ||
+(L.$.number) "5077" $= ||
+(L.$.number) "5078" $= ||
+(L.$.number) "5079" $= ||
+(L.$.number) "5080" $= ||
+(L.$.number) "5081" $= ||
+(L.$.number) "5082" $= ||
+(L.$.number) "5083" $= ||
+(L.$.number) "5084" $= ||
+(L.$.number) "5085" $= ||
+(L.$.number) "5086" $= ||
+(L.$.number) "5087" $= ||
+(L.$.number) "5088" $= ||
+(L.$.number) "5089" $= ||
+(L.$.number) "5090" $= ||
+(L.$.number) "5091" $= ||
+(L.$.number) "5092" $= ||
+(L.$.number) "5093" $= ||
+(L.$.number) "5094" $= ||
+(L.$.number) "5095" $= ||
+(L.$.number) "5096" $= ||
+(L.$.number) "5097" $= ||
+(L.$.number) "5098" $= ||
+(L.$.number) "5099" $= ||
+(L.$.number) "5100" $= ||
+(L.$.number) "5101" $= ||
+(L.$.number) "5102" $= ||
+(L.$.number) "5103" $= ||
+(L.$.number) "5104" $= ||
+(L.$.number) "5105" $= ||
+(L.$.number) "5106" $= ||
+(L.$.number) "5107" $= ||
+(L.$.number) "5108" $= ||
+(L.$.number) "5109" $= ||
+(L.$.number) "5110" $= ||
+(L.$.number) "5111" $= ||
+(L.$.number) "5112" $= ||
+(L.$.number) "5113" $= ||
+(L.$.number) "5114" $= ||
+(L.$.number) "5115" $= ||
+(L.$.number) "5116" $= ||
+(L.$.number) "5117" $= ||
+(L.$.number) "5118" $= ||
+(L.$.number) "5119" $= ||
+(L.$.number) "5120" $= ||
+(L.$.number) "5121" $= ||
+(L.$.number) "5122" $= ||
+(L.$.number) "5123" $= ||
+(L.$.number) "5124" $= ||
+(L.$.number) "5150" $= ||
+(L.$.number) "5152" $= ||
+(L.$.number) "5154" $= ||
+(L.$.number) "5156" $= ||
+(L.$.number) "5158" $= ||
+(L.$.number) "5160" $= ||
+(L.$.number) "5162" $= ||
+(L.$.number) "5164" $= ||
+(L.$.number) "5166" $= ||
+(L.$.number) "5168" $= ||
+(L.$.number) "5170" $= ||
+(L.$.number) "5172" $= ||
+(L.$.number) "5174" $= ||
+(L.$.number) "5176" $= ||
+(L.$.number) "5178" $= ||
+(L.$.number) "5180" $= ||
+(L.$.number) "5182" $= ||
+(L.$.number) "5184" $= ||
+(L.$.number) "5186" $= ||
+(L.$.number) "5188" $= ||
+(L.$.number) "5190" $= ||
+(L.$.number) "5192" $= ||
+(L.$.number) "5194" $= ||
+(L.$.number) "5196" $= ||
+(L.$.number) "5198" $= ||
+(L.$.number) "5200" $= ||
+(L.$.number) "5202" $= ||
+(L.$.number) "5204" $= ||
+(L.$.number) "5206" $= ||
+(L.$.number) "5208" $= ||
+(L.$.number) "5210" $= ||
+(L.$.number) "5212" $= ||
+(L.$.number) "5214" $= ||
+(L.$.number) "5216" $= ||
+(L.$.number) "5218" $= ||
+(L.$.number) "5220" $= ||
+(L.$.number) "5222" $= ||
+(L.$.number) "5224" $= ||
+(L.$.number) "5226" $= ||
+(L.$.number) "5228" $= ||
+(L.$.number) "5230" $= ||
+(L.$.number) "5232" $= ||
+(L.$.number) "5234" $= ||
+(L.$.number) "5236" $= ||
+(L.$.number) "5238" $= ||
+(L.$.number) "5240" $= ||
+(L.$.number) "5242" $= ||
+(L.$.number) "5244" $= ||
+(L.$.number) "5246" $= ||
+(L.$.number) "5248" $= ||
+(L.$.number) "5250" $= ||
+(L.$.number) "5252" $= ||
+(L.$.number) "5254" $= ||
+(L.$.number) "5256" $= ||
+(L.$.number) "5258" $= ||
+(L.$.number) "5260" $= ||
+(L.$.number) "5262" $= ||
+(L.$.number) "5264" $= ||
+(L.$.number) "5266" $= ||
+(L.$.number) "5268" $= ||
+(L.$.number) "5270" $= ||
+(L.$.number) "5272" $= ||
+(L.$.number) "5274" $= ||
+(L.$.number) "5276" $= ||
+(L.$.number) "5278" $= ||
+(L.$.number) "5280" $= ||
+(L.$.number) "5282" $= ||
+(L.$.number) "5284" $= ||
+(L.$.number) "5286" $= ||
+(L.$.number) "5288" $= ||
+(L.$.number) "5290" $= ||
+(L.$.number) "5292" $= ||
+(L.$.number) "5294" $= ||
+(L.$.number) "5296" $= ||
+(L.$.number) "5298" $= ||
+(L.$.number) "5300" $= ||
+(L.$.number) "5302" $= ||
+(L.$.number) "5304" $= ||
+(L.$.number) "5306" $= ||
+(L.$.number) "5308" $= ||
+(L.$.number) "5310" $= ||
+(L.$.number) "5312" $= ||
+(L.$.number) "5314" $= ||
+(L.$.number) "5316" $= ||
+(L.$.number) "5318" $= ||
+(L.$.number) "5320" $= ||
+(L.$.number) "5322" $= ||
+(L.$.number) "5324" $= ||
+(L.$.number) "5326" $= ||
+(L.$.number) "5328" $= ||
+(L.$.number) "5330" $= ||
+(L.$.number) "5332" $= ||
+(L.$.number) "5334" $= ||
+(L.$.number) "5336" $= ||
+(L.$.number) "5338" $= ||
+(L.$.number) "5340" $= ||
+(L.$.number) "5342" $= ||
+(L.$.number) "5344" $= ||
+(L.$.number) "5346" $= ||
+(L.$.number) "5348" $= ||
+(L.$.number) "5350" $= ||
+(L.$.number) "5352" $= ||
+(L.$.number) "5354" $= ||
+(L.$.number) "5356" $= ||
+(L.$.number) "5358" $= ||
+(L.$.number) "5360" $= ||
+(L.$.number) "5362" $= ||
+(L.$.number) "5364" $= ||
+(L.$.number) "5366" $= ||
+(L.$.number) "5368" $= ||
+(L.$.number) "5370" $= ||
+(L.$.number) "5372" $= ||
+(L.$.number) "5374" $= ||
+(L.$.number) "5376" $= ||
+(L.$.number) "5378" $= ||
+(L.$.number) "5380" $= ||
+(L.$.number) "5382" $= ||
+(L.$.number) "5384" $= ||
+(L.$.number) "5386" $= ||
+(L.$.number) "5388" $= ||
+(L.$.number) "5390" $= ||
+(L.$.number) "5392" $= ||
+(L.$.number) "5394" $= ||
+(L.$.number) "5396" $= ||
+(L.$.number) "5398" $= ||
+(L.$.number) "5400" $= ||
+(L.$.number) "5402" $= ||
+(L.$.number) "5404" $= ||
+(L.$.number) "5406" $= ||
+(L.$.number) "5408" $= ||
+(L.$.number) "5410" $= ||
+(L.$.number) "5412" $= ||
+(L.$.number) "5414" $= ||
+(L.$.number) "1817" $= ||
+(L.$.number) "1827" $= ||
+(L.$.number) "1828" $= ||
+(L.$.number) "1830" $= ||
+{if}
+1 (S.L.Zaehlwagen)
+{else}
+0 (S.L.Zaehlwagen)
+{endif}
+
+
+(L.$.number) "1817" $=
+(L.$.number) "1827" $= ||
+(L.$.number) "1828" $= ||
+(L.$.number) "1830" $= ||
+{if}
+1 (S.L.Zaehleinrichtung_hinten)
+{else}
+0 (S.L.Zaehleinrichtung_hinten)
+{endif}
+
+'
+(L.L.Zaehlwagen) 1 =
+{if}
+	(L.L.neue_Decke) 0 =
+	{if}
+	3 (S.L.Zaehleinrichtung_hinten)
+	{endif}
+	(L.L.neue_Decke) 1 =
+	{if}
+	1 (S.L.Zaehleinrichtung_hinten)
+	{endif}
+	(L.L.neue_Decke) 2 =
+	{if}
+	2 (S.L.Zaehleinrichtung_hinten)
+	{endif}
+{else}
+0 (S.L.Zaehleinrichtung_hinten)
+{endif}
+
+(L.L.Zaehlwagen) 1 =
+(L.L.neue_Decke) 0 = &&
+{if}
+1 (S.L.Nothahn_Zaehl_hinten)
+{else}
+(L.L.Zaehlwagen) 0 =
+(L.L.neue_Decke) 0 = &&
+{if}
+0 (S.L.Nothahn_Zaehl_hinten)
+{else}
+2 (S.L.Nothahn_Zaehl_hinten)
+{endif}
+{endif}
+
+{if}
+1 (S.L.Flughafenversion)
+{else}
+0 (S.L.Flughafenversion)
+{endif}
+
+(L.L.altesSitzmuster) 0 =
+(L.L.Flughafenversion) 1 = &&
+{if}
+2 (S.L.Flughafenversion_Sitze)
+{endif}
+
+(L.L.altesSitzmuster) 0 =
+(L.L.Flughafenversion) 0 = &&
+{if}
+1 (S.L.Flughafenversion_Sitze)
+{endif}
+
+(L.L.altesSitzmuster) 1 =
+{if}
+0 (S.L.Flughafenversion_Sitze)
+{endif}
+
+
+(L.L.neue_Decke) 0 =
+{if}
+0 (S.L.Flughafenversion_Stop)
+{else}
+(L.L.Flughafenversion) 0 =
+{if}
+1 (S.L.Flughafenversion_Stop)
+{else}
+2 (S.L.Flughafenversion_Stop)
+{endif}
+{endif}
+
+(L.$.number) "1100" $=
+(L.$.number) "1101" $= ||
+(L.$.number) "1102" $= ||
+(L.$.number) "1103" $= ||
+(L.$.number) "1104" $= ||
+(L.$.number) "1105" $= ||
+(L.$.number) "1106" $= ||
+(L.$.number) "1107" $= ||
+(L.$.number) "1108" $= ||
+(L.$.number) "1109" $= ||
+(L.$.number) "1110" $= ||
+(L.$.number) "1111" $= ||
+(L.$.number) "1112" $= ||
+(L.$.number) "1113" $= ||
+(L.$.number) "1114" $= ||
+(L.$.number) "1115" $= ||
+(L.$.number) "1116" $= ||
+(L.$.number) "1117" $= ||
+(L.$.number) "1118" $= ||
+(L.$.number) "1119" $= ||
+(L.$.number) "1120" $= ||
+(L.$.number) "1121" $= ||
+(L.$.number) "1122" $= ||
+(L.$.number) "1123" $= ||
+(L.$.number) "1124" $= ||
+(L.$.number) "1125" $= ||
+(L.$.number) "1126" $= ||
+(L.$.number) "1127" $= ||
+(L.$.number) "1128" $= ||
+(L.$.number) "1129" $= ||
+(L.$.number) "1130" $= ||
+(L.$.number) "1131" $= ||
+(L.$.number) "1132" $= ||
+(L.$.number) "1133" $= ||
+(L.$.number) "1134" $= ||
+(L.$.number) "1135" $= ||
+(L.$.number) "1136" $= ||
+(L.$.number) "1137" $= ||
+(L.$.number) "1138" $= ||
+(L.$.number) "1139" $= ||
+(L.$.number) "1140" $= ||
+(L.$.number) "1141" $= ||
+(L.$.number) "1142" $= ||
+(L.$.number) "1143" $= ||
+(L.$.number) "1144" $= ||
+(L.$.number) "1145" $= ||
+(L.$.number) "1146" $= ||
+(L.$.number) "1147" $= ||
+(L.$.number) "1148" $= ||
+(L.$.number) "1149" $= ||
+(L.$.number) "1150" $= ||
+(L.$.number) "1151" $= ||
+(L.$.number) "1152" $= ||
+(L.$.number) "1153" $= ||
+(L.$.number) "1154" $= ||
+(L.$.number) "1155" $= ||
+(L.$.number) "1156" $= ||
+(L.$.number) "4980" $= ||
+(L.$.number) "4981" $= ||
+(L.$.number) "4982" $= ||
+(L.$.number) "4983" $= ||
+(L.$.number) "4984" $= ||
+(L.$.number) "4985" $= ||
+(L.$.number) "4986" $= ||
+(L.$.number) "4987" $= ||
+(L.$.number) "4988" $= ||
+(L.$.number) "4989" $= ||
+(L.$.number) "4990" $= ||
+(L.$.number) "4991" $= ||
+(L.$.number) "4992" $= ||
+(L.$.number) "4993" $= ||
+(L.$.number) "4994" $= ||
+(L.$.number) "4995" $= ||
+(L.$.number) "4996" $= ||
+(L.$.number) "4997" $= ||
+(L.$.number) "4998" $= ||
+(L.$.number) "4999" $= ||
+(L.$.number) "5000" $= ||
+(L.$.number) "5001" $= ||
+(L.$.number) "5002" $= ||
+(L.$.number) "5003" $= ||
+(L.$.number) "5004" $= ||
+(L.$.number) "5005" $= ||
+(L.$.number) "5006" $= ||
+(L.$.number) "5007" $= ||
+(L.$.number) "5008" $= ||
+(L.$.number) "5009" $= ||
+(L.$.number) "5010" $= ||
+(L.$.number) "5011" $= ||
+(L.$.number) "5012" $= ||
+(L.$.number) "5013" $= ||
+(L.$.number) "5014" $= ||
+(L.$.number) "5015" $= ||
+(L.$.number) "5016" $= ||
+(L.$.number) "5017" $= ||
+(L.$.number) "5018" $= ||
+(L.$.number) "5019" $= ||
+(L.$.number) "5020" $= ||
+(L.$.number) "5021" $= ||
+(L.$.number) "5022" $= ||
+(L.$.number) "5023" $= ||
+(L.$.number) "5024" $= ||
+(L.$.number) "5025" $= ||
+(L.$.number) "5026" $= ||
+(L.$.number) "5027" $= ||
+(L.$.number) "5028" $= ||
+(L.$.number) "5029" $= ||
+(L.$.number) "5030" $= ||
+(L.$.number) "5031" $= ||
+(L.$.number) "5032" $= ||
+(L.$.number) "5033" $= ||
+(L.$.number) "5034" $= ||
+(L.$.number) "5035" $= ||
+(L.$.number) "5036" $= ||
+(L.$.number) "5037" $= ||
+(L.$.number) "5038" $= ||
+(L.$.number) "5039" $= ||
+(L.$.number) "5040" $= ||
+(L.$.number) "5041" $= ||
+(L.$.number) "5042" $= ||
+(L.$.number) "5043" $= ||
+(L.$.number) "5044" $= ||
+(L.$.number) "5045" $= ||
+(L.$.number) "5046" $= ||
+(L.$.number) "5047" $= ||
+(L.$.number) "5048" $= ||
+(L.$.number) "5049" $= ||
+(L.$.number) "5050" $= ||
+(L.$.number) "5051" $= ||
+(L.$.number) "5052" $= ||
+(L.$.number) "5053" $= ||
+(L.$.number) "5054" $= ||
+(L.$.number) "5055" $= ||
+(L.$.number) "5056" $= ||
+(L.$.number) "5057" $= ||
+(L.$.number) "5058" $= ||
+(L.$.number) "5059" $= ||
+(L.$.number) "5060" $= ||
+(L.$.number) "5061" $= ||
+(L.$.number) "5062" $= ||
+(L.$.number) "5063" $= ||
+(L.$.number) "5064" $= ||
+(L.$.number) "5065" $= ||
+(L.$.number) "5066" $= ||
+(L.$.number) "5067" $= ||
+(L.$.number) "5068" $= ||
+(L.$.number) "5069" $= ||
+(L.$.number) "5070" $= ||
+(L.$.number) "5071" $= ||
+(L.$.number) "5072" $= ||
+(L.$.number) "5073" $= ||
+(L.$.number) "5074" $= ||
+(L.$.number) "5075" $= ||
+(L.$.number) "5076" $= ||
+(L.$.number) "5077" $= ||
+(L.$.number) "5078" $= ||
+(L.$.number) "5079" $= ||
+(L.$.number) "5080" $= ||
+(L.$.number) "5081" $= ||
+(L.$.number) "5082" $= ||
+(L.$.number) "5083" $= ||
+(L.$.number) "5084" $= ||
+(L.$.number) "5085" $= ||
+(L.$.number) "5086" $= ||
+(L.$.number) "5087" $= ||
+(L.$.number) "5088" $= ||
+(L.$.number) "5089" $= ||
+(L.$.number) "5090" $= ||
+(L.$.number) "5091" $= ||
+(L.$.number) "5092" $= ||
+(L.$.number) "5093" $= ||
+(L.$.number) "5094" $= ||
+(L.$.number) "5095" $= ||
+(L.$.number) "5096" $= ||
+(L.$.number) "5097" $= ||
+(L.$.number) "5098" $= ||
+(L.$.number) "5099" $= ||
+(L.$.number) "5100" $= ||
+(L.$.number) "5101" $= ||
+(L.$.number) "5102" $= ||
+(L.$.number) "5103" $= ||
+(L.$.number) "5104" $= ||
+(L.$.number) "5105" $= ||
+(L.$.number) "5106" $= ||
+(L.$.number) "5107" $= ||
+(L.$.number) "5108" $= ||
+(L.$.number) "5109" $= ||
+(L.$.number) "5110" $= ||
+(L.$.number) "5111" $= ||
+(L.$.number) "5112" $= ||
+(L.$.number) "5113" $= ||
+(L.$.number) "5114" $= ||
+(L.$.number) "5115" $= ||
+(L.$.number) "5116" $= ||
+(L.$.number) "5117" $= ||
+(L.$.number) "5118" $= ||
+(L.$.number) "5119" $= ||
+(L.$.number) "5120" $= ||
+(L.$.number) "5121" $= ||
+(L.$.number) "5122" $= ||
+(L.$.number) "5123" $= ||
+(L.$.number) "5124" $= ||
+(L.$.number) "5125" $= ||
+(L.$.number) "5126" $= ||
+(L.$.number) "5127" $= ||
+(L.$.number) "5128" $= ||
+(L.$.number) "5129" $= ||
+(L.$.number) "5130" $= ||
+(L.$.number) "5131" $= ||
+(L.$.number) "5132" $= ||
+(L.$.number) "5133" $= ||
+(L.$.number) "5134" $= ||
+(L.$.number) "5135" $= ||
+(L.$.number) "5136" $= ||
+(L.$.number) "5137" $= ||
+(L.$.number) "5138" $= ||
+(L.$.number) "5139" $= ||
+(L.$.number) "5140" $= ||
+(L.$.number) "5141" $= ||
+(L.$.number) "5142" $= ||
+(L.$.number) "5143" $= ||
+(L.$.number) "5144" $= ||
+(L.$.number) "1160" $= ||
+(L.$.number) "1161" $= ||
+(L.$.number) "1162" $= ||
+(L.$.number) "1163" $= ||
+(L.$.number) "1164" $= ||
+(L.$.number) "1165" $= ||
+(L.$.number) "1166" $= ||
+(L.$.number) "1167" $= ||
+(L.$.number) "1168" $= ||
+(L.$.number) "1169" $= ||
+(L.$.number) "1170" $= ||
+(L.$.number) "1171" $= ||
+(L.$.number) "1172" $= ||
+(L.$.number) "1173" $= ||
+(L.$.number) "1174" $= ||
+(L.$.number) "1175" $= ||
+(L.$.number) "1176" $= ||
+(L.$.number) "1177" $= ||
+(L.$.number) "1178" $= ||
+(L.$.number) "1179" $= ||
+(L.$.number) "1180" $= ||
+(L.$.number) "1181" $= ||
+(L.$.number) "1182" $= ||
+(L.$.number) "1183" $= ||
+(L.$.number) "1184" $= ||
+(L.$.number) "1185" $= ||
+(L.$.number) "1186" $= ||
+(L.$.number) "1187" $= ||
+(L.$.number) "1188" $= ||
+(L.$.number) "1189" $= ||
+(L.$.number) "1190" $= ||
+(L.$.number) "1191" $= ||
+(L.$.number) "1192" $= ||
+(L.$.number) "1193" $= ||
+(L.$.number) "1194" $= ||
+(L.$.number) "1195" $= ||
+(L.$.number) "1196" $= ||
+(L.$.number) "1197" $= ||
+(L.$.number) "1198" $= ||
+(L.$.number) "1199" $= ||
+(L.$.number) "5150" $= ||
+(L.$.number) "5151" $= ||
+(L.$.number) "5152" $= ||
+(L.$.number) "5153" $= ||
+(L.$.number) "5154" $= ||
+(L.$.number) "5155" $= ||
+(L.$.number) "5156" $= ||
+(L.$.number) "5157" $= ||
+(L.$.number) "5158" $= ||
+(L.$.number) "5159" $= ||
+(L.$.number) "5160" $= ||
+(L.$.number) "5161" $= ||
+(L.$.number) "5162" $= ||
+(L.$.number) "5163" $= ||
+(L.$.number) "5164" $= ||
+(L.$.number) "5165" $= ||
+(L.$.number) "5166" $= ||
+(L.$.number) "5167" $= ||
+(L.$.number) "5168" $= ||
+(L.$.number) "5169" $= ||
+(L.$.number) "5170" $= ||
+(L.$.number) "5171" $= ||
+(L.$.number) "5172" $= ||
+(L.$.number) "5173" $= ||
+(L.$.number) "5174" $= ||
+(L.$.number) "5175" $= ||
+(L.$.number) "5176" $= ||
+(L.$.number) "5177" $= ||
+(L.$.number) "5178" $= ||
+(L.$.number) "5179" $= ||
+(L.$.number) "5180" $= ||
+(L.$.number) "5181" $= ||
+(L.$.number) "5182" $= ||
+(L.$.number) "5183" $= ||
+(L.$.number) "5184" $= ||
+(L.$.number) "5185" $= ||
+(L.$.number) "5186" $= ||
+(L.$.number) "5187" $= ||
+(L.$.number) "5188" $= ||
+(L.$.number) "5189" $= ||
+(L.$.number) "5190" $= ||
+(L.$.number) "5191" $= ||
+(L.$.number) "5192" $= ||
+(L.$.number) "5193" $= ||
+(L.$.number) "5194" $= ||
+(L.$.number) "5195" $= ||
+(L.$.number) "5196" $= ||
+(L.$.number) "5197" $= ||
+(L.$.number) "5198" $= ||
+(L.$.number) "5199" $= ||
+(L.$.number) "5200" $= ||
+(L.$.number) "5201" $= ||
+(L.$.number) "5202" $= ||
+(L.$.number) "5203" $= ||
+(L.$.number) "5204" $= ||
+(L.$.number) "5205" $= ||
+(L.$.number) "5206" $= ||
+(L.$.number) "5207" $= ||
+(L.$.number) "5208" $= ||
+(L.$.number) "5209" $= ||
+(L.$.number) "5210" $= ||
+(L.$.number) "5211" $= ||
+(L.$.number) "5212" $= ||
+(L.$.number) "5213" $= ||
+(L.$.number) "5214" $= ||
+(L.$.number) "5215" $= ||
+(L.$.number) "5216" $= ||
+(L.$.number) "5217" $= ||
+(L.$.number) "5218" $= ||
+(L.$.number) "5219" $= ||
+(L.$.number) "5220" $= ||
+(L.$.number) "5221" $= ||
+(L.$.number) "5222" $= ||
+(L.$.number) "5223" $= ||
+(L.$.number) "5224" $= ||
+(L.$.number) "5225" $= ||
+(L.$.number) "5226" $= ||
+(L.$.number) "5227" $= ||
+(L.$.number) "5228" $= ||
+(L.$.number) "5229" $= ||
+(L.$.number) "5230" $= ||
+(L.$.number) "5231" $= ||
+(L.$.number) "5232" $= ||
+(L.$.number) "5233" $= ||
+(L.$.number) "5234" $= ||
+(L.$.number) "5235" $= ||
+(L.$.number) "5236" $= ||
+(L.$.number) "5237" $= ||
+(L.$.number) "5238" $= ||
+(L.$.number) "5239" $= ||
+(L.$.number) "5240" $= ||
+(L.$.number) "5241" $= ||
+(L.$.number) "5242" $= ||
+(L.$.number) "5243" $= ||
+(L.$.number) "5244" $= ||
+(L.$.number) "5245" $= ||
+(L.$.number) "5246" $= ||
+(L.$.number) "5247" $= ||
+(L.$.number) "5248" $= ||
+(L.$.number) "5249" $= ||
+(L.$.number) "5250" $= ||
+(L.$.number) "5251" $= ||
+(L.$.number) "5252" $= ||
+(L.$.number) "5253" $= ||
+(L.$.number) "5254" $= ||
+(L.$.number) "5255" $= ||
+(L.$.number) "5256" $= ||
+(L.$.number) "5257" $= ||
+(L.$.number) "5258" $= ||
+(L.$.number) "5259" $= ||
+(L.$.number) "5260" $= ||
+(L.$.number) "5261" $= ||
+(L.$.number) "5262" $= ||
+(L.$.number) "5263" $= ||
+(L.$.number) "5264" $= ||
+(L.$.number) "5265" $= ||
+(L.$.number) "5266" $= ||
+(L.$.number) "5267" $= ||
+(L.$.number) "5268" $= ||
+(L.$.number) "5269" $= ||
+(L.$.number) "5270" $= ||
+(L.$.number) "5271" $= ||
+(L.$.number) "5272" $= ||
+(L.$.number) "5273" $= ||
+(L.$.number) "5274" $= ||
+(L.$.number) "5275" $= ||
+(L.$.number) "5276" $= ||
+(L.$.number) "5277" $= ||
+(L.$.number) "5278" $= ||
+(L.$.number) "5279" $= ||
+(L.$.number) "5280" $= ||
+(L.$.number) "5281" $= ||
+(L.$.number) "5282" $= ||
+(L.$.number) "5283" $= ||
+(L.$.number) "5284" $= ||
+(L.$.number) "5285" $= ||
+(L.$.number) "5286" $= ||
+(L.$.number) "5287" $= ||
+(L.$.number) "5288" $= ||
+(L.$.number) "5289" $= ||
+(L.$.number) "5290" $= ||
+(L.$.number) "5291" $= ||
+(L.$.number) "5292" $= ||
+(L.$.number) "5293" $= ||
+(L.$.number) "5294" $= ||
+(L.$.number) "5295" $= ||
+(L.$.number) "5296" $= ||
+(L.$.number) "5297" $= ||
+(L.$.number) "5298" $= ||
+(L.$.number) "5299" $= ||
+(L.$.number) "5300" $= ||
+(L.$.number) "5301" $= ||
+(L.$.number) "5302" $= ||
+(L.$.number) "5303" $= ||
+(L.$.number) "5304" $= ||
+(L.$.number) "5305" $= ||
+(L.$.number) "5306" $= ||
+(L.$.number) "5307" $= ||
+(L.$.number) "5308" $= ||
+(L.$.number) "5309" $= ||
+(L.$.number) "5310" $= ||
+(L.$.number) "5311" $= ||
+(L.$.number) "5312" $= ||
+(L.$.number) "5313" $= ||
+(L.$.number) "5314" $= ||
+(L.$.number) "5315" $= ||
+(L.$.number) "5316" $= ||
+(L.$.number) "5317" $= ||
+(L.$.number) "5318" $= ||
+(L.$.number) "5319" $= ||
+(L.$.number) "5320" $= ||
+(L.$.number) "5321" $= ||
+(L.$.number) "5322" $= ||
+(L.$.number) "5323" $= ||
+(L.$.number) "5324" $= ||
+(L.$.number) "5325" $= ||
+(L.$.number) "5326" $= ||
+(L.$.number) "5327" $= ||
+(L.$.number) "5328" $= ||
+(L.$.number) "5329" $= ||
+(L.$.number) "5330" $= ||
+(L.$.number) "5331" $= ||
+(L.$.number) "5332" $= ||
+(L.$.number) "5333" $= ||
+(L.$.number) "5334" $= ||
+(L.$.number) "5335" $= ||
+(L.$.number) "5336" $= ||
+(L.$.number) "5337" $= ||
+(L.$.number) "5338" $= ||
+(L.$.number) "5339" $= ||
+(L.$.number) "5340" $= ||
+(L.$.number) "5341" $= ||
+(L.$.number) "5342" $= ||
+(L.$.number) "5343" $= ||
+(L.$.number) "5344" $= ||
+(L.$.number) "5345" $= ||
+(L.$.number) "5346" $= ||
+(L.$.number) "5347" $= ||
+(L.$.number) "5348" $= ||
+(L.$.number) "5349" $= ||
+(L.$.number) "5350" $= ||
+(L.$.number) "5351" $= ||
+(L.$.number) "5352" $= ||
+(L.$.number) "5353" $= ||
+(L.$.number) "5354" $= ||
+(L.$.number) "5355" $= ||
+(L.$.number) "5356" $= ||
+(L.$.number) "5357" $= ||
+(L.$.number) "5358" $= ||
+(L.$.number) "5359" $= ||
+(L.$.number) "5360" $= ||
+(L.$.number) "5361" $= ||
+(L.$.number) "5362" $= ||
+(L.$.number) "5363" $= ||
+(L.$.number) "5364" $= ||
+(L.$.number) "5365" $= ||
+(L.$.number) "5366" $= ||
+(L.$.number) "5367" $= ||
+(L.$.number) "5368" $= ||
+(L.$.number) "5369" $= ||
+(L.$.number) "5370" $= ||
+(L.$.number) "5371" $= ||
+(L.$.number) "5372" $= ||
+(L.$.number) "5373" $= ||
+(L.$.number) "5374" $= ||
+(L.$.number) "5375" $= ||
+(L.$.number) "5376" $= ||
+(L.$.number) "5377" $= ||
+(L.$.number) "5378" $= ||
+(L.$.number) "5379" $= ||
+(L.$.number) "5380" $= ||
+(L.$.number) "5381" $= ||
+(L.$.number) "5382" $= ||
+(L.$.number) "5383" $= ||
+(L.$.number) "5384" $= ||
+(L.$.number) "5385" $= ||
+(L.$.number) "5386" $= ||
+(L.$.number) "5387" $= ||
+(L.$.number) "5388" $= ||
+(L.$.number) "5389" $= ||
+(L.$.number) "5390" $= ||
+(L.$.number) "5391" $= ||
+(L.$.number) "5392" $= ||
+(L.$.number) "5393" $= ||
+(L.$.number) "5394" $= ||
+(L.$.number) "5395" $= ||
+(L.$.number) "5396" $= ||
+(L.$.number) "5397" $= ||
+(L.$.number) "5398" $= ||
+(L.$.number) "5399" $= ||
+(L.$.number) "5400" $= ||
+(L.$.number) "5401" $= ||
+(L.$.number) "5402" $= ||
+(L.$.number) "5403" $= ||
+(L.$.number) "5404" $= ||
+(L.$.number) "5405" $= ||
+(L.$.number) "5406" $= ||
+(L.$.number) "5407" $= ||
+(L.$.number) "5408" $= ||
+(L.$.number) "5409" $= ||
+(L.$.number) "5410" $= ||
+(L.$.number) "5411" $= ||
+(L.$.number) "5412" $= ||
+(L.$.number) "5413" $= ||
+(L.$.number) "5414" $= ||
+(L.$.number) "5415" $= ||
+{if}
+1 (S.L.EKSGeraet)
+{else}
+0 (S.L.EKSGeraet)
+{endif}
+
+
+{end}
+
+'----------------------
+'	Frame
+'----------------------
+{macro:cockpit_frame}
+
+' Modding
+
+(L.L.Modding_Modus) 2 =
+{if}
+
+(L.L.Modding_Menue_Timer) 5 >
+{if}
+"Modding Menue" (S.$.Modding_Text)
+{endif}
+(L.L.Modding_Menue_Timer) (L.S.Timegap) + 8 min (S.L.Modding_Menue_Timer)
+{endif}
+
+
+(L.L.Axle_Steering_0_L) 0.1 >
+{if}
+(L.L.Axle_Steering_0_L) (S.L.Lenkhilfe)
+{else}
+(L.L.Axle_Steering_0_L) -1 * (S.L.Lenkhilfe)
+{endif}
+
+' Dachluken Steuerung
+(L.L.Dachluken_Modus) 0 =
+{if}
+0 (S.L.Dachluken_Vorne)
+0 (S.L.Dachluken_Mitte)
+0 (S.L.Dachluken_Hinten)
+{endif}
+
+(L.L.Dachluken_Modus) 1 =
+{if}
+0 (S.L.Dachluken_Vorne)
+1 (S.L.Dachluken_Mitte)
+1 (S.L.Dachluken_Hinten)
+{endif}
+
+(L.L.Dachluken_Modus) 2 =
+{if}
+0 (S.L.Dachluken_Vorne)
+1 (S.L.Dachluken_Mitte)
+0 (S.L.Dachluken_Hinten)
+{endif}
+
+(L.L.Dachluken_Modus) 3 =
+{if}
+1 (S.L.Dachluken_Vorne)
+1 (S.L.Dachluken_Mitte)
+0 (S.L.Dachluken_Hinten)
+{endif}
+
+' Lampe auf Schalter
+
+(L.L.Dachluken_Modus) 1 =
+(L.L.Dachluken_Modus) 2 = ||
+{if}
+1 (S.L.Dachluken_Lampe_unten)
+{else}
+0 (S.L.Dachluken_Lampe_unten)
+{endif}
+
+(L.L.Dachluken_Modus) 3 =
+(L.L.Dachluken_Modus) 2 = ||
+{if}
+1 (S.L.Dachluken_Lampe_oben)
+{else}
+0 (S.L.Dachluken_Lampe_oben)
+{endif}
+
+(L.L.neue_Decke) 0 =
+{if}
+	(L.L.Tuer2_IST_SST) 0 =
+	{if}
+	0 (S.L.Tuer2Lampe)
+	0 (S.L.Tuer2Nothahn)
+	0 (S.L.Tuer2Seitenbalken)
+	0 (S.L.Tuer2Decke)
+	0 (S.L.Tuer2_Innen)
+	{else}
+	2 (S.L.Tuer2Lampe)
+	1 (S.L.Tuer2Nothahn)
+	1 (S.L.Tuer2Seitenbalken)
+	3 (S.L.Tuer2Decke)
+	2 (S.L.Tuer2_Innen)
+	{endif}
+	(L.L.Tuer3_IST_SST) 0 =
+	{if}
+	0 (S.L.Tuer3Lampe)
+	0 (S.L.Tuer3Nothahn)
+	0 (S.L.Tuer3Seitenbalken)
+	0 (S.L.Tuer3Decke)
+	0 (S.L.Tuer3_Innen)
+	{else}
+	2 (S.L.Tuer3Lampe)
+	1 (S.L.Tuer3Nothahn)
+	1 (S.L.Tuer3Seitenbalken)
+	3 (S.L.Tuer3Decke)
+	2 (S.L.Tuer3_Innen)
+	{endif}
+	(L.L.Tuer4_IST_SST) 0 =
+	{if}
+	0 (S.L.Tuer4Lampe)
+	0 (S.L.Tuer4Nothahn)
+	0 (S.L.Tuer4Seitenbalken)
+	0 (S.L.Tuer4Decke)
+	0 (S.L.Tuer4_Innen)
+	{else}
+	2 (S.L.Tuer4Lampe)
+	1 (S.L.Tuer4Nothahn)
+	1 (S.L.Tuer4Seitenbalken)
+	3 (S.L.Tuer4Decke)
+	2 (S.L.Tuer4_Innen)
+	{endif}
+{endif}
+(L.L.neue_Decke) 1 =
+{if}
+	(L.L.Tuer2_IST_SST) 0 =
+	{if}
+	0 (S.L.Tuer2Lampe)
+	0 (S.L.Tuer2Nothahn)
+	2 (S.L.Tuer2Seitenbalken)
+	1 (S.L.Tuer2Decke)
+	0 (S.L.Tuer2_Innen)
+	{else}
+	3 (S.L.Tuer2Lampe)
+	2 (S.L.Tuer2Nothahn)
+	2 (S.L.Tuer2Seitenbalken)
+	4 (S.L.Tuer2Decke)
+	2 (S.L.Tuer2_Innen)
+	{endif}
+	(L.L.Tuer3_IST_SST) 0 =
+	{if}
+	0 (S.L.Tuer3Lampe)
+	0 (S.L.Tuer3Nothahn)
+	2 (S.L.Tuer3Seitenbalken)
+	1 (S.L.Tuer3Decke)
+	0 (S.L.Tuer3_Innen)
+	{else}
+	3 (S.L.Tuer3Lampe)
+	2 (S.L.Tuer3Nothahn)
+	2 (S.L.Tuer3Seitenbalken)
+	4 (S.L.Tuer3Decke)
+	2 (S.L.Tuer3_Innen)
+	{endif}
+	(L.L.Tuer4_IST_SST) 0 =
+	{if}
+	0 (S.L.Tuer4Lampe)
+	0 (S.L.Tuer4Nothahn)
+	2 (S.L.Tuer4Seitenbalken)
+	1 (S.L.Tuer4Decke)
+	0 (S.L.Tuer4_Innen)
+	{else}
+	3 (S.L.Tuer4Lampe)
+	2 (S.L.Tuer4Nothahn)
+	2 (S.L.Tuer4Seitenbalken)
+	4 (S.L.Tuer4Decke)
+	2 (S.L.Tuer4_Innen)
+	{endif}
+{endif}
+(L.L.neue_Decke) 2 =
+{if}
+	(L.L.Tuer2_IST_SST) 0 =
+	{if}
+	1 (S.L.Tuer2Lampe)
+	0 (S.L.Tuer2Nothahn)
+	3 (S.L.Tuer2Seitenbalken)
+	2 (S.L.Tuer2Decke)
+	1 (S.L.Tuer2_Innen)
+	{else}
+	4 (S.L.Tuer2Lampe)
+	2 (S.L.Tuer2Nothahn)
+	3 (S.L.Tuer2Seitenbalken)
+	5 (S.L.Tuer2Decke)
+	3 (S.L.Tuer2_Innen)
+	{endif}
+	(L.L.Tuer3_IST_SST) 0 =
+	{if}
+	1 (S.L.Tuer3Lampe)
+	0 (S.L.Tuer3Nothahn)
+	3 (S.L.Tuer3Seitenbalken)
+	2 (S.L.Tuer3Decke)
+	1 (S.L.Tuer3_Innen)
+	{else}
+	4 (S.L.Tuer3Lampe)
+	2 (S.L.Tuer3Nothahn)
+	3 (S.L.Tuer3Seitenbalken)
+	5 (S.L.Tuer3Decke)
+	3 (S.L.Tuer3_Innen)
+	{endif}
+	(L.L.Tuer4_IST_SST) 0 =
+	{if}
+	1 (S.L.Tuer4Lampe)
+	0 (S.L.Tuer4Nothahn)
+	3 (S.L.Tuer4Seitenbalken)
+	2 (S.L.Tuer4Decke)
+	1 (S.L.Tuer4_Innen)
+	{else}
+	4 (S.L.Tuer4Lampe)
+	2 (S.L.Tuer4Nothahn)
+	3 (S.L.Tuer4Seitenbalken)
+	5 (S.L.Tuer4Decke)
+	3 (S.L.Tuer4_Innen)
+	{endif}
+{endif}
+
+' Dashboard Uhrzeit
+(L.S.Time) 3600 / s0 trunc s1 "02" $IntToStrEnh ":" $+ l0 l1 - 60 * trunc "02" $IntToStrEnh $+
+(S.$.Dashboard_Uhrzeit)
+
+' Dashboard Aussentemperatur
+(L.S.Weather_Temperature) $IntToStr (S.$.Dashboard_Temperatur)
+
+' Dashboard Kilometerstand
+(L.L.km_counter_km) trunc " 6" $IntToStrEnh "." $+ (L.L.km_counter_m) trunc $IntToStr $+ (S.$.Dashboard_Kilometer_Step2)
+
+' Dashboard Tageskilometerstand
+(L.L.km_counter_km_day) trunc " 3" $IntToStrEnh "." $+ (L.L.km_counter_m_day) trunc $IntToStr $+ (S.$.Dashboard_Tageskilometer_Step2)
+
+
+' Dashboard Kilometerstand
+(L.L.km_counter_km) trunc " 6" $IntToStrEnh (S.$.Dashboard_Kilometer)
+
+' Dashboard Tageskilometerstand
+(L.L.km_counter_km_day) trunc " 3" $IntToStrEnh (S.$.Dashboard_Tageskilometer)
+
+		(L.L.km_counter_m_day) trunc $IntToStr
+		(S.$.Dashboard_Tageskilometer_Meter)
+
+
+' Dashboard Text
+(L.$.Dashboard_Uhrzeit) "  " $+ (L.$.Dashboard_Temperatur) $+ " " $+ (L.$.Dashboard_Kilometer) $+ " " $+ (L.$.Dashboard_Tageskilometer) $+ "  " $+ (L.$.Dashboard_Tageskilometer_Meter) $+
+(S.$.Dashboard_Text)
+
+' Dashboard Text Step 2
+(L.$.Dashboard_Uhrzeit) "  " $+ (L.$.Dashboard_Temperatur) $+ " " $+ (L.$.Dashboard_Kilometer_Step2) $+ " " $+ (L.$.Dashboard_Tageskilometer_Step2) $+
+(S.$.Dashboard_Text_Step2)
+
+
+(L.L.elec_busbar_main)
+{if}
+
+	(L.L.neue_Decke)
+	{if}
+	0 (S.L.alte_Decke_Haltewunsch)
+	0 (S.L.alte_Decke_Monitor)
+
+		(L.L.haltewunschlampe)
+		{if}
+		1 (S.L.neue_Decke_Haltewunsch)
+		{else}
+		0 (S.L.neue_Decke_Haltewunsch)
+		{endif}
+
+		(L.L.elec_busbar_main)
+		{if}
+		1 (S.L.neue_Decke_Monitor)
+		{else}
+		0 (S.L.neue_Decke_Monitor)
+		{endif}
+
+	{else}
+	0 (S.L.neue_Decke_Haltewunsch)
+	0 (S.L.neue_Decke_Monitor)
+
+		(L.L.haltewunschlampe)
+		{if}
+		1 (S.L.alte_Decke_Haltewunsch)
+		{else}
+		0 (S.L.alte_Decke_Haltewunsch)
+		{endif}
+
+		(L.L.elec_busbar_main)
+		{if}
+		1 (S.L.alte_Decke_Monitor)
+		{else}
+		0 (S.L.alte_Decke_Monitor)
+		{endif}
+
+	{endif}
+
+{else}
+0 (S.L.neue_Decke_Haltewunsch)
+0 (S.L.alte_Decke_Haltewunsch)
+0 (S.L.neue_Decke_Monitor)
+0 (S.L.alte_Decke_Monitor)
+{endif}
+
+
+(L.L.elec_busbar_main)
+{if}
+
+    (L.L.VDL_DUMMY_16) 1 =
+    {if}
+        0 (S.L.taster_rot_fahrertuer)
+    {else}
+        1 (S.L.taster_rot_fahrertuer)
+    {endif}
+
+    (C.L.cockpit_has_retarderswitch)
+    {if}
+        (L.L.cp_retarder_sw) (S.L.retarder_off_light)
+    {else}
+        (L.L.cp_retarder_sw_direkt) ! (S.L.retarder_off_light)
+    {endif}
+
+{else}
+    0 (S.L.taster_rot_fahrertuer)
+    0 (S.L.retarder_off_light)
+{endif}
+
+(L.L.ecas_kneel) 0 =
+{if}
+0 (S.L.taster_rot_kneeling)
+{else}
+1 (S.L.taster_rot_kneeling)
+{endif}
+{endif}
+
+
+(L.L.Seiten_unten_DUMMY_2) 0 =
+(L.L.elec_busbar_main) &&
+{if}
+1 (S.L.BVG_USB_an)
+{else}
+0 (S.L.BVG_USB_an)
+{endif}
+
+
+(L.L.elec_busbar_main)
+{if}
+
+
+	(L.L.lights_sw_blinker) 2 =
+	{if}
+	1 (S.L.Rosho_Cam_an)
+	0 (S.L.cam_timer)
+	{else}
+	(L.L.cam_timer) (L.S.Timegap) + 5 min (S.L.cam_timer)
+
+		(L.L.cam_timer) 3 >
+		{if}
+		0 (S.L.Rosho_Cam_an)
+		{endif}
+	{endif}
+{else}
+0 (S.L.Rosho_Cam_an)
+{endif}
+
+
+(L.L.neue_Decke) 2 =
+{if}
+2 (S.L.Rosho_Cam_an_alt)
+	(L.L.Rosho_Cam_an) 0 =
+	{if}
+	0 (S.L.Rosho_Cam_an_neu)
+	{else}
+	1 (S.L.Rosho_Cam_an_neu)
+	{endif}
+{else}
+2 (S.L.Rosho_Cam_an_neu)
+	(L.L.Rosho_Cam_an) 0 =
+	{if}
+	0 (S.L.Rosho_Cam_an_alt)
+	{else}
+	1 (S.L.Rosho_Cam_an_alt)
+	{endif}
+
+{endif}
+
+(L.L.elec_busbar_main)
+{if}
+	(L.L.door_2) 0.1 >
+	{if}
+	1 (S.L.2_Tuer_Cam_an)
+	{else}
+	0 (S.L.2_Tuer_Cam_an)
+	{endif}
+{else}
+0 (S.L.2_Tuer_Cam_an)
+{endif}
+
+
+
+1 (S.L.Daueranimation)
+
+'�bertragen der Schalterstellungen:
+	(L.L.cp_retarder_sw) (S.L.antrieb_retarder_sw)
+	(L.L.cp_retarder_sw_direkt) (S.L.antrieb_retarder_sw_direkt)
+	(L.L.cp_wischer_schnell_sw) (S.L.wiper_schnell_sw)
+	(L.L.cp_wischer_einaus_sw) (S.L.wiper_einaus_sw)
+	(L.L.cp_wischer_intervall_sw) (S.L.wiper_intervall_sw)
+	(L.L.cp_wischer_wascher_sw) (S.L.wiper_wascher_sw)
+
+	1 (S.L.almex_static_anim)
+
+	(C.L.vdv_blinker_tone_volume) 0 max 1 min (S.L.vdv_blinker_tone_volume)
+
+	(M.L.tacho_frame)
+	(M.L.uhr_frame)
+	(M.L.drehzahlmesser_frame)
+	(M.L.hupe_frame)
+	(M.L.blinkerhebel_frame)
+	(M.L.wischerhebel_frame)
+	(M.L.wischer_drehschalter_frame)
+	(M.L.oeldruck_frame)
+	(M.L.tankuhr_frame)
+	(M.L.cockpitlights_frame)
+	(M.L.klimator_frame)
+	(M.L.schluessel_frame)
+	(M.L.odometer_frame)
+	(M.L.fahrertuer_frame) 
+	(M.L.rollo_frame)
+	(M.L.rollo1_frame)
+	(M.L.engine_thermometer_frame)
+	(M.L.engine_diagnostic)
+	(M.L.microphone_frame)
+	(M.L.pressure_warning_needle_frame)
+	(M.L.zentralschmierung_frame)
+	(M.L.Thermometer_frame)
+	(M.L.pandus_frame)
+	(M.L.fahrerfenster)
+	(M.L.visual_addons)
+	(M.L.aep)
+	(M.L.stampers_disp)
+{end}
+
+{macro:aep}
+
+(L.L.elec_busbar_main) (L.L.cp_stamper_ver) 1 = &&
+	{if}
+	(L.S.Day) "02" $IntToStrEnh "/" $+ 
+	(L.S.Month) "02" $IntToStrEnh $+ "/" $+ 
+	(L.S.Year) $IntToStr $+ " " $+
+	(L.S.Time) 3600 / s0 trunc s1 "02" $IntToStrEnh $+ ":" $+ l0 l1 - 60 * trunc "02" $IntToStrEnh $+
+	(S.$.aep_czas)
+	{else}
+	" " (S.$.aep_czas)
+	{endif}
+
+ 
+	(L.L.door_0) 0.5 > (L.L.door_1) 0.5 > || (L.L.door_2) 0.5 > || (L.L.door_3) 0.5 > ||
+	{if}
+		1 (S.L.drzwi_aep)
+		(L.L.index_przystanek) (S.L.index_busstop_last)
+	{endif}
+	
+	
+(L.L.elec_busbar_main)
+	{if}
+		(L.L.aep_loop) (L.S.Timegap) + (S.L.aep_loop)
+	{else}
+		0 (S.L.aep_loop)
+	{endif}
+
+(L.L.aep_loop) 2 >
+	{if}
+		(L.L.aep_wysw) 1 + (S.L.aep_wysw)
+		0 (S.L.aep_loop)
+	{endif}
+	
+(L.L.drzwi_aep)
+{if}
+	(L.L.aep_wysw) 2 >
+	{if}
+		1 (S.L.aep_wysw)
+	{endif}
+{else}
+	(L.L.aep_wysw) 3 >
+	{if}
+		1 (S.L.aep_wysw)
+	{endif}
+{endif}
+
+(L.L.elec_busbar_main) (L.L.cp_stamper_ver) 1 = &&
+{if}
+	(L.L.schedule_active)
+	{if}	
+		0 (S.L.nieczynny)
+		1 (S.L.aep_ikony)
+		(L.L.drzwi_aep)
+		{if}
+			(L.L.aep_wysw) 1 =
+			{if}
+				(M.V.GetTTBusstopIndex) (M.V.GetTTBusstopName) (M.V.GetBusstopIndex) 3 (M.V.GetBusstopString)
+			{else}
+				(L.L.aep_wysw) 2 =
+				{if}
+					"Zbliz karte"
+				{endif}
+			{endif}			
+		{else}
+			(L.L.elec_Busbar_main)
+			{if}
+				(L.L.aep_wysw) 1 =
+				{if}
+					(M.V.GetTTBusstopIndex) 0 =
+					{if}
+						(M.V.GetTTBusstopIndex) (M.V.GetTTBusstopName) (M.V.GetBusstopIndex) 3 (M.V.GetBusstopString) ">" $+
+					{else}
+						"<" (M.V.GetTTBusstopIndex)	1 - (M.V.GetTTBusstopName) (M.V.GetBusstopIndex) 3 (M.V.GetBusstopString) $+
+					{endif}
+				{else}
+					(L.L.aep_wysw) 2 =
+					{if}
+						(M.V.GetTTBusstopIndex) (M.V.GetTTBusstopName) (M.V.GetBusstopIndex) 3 (M.V.GetBusstopString) ">" $+
+					{else}
+						(L.L.aep_wysw) 3 =
+						{if}
+							"Zbliz karte"
+						{endif}
+					{endif}
+				{endif}
+			{else}
+				" "
+			{endif}
+		{endif}
+		(S.$.aep_przystanek)
+	{else}
+	1 (S.L.nieczynny)
+	0 (S.L.aep_ikony)
+	" " (S.$.aep_przystanek)
+	{endif}
+{else}
+0 (S.L.nieczynny)
+0 (S.L.aep_ikony)
+" " (S.$.aep_przystanek)
+{endif}
+
+(M.V.GetTTBusstopIndex) (M.V.GetTTBusstopName) (M.V.GetBusstopIndex) (S.L.index_przystanek)
+
+(L.L.index_przystanek) (L.L.index_busstop_last) > (L.L.index_przystanek) (L.L.index_busstop_last) < ||
+{if}
+	0 (S.L.drzwi_aep)
+{endif}
+
+(L.L.IBIS_TerminusCode) "03" $IntToStrEnh (S.$.kurs_aep)
+
+
+(L.L.elec_busbar_main) (L.L.cp_stamper_ver) 1 = &&
+{if}
+	(L.L.schedule_active)
+	{if}
+		(L.L.drzwi_aep)
+		{if}
+			(M.V.GetTTBusstopIndex) (M.V.GetTTBusstopName) (M.V.GetBusstopIndex) 3 (M.V.GetBusstopString)	
+			0 (S.L.sterownik_logowanie)
+			0 (S.L.sterownik_trasa)
+			1 (S.L.sterownik_przystanek)
+			1 (S.L.sterownik_on)
+		{else}
+			(M.V.GetTTBusstopIndex) 1 - (M.V.GetTTBusstopName) (M.V.GetBusstopIndex) 3 (M.V.GetBusstopString)
+			0 (S.L.sterownik_logowanie)
+			1 (S.L.sterownik_trasa)
+			0 (S.L.sterownik_przystanek)
+			1 (S.L.sterownik_on)
+		{endif}
+		(S.$.aep_ster1)
+	{else}
+	" " (S.$.aep_ster1)
+	1 (S.L.sterownik_logowanie)
+	0 (S.L.sterownik_trasa)
+	0 (S.L.sterownik_przystanek)
+	1 (S.L.sterownik_on)
+	{endif}
+{else}
+	0 (S.L.sterownik_logowanie)
+	0 (S.L.sterownik_trasa)
+	0 (S.L.sterownik_przystanek)
+	0 (S.L.sterownik_on)
+
+	" " (S.$.aep_ster1)
+{endif}
+
+
+(L.L.elec_busbar_main) (L.L.cp_stamper_ver) 1 = &&
+{if}
+	(L.L.schedule_active)
+	{if}
+		(L.L.drzwi_aep)
+		{if}
+			" " (S.$.aep_ster2)
+		{else}
+			(M.V.GetTTBusstopIndex) (M.V.GetTTBusstopName) (M.V.GetBusstopIndex) 3 (M.V.GetBusstopString)
+		{endif}
+		(S.$.aep_ster2)
+	{else}
+	" " (S.$.aep_ster2)
+	{endif}
+{else}
+" " (S.$.aep_ster2)
+{endif}
+
+
+(L.L.elec_busbar_main) (L.L.cp_stamper_ver) 1 = &&
+{if}
+	(L.L.schedule_active)
+	{if}
+		(L.L.drzwi_aep)
+		{if}
+			" " (S.$.aep_czas_ster)			
+		{else}
+			(M.V.GetTTBusstopIndex) (M.V.GetTTBusstopArr)
+			" " (S.$.aep_czas_ster)
+			3600 / s0 trunc s1 "02" $IntToStrEnh $+ ":" $+ l0 l1 - 60 * trunc "02" $IntToStrEnh $+
+		{endif}
+		(S.$.aep_czas_ster)
+	{else}
+	" " (S.$.aep_czas_ster)
+	{endif}
+{else}
+" " (S.$.aep_czas_ster)
+{endif}
+		
+(L.S.Day) "02" $IntToStrEnh "-" $+ 
+(L.S.Month) "02" $IntToStrEnh $+ "-" $+ 
+(L.S.Year) $IntToStr 2 $SetLengthR $+ " " $+
+(L.S.Time) 3600 / s0 trunc s1 "02" $IntToStrEnh $+ ":" $+ l0 l1 - 60 * trunc "02" $IntToStrEnh $+
+(S.$.aep_czas_2)
+
+(M.V.GetTTLineString) (S.$.aep_kurs)
+
+(L.$.number) (S.$.aep_pojazd)
+
+
+(L.L.sterownik_logowanie) 1 = (L.L.cp_stamper_ver) 1 = && (L.L.elec_busbar_main) 1 = &&
+{if}
+	1	(S.L.sterownik_gps)
+{else}
+	(L.L.sterownik_trasa) 1 = (L.L.sterownik_przystanek) 1 = || (L.L.cp_stamper_ver) 1 = && (L.L.elec_busbar_main) 1 = &&
+	{if}
+		2 (S.L.sterownik_gps)
+	{else}
+		(L.L.elec_busbar_main) 0 =
+		{if}
+			0 (S.L.sterownik_gps)
+		{endif}
+	{endif}
+{endif}
+
+(L.L.sterownik_gps) 2 =
+	{if}
+		(L.L.aep_blinktime) (L.S.Timegap) + 7 min (S.L.aep_blinktime)
+		(L.L.aep_blinktime) 7 =
+		{if}
+			0 (S.L.aep_blinktime)
+		{endif}
+		(L.L.aep_blinktime) 6.9 >
+		(L.L.elec_busbar_main) &&
+		{if}
+			1 (S.L.sterownik_light)
+		{else}
+			0 (S.L.sterownik_light)
+		{endif}
+	{else}
+		0 (S.L.aep_blinktime)
+		0 (S.L.sterownik_light)
+	{endif}
+	
+(L.L.sterownik_gps) 1 =
+{if}
+	1 (S.L.sterownik_light)
+{endif}
+
+(L.L.elec_busbar_main) 0 = (L.L.cp_stamper_ver) 1 = &&
+	{if}
+	1 (S.L.sterownik_off)
+	{else}
+	0 (S.L.sterownik_off)
+
+{end}
+
+{macro:fahrerfenster}
+
+(L.L.elec_busbar_main)
+{if}
+	(L.L.cp_dummy_sw08) -1 =
+	{if}
+		(L.L.cp_fahrerfenster_pos) (L.S.timegap) 0.3 * - 0 max (S.L.cp_fahrerfenster_pos)
+
+		(L.L.cp_fahrerfenster_pos) 0 >
+		(L.L.cp_fahrerfenster_pos) 0.01 < &&
+		{if}
+			(T.L.ev_window_up_stop)
+		{endif}
+		
+		(L.L.cp_fahrerfenster_pos) 0 >
+		{if}
+			1 (S.L.ev_window_up_move)
+		{else}
+			0 (S.L.ev_window_up_move)
+		{endif}
+	{endif}
+	(L.L.cp_dummy_sw08) 0 =
+	{if}
+		0 (S.L.ev_window_up_move) (S.L.ev_window_down_move)
+	{endif}
+	(L.L.cp_dummy_sw08) 1 =
+	{if}
+		(L.L.cp_fahrerfenster_pos) (L.S.timegap) 0.3 * + 1 min (S.L.cp_fahrerfenster_pos)
+
+		(L.L.cp_fahrerfenster_pos) 1 <
+		(L.L.cp_fahrerfenster_pos) 0.99 > &&
+		{if}
+			(T.L.ev_window_down_stop)
+		{endif}
+
+		(L.L.cp_fahrerfenster_pos) 1 <
+		{if}
+			1 (S.L.ev_window_down_move)
+		{else}
+			0 (S.L.ev_window_down_move)
+		{endif}
+	{endif}
+
+
+
+
+(L.L.cp_dummy_sw08_frontrollo) -1 =
+	{if}
+		(L.L.cp_frontrollo_pos) (L.S.timegap) 0.2 * - 0 max (S.L.cp_frontrollo_pos)
+
+		(L.L.cp_frontrollo_pos) 0 >
+		(L.L.cp_frontrollo_pos) 0.01 < &&
+		{if}
+			(T.L.ev_rollo1_retract)
+		{endif}
+		
+		(L.L.cp_frontrollo_pos) 0 >
+		{if}
+			1 (S.L.cp_rollo_speed)
+		{else}
+			0 (S.L.cp_rollo_speed)
+		{endif}
+	{endif}
+	(L.L.cp_dummy_sw08_frontrollo) 0 =
+	{if}
+		0 (S.L.cp_rollo_speed) (S.L.cp_rollo_speed)
+	{endif}
+	(L.L.cp_dummy_sw08_frontrollo) 1 =
+	{if}
+		(L.L.cp_frontrollo_pos) (L.S.timegap) 0.2 * + 1 min (S.L.cp_frontrollo_pos)
+
+		(L.L.cp_frontrollo_pos) 1 <
+		(L.L.cp_frontrollo_pos) 0.99 > &&
+		{if}
+			(T.L.ev_rollo_end)
+		{endif}
+
+		(L.L.cp_frontrollo_pos) 1 <
+		{if}
+			1 (S.L.cp_rollo_speed)
+		{else}
+			0 (S.L.cp_rollo_speed)
+		{endif}
+	{endif}
+
+
+
+(L.L.cp_dummy_sw08_seitenrollo) -1 =
+	{if}
+		(L.L.cp_seitenrollo_pos) (L.S.timegap) 0.3 * - 0 max (S.L.cp_seitenrollo_pos)
+
+		(L.L.cp_seitenrollo_pos) 0 >
+		(L.L.cp_seitenrollo_pos) 0.01 < &&
+		{if}
+			(T.L.ev_rollo1_retract)
+		{endif}
+		
+		(L.L.cp_seitenrollo_pos) 0 >
+		{if}
+			1 (S.L.cp_rollo1_speed)
+		{else}
+			0 (S.L.cp_rollo1_speed)
+		{endif}
+	{endif}
+	(L.L.cp_dummy_sw08_seitenrollo) 0 =
+	{if}
+		0 (S.L.cp_rollo1_speed) (S.L.cp_rollo1_speed)
+	{endif}
+	(L.L.cp_dummy_sw08_seitenrollo) 1 =
+	{if}
+		(L.L.cp_seitenrollo_pos) (L.S.timegap) 0.3 * + 1 min (S.L.cp_seitenrollo_pos)
+
+		(L.L.cp_seitenrollo_pos) 1 <
+		(L.L.cp_seitenrollo_pos) 0.99 > &&
+		{if}
+			(T.L.ev_rollo_end)
+		{endif}
+
+		(L.L.cp_seitenrollo_pos) 1 <
+		{if}
+			1 (S.L.cp_rollo1_speed)
+		{else}
+			0 (S.L.cp_rollo1_speed)
+		{endif}
+	{endif}
+
+
+
+{endif}
+{end}
+
+{macro:tacho_frame}
+	(L.L.Velocity) (F.L.cockpit_tacholinie) (S.L.cockpit_tachowinkel)
+	(L.L.engine_n) (F.L.rpm_tacholinie) (S.L.cockpit_rpmwinkel)
+
+	(L.L.kmcounter_km) (L.L.kmcounter_m) 1000 / + (S.L.km_counter_km)
+	(L.L.km_counter_km) 10 * trunc 10 / (S.L.km_counter_km)
+	(L.L.kmcounter_m) "04" $IntToStrEnh 3 $SetLengthR (S.$.km_counter_m)
+	(L.$.km_counter_m) 1 $SetLengthL $StrToFloat trunc (S.L.km_counter_m)
+'	-------------------------
+
+
+	(L.L.km_counter_km) (L.L.km_counter_km_last) - (S.L.km_counter_km_day)
+	(L.L.km_counter_m) (L.L.km_counter_m_last) <
+	{if}
+		10 (L.L.km_counter_m) + (L.L.km_counter_m_last) - (S.L.km_counter_m_day)
+	{else}
+		(L.L.km_counter_m) (L.L.km_counter_m_last) - (S.L.km_counter_m_day)
+	{endif}
+	
+	(L.L.elec_busbar_main)
+	{if}
+'		������ ������ �������
+		(L.L.km_counter_km) trunc " 7" $IntToStrEnh 5 $SetLengthR
+		"." $+
+		(L.$.km_counter_m) 1 $SetLengthL $+
+		(S.$.odometr_full)
+
+'		������ ��������� �������
+		(L.L.km_counter_km_day) " 4" $IntToStrEnh
+		"." $+
+		(L.L.km_counter_m_day) trunc $IntToStr $+
+		" " $+
+		(S.$.odometr_day)
+		
+'		���� �������� ������ ����� ������ 9999 ��, �� �� ������������� ��������� (������ �� ������)		
+		(L.L.km_counter_km_day) 9999 >=
+		{if}
+			0 (S.L.odometr_sbros)
+		{endif}
+		
+		(L.L.odometr_sbros) 0 =
+		{if}
+			(L.L.km_counter_km) (S.L.km_counter_km_last)
+			(L.L.km_counter_m) (S.L.km_counter_m_last)
+			1 (S.L.odometr_sbros)
+		{endif}
+		
+	{else}
+		" " $ (S.$.odometr_full)
+		" " $ (S.$.odometr_day)
+	{endif}
+{end}
+
+{macro:uhr_frame}
+	(L.S.Time) s0 60 / (S.L.cockpit_uhr_min) 12 / (S.L.cockpit_uhr_std)
+	l0 trunc (S.L.cockpit_uhr_sek)
+{end} 
+
+{macro:drehzahlmesser_frame}
+'	(L.L.engine_n) 3000 270 / / (S.L.cockpit_drehzahlwinkel)
+	(L.L.engine_n) (F.L.rpm_tacholinie) (S.L.cockpit_drehzahlwinkel)
+
+'cockpit_drehzahllinie
+
+	(L.L.elec_busbar_main)
+		{if}
+			
+				
+					(L.L.Throttle) 0 >
+					{if}
+					(L.L.Throttle) 90 * (S.L.cockpit_EBus)
+					{else}
+					(L.L.Brake) 0.2 >
+					{if}
+					(L.L.Brake) -90 *  (S.L.cockpit_EBus)
+					{else}
+					0 (S.L.cockpit_EBus)
+					{endif}
+					{endif}
+
+			
+
+
+				
+			
+		{else}
+		
+		-116 (S.L.cockpit_EBus)
+		{endif}		
+{end}
+
+
+
+{macro:hupe_frame}
+	(L.L.elec_busbar_main)
+	{if}
+		(L.L.cockpit_hupe) 1 =
+		(L.L.cockpit_hupe_swheel) 1 = ||
+		{if}
+			(L.L.cockpit_hupe_volume) 1 <
+			{if}
+				(L.L.cockpit_hupe_volume) (L.S.Timegap) 10 * + (S.L.cockpit_hupe_volume)
+			{else}
+				1 (S.L.cockpit_hupe_volume)
+			{endif}
+		{else}
+			(L.L.cockpit_hupe_volume) 0 >
+			{if}
+				(L.L.cockpit_hupe_volume) (L.S.Timegap) 10 * - (S.L.cockpit_hupe_volume)
+			{else}
+				0 (S.L.cockpit_hupe_volume)
+			{endif}
+		{endif}
+	{else}
+		(L.L.cockpit_hupe_volume) 0 >
+		{if}
+			(L.L.cockpit_hupe_volume) (L.S.Timegap) 10 * - (S.L.cockpit_hupe_volume)
+		{else}
+			0 (S.L.cockpit_hupe_volume)
+		{endif}
+	{endif}	
+	
+{end}
+
+{macro:blinkerhebel_frame}
+	(L.L.lights_sw_blinker) 1 =
+	{if}	
+		-1 (S.L.cockpit_blinkerhebel)
+	{else}
+		(L.L.lights_sw_blinker) 2 =
+		{if}
+			1 (S.L.cockpit_blinkerhebel)
+		{else}
+			0 (S.L.cockpit_blinkerhebel)
+		{endif}
+	{endif}
+
+'	Hebel-Animation f�r Fernlicht
+	(L.L.lights_sw_fern)
+	{if}	
+		(L.L.cockpit_fernlichthebel) -1 = !
+		{if}
+			1 (S.L.cockpit_fernlichthebel)
+		{endif}
+
+		(L.L.cp_schluessel_rot) 0.8 >
+		{if}
+			-0.3 (S.L.cockpit_fernlichthebel)
+		{endif}
+	{else}
+		0 (S.L.cockpit_fernlichthebel)
+	{endif}
+
+
+{end}
+
+{macro:wischerhebel_frame}
+
+	(L.L.cockpit_wischerhebel_lastmode) (L.L.cockpit_wischerhebel_mode) = !
+	{if}
+		(T.L.ev_wischerhebel)
+	{endif}
+	(L.L.cockpit_wischerhebel_mode) (S.L.cockpit_wischerhebel_lastmode)
+{end}
+
+{macro:wischer_drehschalter_frame}
+
+	(L.L.cockpit_wischer_drehschalter_lastmode) (L.L.cockpit_wischer_drehschalter_mode) = !
+	{if}
+		(T.L.ev_wischerhebel)
+	{endif}
+	(L.L.cockpit_wischer_drehschalter_mode) (S.L.cockpit_wischer_drehschalter_lastmode)
+{end}
+
+
+
+{macro:cockpitlights_frame}
+
+'	St�rungsmelder
+	(L.L.vdv_display_masterwarn)
+	(L.L.vdv_on) &&
+	(S.L.cockpit_light_masterfailure)
+
+'	T�rkontrolle
+	(L.L.door_kinderwagenwunsch) 1 =
+	{if}
+		(L.L.kinderwagenwunsch_blinkgeber) (L.S.Timegap) + 2 min (S.L.kinderwagenwunsch_blinkgeber)
+		(L.L.kinderwagenwunsch_blinkgeber) 2 =
+		{if}
+			0 (S.L.kinderwagenwunsch_blinkgeber)
+		{endif}
+		(L.L.kinderwagenwunsch_blinkgeber) 1 >
+		(L.L.vdv_on) &&
+		{if}
+			1 (S.L.cockpit_light_tuerkontrolle)
+		{else}
+			0 (S.L.cockpit_light_tuerkontrolle)
+		{endif}
+	{else}
+		0 (S.L.kinderwagenwunsch_blinkgeber)
+		0 (S.L.cockpit_light_tuerkontrolle)
+	{endif}
+
+
+'	Batterie
+	(L.L.elec_ladekontrolle) ! (L.L.vdv_on) &&
+	(S.L.cockpit_light_batterie)
+	
+	(L.L.bremse_halte)
+	(L.L.vdv_on) &&
+	(S.L.cockpit_light_bremse_knopf)
+	
+	(L.L.bremse_halte) !
+	(L.L.vdv_on) &&
+	(S.L.cockpit_light_bremse_halte)
+	
+
+'	Kontrolle Feststellbremse
+	(L.L.bremse_p_Brzyl_FBA) 650000 <
+	(L.L.vdv_on) &&
+	(S.L.cockpit_light_feststellbremse)
+
+'	Geschwindigkeitswarnung
+	(L.L.Velocity) 54 > (L.L.vdv_on) &&
+	(S.L.cockpit_light_speedwarning)
+	
+'	Kinderwagenwunsch
+	(L.L.door_kinderwagenwunsch) (L.L.vdv_on) &&
+	(S.L.cockpit_light_kinderwagenwunsch)
+
+'	Kippschalter-Beleuchtung
+	(L.L.cp_retarder_sw_direkt) (L.L.elec_busbar_main) &&
+	(S.L.cockpit_light_retarder_direkt)
+
+	(L.L.cp_retarder_sw) (L.L.elec_busbar_main) &&
+	(S.L.cockpit_light_retarder)
+
+	(L.L.cp_fahrerlicht_sw) (L.L.elec_busbar_main) &&
+	(S.L.cockpit_light_fahrerlicht)
+
+	(L.L.cp_licht_untenrechts_sw) (L.L.elec_busbar_main) &&
+	(S.L.cockpit_light_licht_untenrechts)
+
+	(L.L.cp_licht_unterdeck_sw) (L.L.elec_busbar_main) &&
+	(S.L.cockpit_light_licht_unterdeck)
+
+	(L.L.cp_licht_oberdeck_sw) (L.L.elec_busbar_main) &&
+	(S.L.cockpit_light_licht_oberdeck)
+
+	(L.L.cp_wischer_schnell_sw) (L.L.elec_busbar_main) &&
+	(S.L.cockpit_light_wischer_schnell)
+
+	(L.L.cp_wischer_einaus_sw) (L.L.elec_busbar_main) &&
+	(S.L.cockpit_light_wischer_einaus)
+
+	(L.L.cp_wischer_intervall_sw) (L.L.elec_busbar_main) &&
+	(S.L.cockpit_light_wischer_intervall)
+	
+	(L.L.cp_wischer_wascher_sw) (L.L.elec_busbar_main) &&
+	(S.L.cockpit_light_wischer_wascher)
+
+	(L.L.cp_heizluefter_sw) (L.L.elec_busbar_main) &&
+	(S.L.cockpit_light_heizluefter)
+	
+	(L.L.cp_spiegelheizung_sw) (L.L.elec_busbar_main) &&
+	(S.L.cockpit_light_spiegelheizung)
+
+	(L.L.cp_motorkuehlung_sw) (L.L.elec_busbar_main) &&
+	(S.L.cockpit_light_motorkuehlung)
+
+	(L.L.door_handsteuerung) (L.L.elec_busbar_main) &&
+	(S.L.cockpit_light_tuer_handsteuerung)
+
+	(L.L.cp_ASR_off) (L.L.elec_busbar_main) &&
+	(S.L.cockpit_light_ASR_off)
+
+	(L.L.cockpit_gang3) 0 >
+	{if}
+
+		(L.L.engine_on) 1 =
+		{if}
+		(L.L.antrieb_getr_gangwahl) 4 = (L.L.elec_busbar_main) &&
+		(S.L.automatic_D_light)
+		{else}
+			(L.L.gangwahl_error_timer) (L.S.Timegap) + 1 min (S.L.gangwahl_error_timer)
+			0.5 >
+			{if}
+				1 (S.L.automatic_D_light)
+			{else}
+				0 (S.L.automatic_D_light)
+			{endif}
+			(L.L.gangwahl_error_timer) 1 =
+			{if}
+				0 (S.L.gangwahl_error_timer)
+			{endif}
+		{endif}
+	{else}
+	0 (S.L.automatic_D_light)
+	{endif}
+ 
+	(L.L.antrieb_getr_gangwahl) 1 = (L.L.elec_busbar_main) &&
+	(S.L.automatic_N_light)
+
+	(L.L.cockpit_gangR) 0 >
+	{if}
+
+		(L.L.engine_on) 1 =
+		{if}
+		(L.L.antrieb_getr_gangwahl) 0 = (L.L.elec_busbar_main) &&
+		(S.L.automatic_R_light)
+		{else}
+			(L.L.gangwahl_error_timer) (L.S.Timegap) + 1 min (S.L.gangwahl_error_timer)
+			0.5 >
+			{if}
+				1 (S.L.automatic_R_light)
+			{else}
+				0 (S.L.automatic_R_light)
+			{endif}
+			(L.L.gangwahl_error_timer) 1 =
+			{if}
+				0 (S.L.gangwahl_error_timer)
+			{endif}
+		{endif}
+	{else}
+	0 (S.L.automatic_R_light)
+	{endif}
+
+
+
+'	Dummy-Schalter:
+
+	(L.L.cp_dummy_sw01) (L.L.elec_busbar_main) &&
+	(S.L.cp_dummy_func01)
+
+	(L.L.cp_dummy_sw02) (L.L.elec_busbar_main) &&
+	(S.L.cp_dummy_func02)
+
+	(L.L.cp_dummy_sw03) (L.L.elec_busbar_main) &&
+	(S.L.cp_dummy_func03)
+
+	(L.L.cp_dummy_sw04) (L.L.elec_busbar_main) &&
+	(S.L.cp_dummy_func04)
+
+	(L.L.cp_dummy_sw05) (L.L.elec_busbar_main) &&
+	(S.L.cp_dummy_func05)
+
+	(L.L.cp_dummy_sw06) (L.L.elec_busbar_main) &&
+	(S.L.cp_dummy_func06)
+
+	(L.L.cp_dummy_sw07) (L.L.elec_busbar_main) &&
+	(S.L.cp_dummy_func07)
+
+	(L.L.cp_dummy_sw08) (L.L.elec_busbar_main) &&
+	(S.L.cp_dummy_func08)
+
+	(L.L.cp_dummy_sw09) (L.L.elec_busbar_main) &&
+	(S.L.cp_dummy_func09)
+
+	(L.L.cp_dummy_sw10) (L.L.elec_busbar_main) &&
+	(S.L.cp_dummy_func10)
+
+
+
+{end}
+
+{macro:oeldruck_frame}
+	(L.L.engine_n) (F.L.cockpit_oeldruck) s0
+
+	(L.L.elec_busbar_main) !
+	{if}
+		0 s0
+	{endif}
+
+	(L.L.cockpit_oeldruck) s1
+	5 s2
+	5 s3
+	(M.L.traegheit)	
+	l1 (S.L.cockpit_oeldruck)
+{end}
+
+{macro:tankuhr_frame}
+	(L.L.engine_tank_content) s0
+
+	(L.L.elec_busbar_main) !
+	{if}
+		0 s0
+	{endif}
+
+	(L.L.cockpit_tankuhr) s1
+	5 s2
+	5 s3
+	(M.L.traegheit)	
+	l1 (S.L.cockpit_tankuhr)
+{end}
+
+{macro:engine_thermometer_frame}
+	(L.L.elec_busbar_main) !
+	{if}
+		0 s0
+	{else}
+		(L.L.engine_temperature) (F.L.cockpit_engine_temperature) s0
+	{endif}
+
+	(L.L.cockpit_motortemperaturwinkel) s1
+	5 s2
+	5 s3
+	(M.L.traegheit)	
+	l1 (S.L.cockpit_motortemperaturwinkel)
+{end}
+
+{macro:klappfenstersound}
+	l1
+	{if}
+		(T.L.ev_klappfenster_opn)
+	{else}
+		(T.L.ev_klappfenster_cls)
+	{endif}	
+{end}
+
+{macro:schluessel_frame}
+
+	(L.L.cp_schluessel_trans_lastmode) (L.L.cp_schluessel_trans_mode) = !
+	{if}
+		(T.L.ev_schluessel_steck)
+	{endif}
+	(L.L.cp_schluessel_trans_mode) (S.L.cp_schluessel_trans_lastmode)
+
+
+	(L.L.cp_schluessel_rot_lastmode) (L.L.cp_schluessel_rot_mode) = !
+	{if}
+		(T.L.ev_schluessel_dreh)
+	{endif}
+	(L.L.cp_schluessel_rot_mode) (S.L.cp_schluessel_rot_lastmode)
+
+
+	(L.L.cp_key_rot_lastmode) (L.L.cp_key_rot_mode) = !
+	{if}
+		(T.L.ev_schluessel_dreh)
+	{endif}
+	(L.L.cp_key_rot_mode) (S.L.cp_key_rot_lastmode)
+{end}
+
+
+
+{macro:traegheit}
+
+'Simuliert tr�ges Verhalten (exponentiell)
+
+'Ladekonventionen:
+'	Sollwert		l0
+'	Istwert			l1
+'	Konstante Anlauf	l2 (Einheiten/s)
+'	Konstante Ablauf	l3 (Einheiten/s)
+
+'Anlauf oder Auslauf?
+	l0 l1 > 
+	{if}
+		l2 (L.S.Timegap) * 1 min -1 max s4
+	{else}
+		l3 (L.S.Timegap) * 1 min -1 max s4
+	{endif}
+
+
+'Sollwert:
+	l0
+'Istwert:
+	l1
+'Beschleunigung:
+	- l4 *
+'Addition zum Istwert:
+	l1 + s1
+{end}
+
+
+{macro:odometer_frame}
+	(L.L.kmcounter_km) (L.L.kmcounter_m) 1000 / + 10 *
+	(S.L.cp_odometer_01)
+
+	(L.L.cp_odometer_01) 10 / trunc 
+	(L.L.cp_odometer_01) 10 / d trunc - (F.L.odometer_10er-uebertrag) +
+	(S.L.cp_odometer_1)
+
+	(L.L.cp_odometer_1) 10 / trunc 
+	(L.L.cp_odometer_1) 10 / d trunc - (F.L.odometer_10er-uebertrag) +
+	(S.L.cp_odometer_10)
+
+	(L.L.cp_odometer_10) 10 / trunc 
+	(L.L.cp_odometer_10) 10 / d trunc - (F.L.odometer_10er-uebertrag) +
+	(S.L.cp_odometer_100)
+
+	(L.L.cp_odometer_100) 10 / trunc 
+	(L.L.cp_odometer_100) 10 / d trunc - (F.L.odometer_10er-uebertrag) +
+	(S.L.cp_odometer_1000)
+
+	(L.L.cp_odometer_1000) 10 / trunc 
+	(L.L.cp_odometer_1000) 10 / d trunc - (F.L.odometer_10er-uebertrag) +
+	(S.L.cp_odometer_10000)
+
+	(L.L.cp_odometer_10000) 10 / trunc 
+	(L.L.cp_odometer_10000) 10 / d trunc - (F.L.odometer_10er-uebertrag) +
+	(S.L.cp_odometer_100000)
+
+
+	(L.L.kmcounter_m) 100 / (S.L.cp_odometer_01)
+{end}
+
+
+{macro:fahrertuer_frame}
+
+	(L.L.cp_fahrertuer_dragged) !
+	{if}
+		(L.L.cp_fahrertuer_pos) (L.S.Timegap) (L.L.cp_fahrertuer_speed) * + (S.L.cp_fahrertuer_pos)
+
+		(L.L.cp_fahrertuer_pos) 1 >
+		{if}
+			1 (S.L.cp_fahrertuer_pos)
+			(L.L.cp_fahrertuer_speed) /-/ 0.7 * (S.L.cp_fahrertuer_speed)
+		{endif}
+		(L.L.cp_fahrertuer_pos) 0 <
+		{if}
+			0 (S.L.cp_fahrertuer_speed) (S.L.cp_fahrertuer_pos)
+		{endif}
+
+		(L.L.cp_fahrertuer_pos) 0 >
+		{if}
+			(L.L.cp_fahrertuer_speed) (L.S.Timegap) (L.L.A_Trans_Y) (C.L.cp_fahrertuer_anschlagseite) * (L.L.A_Trans_X) /-/ + 0.3 * (L.L.cp_fahrertuer_globalangle) * * + (S.L.cp_fahrertuer_speed)
+		{endif}
+	
+		(L.L.cp_fahrertuer_speed) s0 (S.L.cp_fahrertuer_lastspeed)
+		l0 0 >
+		{if}
+			l0 (L.S.Timegap) 0.2 * - (S.L.cp_fahrertuer_speed)
+		{endif}
+		l0 0 <
+		{if}
+			l0 (L.S.Timegap) 0.2 * + (S.L.cp_fahrertuer_speed)
+		{endif}
+
+
+		(L.L.cp_fahrertuer_speed) 0 > (L.L.cp_fahrertuer_lastspeed) 0 < &&
+		(L.L.cp_fahrertuer_speed) 0 < (L.L.cp_fahrertuer_lastspeed) 0 > && ||
+		{if}
+			0 (S.L.cp_fahrertuer_speed)
+		{endif}	 
+	
+	{endif}
+
+	(L.L.cp_fahrertuer_pos) 0 > (L.L.cp_fahrertuer_open) ! &&
+	{if}
+		(T.L.ev_fahrertuer_auf)
+		1 (S.L.cp_fahrertuer_open)
+	{endif}
+
+	(L.L.cp_fahrertuer_pos) 0 = (L.L.cp_fahrertuer_open) &&
+	{if}
+		1 (S.L.cp_fahrertuer_erlaubt)
+		(T.L.ev_fahrertuer_zu)
+		0 (S.L.cp_fahrertuer_open)
+	{endif}
+
+	(L.L.cp_fahrertuer_pos) 140 * 27 + 3.14 * 180 / sin (S.L.cp_fahrertuer_globalangle) 
+
+	(L.L.velocity) (L.L.cp_velocity_last) - (S.L.cp_acceleration)
+	(L.L.velocity) (S.L.cp_velocity_last)
+	
+
+{end}
+
+{macro:rollo_frame}
+	(L.L.cp_rollo_pos) (L.L.cp_rollo_rastpos) max (S.L.cp_rollo_rastpos)
+
+	(L.L.cp_rollo_dragged) !
+	{if}
+		(L.L.cp_rollo_retract)
+		{if}
+			(L.L.cp_rollo_speed) (L.S.Timegap) (L.L.cp_rollo_pos) 14 * * - (S.L.cp_rollo_speed)
+			(L.L.cp_rollo_pos) (L.S.Timegap) (L.L.cp_rollo_speed) * + (S.L.cp_rollo_pos) (S.L.cp_rollo_rastpos)
+					
+		{else}
+			(L.L.cp_rollo_pos) (L.L.cp_rollo_rastpos) < 
+			{if}
+				(L.L.cp_rollo_speed) (L.S.Timegap) 14 * + (S.L.cp_rollo_speed)
+				(L.L.cp_rollo_pos) (L.S.Timegap) (L.L.cp_rollo_speed) * + (L.L.cp_rollo_rastpos) min (S.L.cp_rollo_pos)
+			{else}
+				0 (S.L.cp_rollo_speed)
+			{endif}
+		{endif}
+
+		(L.L.cp_rollo_pos) 1 >
+		{if}
+			1 (S.L.cp_rollo_pos) (S.L.cp_rollo_rastpos)
+		{else}
+			(L.L.cp_rollo_pos) 0 <
+			{if}
+			0 (S.L.cp_rollo_pos) (S.L.cp_rollo_retract) (S.L.cp_rollo_rastpos)
+			{endif}
+		{endif}
+
+	{endif}
+{end}
+
+{macro:rollo1_frame}
+ (L.L.cp_rollo1_pos) (L.L.cp_rollo1_rastpos) max (S.L.cp_rollo1_rastpos)
+
+ (L.L.cp_rollo1_dragged) !
+ {if}
+  (L.L.cp_rollo1_retract)
+  {if}
+   (L.L.cp_rollo1_speed) (L.S.Timegap) (L.L.cp_rollo1_pos) 14 * * - (S.L.cp_rollo1_speed)
+   (L.L.cp_rollo1_pos) (L.S.Timegap) (L.L.cp_rollo1_speed) * + (S.L.cp_rollo1_pos) (S.L.cp_rollo1_rastpos)
+     
+  {else}
+   (L.L.cp_rollo1_pos) (L.L.cp_rollo1_rastpos) < 
+   {if}
+    (L.L.cp_rollo1_speed) (L.S.Timegap) 14 * + (S.L.cp_rollo1_speed)
+    (L.L.cp_rollo1_pos) (L.S.Timegap) (L.L.cp_rollo1_speed) * + (L.L.cp_rollo1_rastpos) min (S.L.cp_rollo1_pos)
+   {else}
+    0 (S.L.cp_rollo1_speed)
+   {endif}
+  {endif}
+
+  (L.L.cp_rollo1_pos) 1 >
+  {if}
+   1 (S.L.cp_rollo1_pos) (S.L.cp_rollo1_rastpos)
+  {else}
+   (L.L.cp_rollo1_pos) 0 <
+   {if}
+   0 (S.L.cp_rollo1_pos) (S.L.cp_rollo1_retract) (S.L.cp_rollo1_rastpos)
+   {endif}
+  {endif}
+
+ {endif}
+{end}
+
+{macro:microphone_frame}
+
+	(L.L.Clutch) 0.2 > (L.L.cp_microphone_sw) ||
+	(L.L.elec_busbar_main) && s0
+	(L.L.Snd_Microphone) s1
+
+
+	l0 l1 ! &&
+	{if}
+		(T.L.micro_lautsprecherknack_start)
+	{endif}
+
+	l0 ! l1 &&
+	{if}
+		(T.L.micro_lautsprecherknack_end)
+	{endif}
+
+
+	l0 (S.L.Snd_Microphone)
+{end}
+
+
+{macro:pressure_warning_needle_frame}
+
+	(L.L.bremse_p_Tank01) (L.L.bremse_p_Tank02) + 2 / (S.L.cockpit_warndruck) (F.L.cockpit_warndruck) (S.L.cockpit_warndruckwinkel)
+
+{end}
+
+{macro:zentralschmierung_frame}
+
+	(L.L.cp_zentralschmierung_nextkm) (L.L.velocity) 3600 / (L.S.Timegap) * + (S.L.cp_zentralschmierung_nextkm)
+	(C.L.cockpit_zentralschmierung_dist) >
+	(L.L.cp_zentralschmierung_runtime) (C.L.cockpit_zentralschmierung_maxtime) < &&
+	{if}
+		1 (S.L.cockpit_light_zentralschmierung)
+		(L.L.cp_zentralschmierung_runtime) (L.S.Timegap) + (S.L.cp_zentralschmierung_runtime)
+	{else}
+		(L.L.cockpit_light_zentralschmierung)
+		{if}
+			0 (S.L.cp_zentralschmierung_nextkm)
+		{endif}
+		0 (S.L.cockpit_light_zentralschmierung) (S.L.cp_zentralschmierung_runtime)
+	{endif}	
+
+{end}
+
+{macro:Thermometer_frame}
+
+	(L.L.Cabinair_Temp) s0 trunc " 3" $IntToStrEnh "." $+ 
+	l0 abs l0 abs trunc - 10 * trunc " 1" $IntToStrEnh $+ "C" $+
+	(S.$.cockpit_temperatur)
+
+
+'��������� ������� �����������. ������� ���������� Wizard
+
+	(L.S.Weather_Temperature) s0 trunc " 3" $IntToStrEnh "." $+ 
+	l0 abs l0 abs trunc - 10 * trunc " 1" $IntToStrEnh $+
+	(S.$.aussen_temperatur)
+
+'	(L.L.engine_temperature) s0 trunc " 3" $IntToStrEnh "." $+ 
+'	l0 abs l0 abs trunc - 10 * trunc " 1" $IntToStrEnh $+ "C" $+
+'	(S.$.engine_temperatur)
+
+	(L.L.engine_temperature) trunc " 3" $IntToStr
+	(S.$.engine_temperatur)
+	
+	45.3 s0 trunc " 3" $IntToStrEnh "." $+ 
+	l0 abs l0 abs trunc - 10 * trunc " 1" $IntToStrEnh $+
+	(S.$.verbrauch_100km)
+
+{end}
+
+'By Wizard, modified alterr
+
+{macro:engine_diagnostic}
+(L.L.vdv_on)
+{if}
+(L.L.engine_timer_start) (L.S.Timegap) + 8 min (S.L.engine_timer_start)
+{else}
+0 (S.L.engine_timer_start)
+{endif}
+
+(L.L.engine_timer_start) 4.4 <
+(L.L.cockpit_light_masterfailure) ||
+(L.L.vdv_on) &&
+{if}
+1 (S.L.indic_1)
+{else}
+0 (S.L.indic_1)
+{endif}
+
+(L.L.vdv_error_pressure2_active)
+(L.L.vdv_error_EBS_active) ||
+(L.L.vdv_error_gearstart_active) ||
+(L.L.vdv_error_door_active) ||
+(L.L.vdv_error_retarder_active) ||
+(L.L.vdv_error_Diesel_active) ||
+(L.L.vdv_error_Battery_active) ||
+(L.L.vdv_error_light_active) ||
+(L.L.vdv_display_mode) 6 = &&
+(L.L.engine_timer_start) 4.4 < ||
+(L.L.vdv_on) &&
+{if}
+1 (S.L.indic_2)
+{else}
+0 (S.L.indic_2)
+{endif}
+
+(L.L.engine_timer_start) 3.3 <
+(L.L.lights_blinkgeber) ||
+(L.L.vdv_on) &&
+{if}
+1 (S.L.indic_3)
+{else}
+0 (S.L.indic_3)
+{endif}
+
+(L.L.engine_timer_start) 4.3 <
+(L.L.lights_fern) ||
+(L.L.vdv_on) &&
+{if}
+1 (S.L.indic_4)
+{else}
+0 (S.L.indic_4)
+{endif}
+
+(L.L.engine_timer_start) 2.6 <
+(L.L.cockpit_light_feststellbremse) ||
+(L.L.vdv_on) &&
+{if}
+1 (S.L.indic_5)
+{else}
+0 (S.L.indic_5)
+{endif}
+
+(L.L.engine_timer_start) 5.2 <
+(L.L.cp_ASR_off) 1 = ||
+(L.L.engine_ASR_eingriff) ||
+(L.L.bremse_ABS_eingriff_0R) ||
+(L.L.bremse_ABS_eingriff_0L) ||
+(L.L.bremse_ABS_eingriff_1R) ||
+(L.L.bremse_ABS_eingriff_1L) ||
+(L.L.vdv_error_EBS_active) ||
+(L.L.vdv_on) &&
+{if}
+1 (S.L.indic_6)
+{else}
+0 (S.L.indic_6)
+{endif}
+
+(L.L.engine_timer_start) 1.6 <
+(L.L.haltewunschlampe) ||
+(L.L.vdv_on) &&
+{if}
+1 (S.L.indic_7)
+{else}
+0 (S.L.indic_7)
+{endif}
+
+(L.L.engine_timer_start) 5.3 <
+(L.L.cockpit_light_zentralschmierung) ||
+(L.L.vdv_on) &&
+{if}
+1 (S.L.indic_8)
+{else}
+0 (S.L.indic_8)
+{endif}
+
+(L.L.engine_timer_start) 4.25 <
+(L.L.cockpit_light_tuerkontrolle) ||
+(L.L.vdv_on) &&
+{if}
+1 (S.L.indic_9)
+{else}
+0 (S.L.indic_9)
+{endif}
+
+(L.L.engine_timer_start) 4.25 <
+(L.L.engine_n) 100 < ||
+(L.L.vdv_on) &&
+{if}
+1 (S.L.indic_10)
+{else}
+0 (S.L.indic_10)
+{endif}
+
+
+{end}
+
+{trigger:mers_logo_visible}
+ (L.L.mers_logo_visible) ! (S.L.mers_logo_visible)
+{end}
+
+'Kneels button by Wizard
+
+{trigger:cp_kneel_up_toggle}
+	(T.L.ev_VDV_toggle_on)
+	1 (S.L.cp_kneel_up_mode)
+{end}
+			
+{trigger:cp_kneel_up_toggle_off}
+	0 (S.L.cp_kneel_up_antirepeat) (S.L.cp_kneel_up_mode) s1
+	(T.L.ev_VDV_toggle_off)
+{end}
+
+{trigger:cp_kneel_down_toggle}
+	(L.L.cp_kneel_down_sw) ! (S.L.cp_kneel_down_sw) 
+	(T.L.ev_VDV_toggle_on)
+
+	(L.L.door_0) 0 =
+	(L.L.door_1) 0 = &&
+	(L.L.door_2) 0 = &&
+	(L.L.door_3) 0 = &&
+	(L.L.door_4) 0 = &&
+	(L.L.door_5) 0 = &&
+	{if}
+		0 (S.L.kneel_allowed) (S.L.kneel_locked) (S.L.kneel_auto_set)
+	{endif}
+	1 (S.L.cp_kneel_down_mode) s1
+{end}
+			
+{trigger:cp_kneel_down_toggle_off}
+	0 (S.L.cp_kneel_down_antirepeat) (S.L.cp_kneel_down_mode) s1
+	(T.L.ev_VDV_toggle_off)
+{end}
+
+{trigger:bus_kneel_up}
+	(T.L.ev_VDV_toggle_on)
+
+	-1 (S.L.bus_kneel)
+
+	1 (S.L.bus_kneel_up)
+	0 (S.L.bus_kneel_down)
+{end}
+
+{trigger:bus_kneel_up_off}
+	(T.L.ev_VDV_toggle_off)
+
+	(L.L.bus_kneel_down)
+	{if}
+		1 (S.L.bus_kneel)
+	{else}
+		0 (S.L.bus_kneel)
+	{endif}
+
+	0 (S.L.bus_kneel_up)
+	0 (S.L.cp_notheben_sw)
+
+{end}
+
+{trigger:bus_kneel_down}
+	(T.L.ev_VDV_toggle_on)
+
+	1 (S.L.bus_kneel)
+
+	1 (S.L.bus_kneel_down)
+	0 (S.L.bus_kneel_up)
+
+{end}
+
+{trigger:bus_kneel_down_off}
+	(T.L.ev_VDV_toggle_off)
+
+	(L.L.bus_kneel_up)
+	{if}
+		-1 (S.L.bus_kneel)
+	{else}
+		0 (S.L.bus_kneel)
+	{endif}
+
+	0 (S.L.bus_kneel_down)
+{end}
+
+{trigger:cp_klapp_up_toggle}
+	(L.L.elec_busbar_main)
+		{if}
+	1 (S.L.cp_klappfenster_OL2) (S.L.cp_klappfenster_OL3) (S.L.cp_klappfenster_UL1) s1
+		{endif}
+	
+		(T.L.ev_klappfenster_opn)
+	
+	(M.L.kippschaltersound)
+	1 (S.L.cp_klapp_up_mode)
+{end}
+
+{trigger:cp_klapp_up_toggle_off}
+	
+	0 (S.L.cp_klapp_up_mode)	
+{end}
+
+{trigger:cp_klapp_down_toggle}
+	
+	(L.L.elec_busbar_main)
+	
+	0 (S.L.cp_klappfenster_OL2) (S.L.cp_klappfenster_OL3) (S.L.cp_klappfenster_UL1) s1
+	
+	(M.L.kippschaltersound)
+	(T.L.ev_klappfenster_cls)
+	
+	1 (S.L.cp_klapp_down_mode)
+{end}
+
+{trigger:cp_klapp_down_toggle_off}
+	
+	0 (S.L.cp_klapp_down_mode)	
+{end}
+
+
+'------------------------------------
+'	������ ��� ���������. ����� ������� Dmitri, ������ ���� �� ���� 5292.30.
+'	��������� ������ �� ��� ����!
+'------------------------------------
+{trigger:Pandus_drag}
+
+	1 (S.L.pandus_dragged)
+	(L.L.pandus_pos) (S.L.pandus_lastpos)
+
+	(L.S.mouse_y) -200 / (L.L.pandus_pos) + (S.L.pandus_pos) s0
+	l0 0 <
+	{if}
+		0 (S.L.pandus_pos)		
+	{endif}
+	l0 1 >
+	{if}
+		1 (S.L.pandus_pos)
+	{endif}
+'	������ ��� ������ ������.		
+	(L.L.pandus_pos) 0.4 > (L.L.door_3) &&
+	{if}
+		1 (S.L.pandus_opn)
+		0 (S.L.pandus_cls)
+	{endif}
+	(L.L.pandus_pos) 0.2 < (L.L.door_3) &&
+	{if}
+		1 (S.L.pandus_cls)
+		0 (S.L.pandus_opn)
+	{endif}
+	(L.L.pandus_opn) (L.L.door_3) 0.9 < &&
+	{if}
+		(L.L.pandus_pos) 0.45 < 
+		{if}
+			0.45 (S.L.pandus_pos)
+		{endif}
+	{endif}
+	(L.L.pandus_cls) (L.L.door_3) 0.9 < &&
+	{if}
+		(L.L.pandus_pos) 0.1 > 
+		{if}
+			0.1 (S.L.pandus_pos)
+		{endif}
+	{endif}
+	(L.L.pandus_pos) (L.L.pandus_lastpos) - (L.S.Timegap) / (S.L.pandus_speed)
+{end}
+
+
+{trigger:Pandus_off}
+	0 (S.L.pandus_dragged)
+{end}
+
+
+'	������...
+
+{macro:pandus_frame}
+
+	(L.L.pandus_dragged) !
+	{if}
+		(L.L.pandus_pos) (L.S.Timegap) (L.L.pandus_speed) * + (S.L.pandus_pos)
+		
+'	�������(���� ������)
+		(L.L.pandus_pos) 0.45 >
+		{if}
+			(L.L.pandus_speed) (L.S.Timegap) + (S.L.pandus_speed)
+		{endif}
+		
+		(L.L.pandus_pos) 0.45 <
+		{if}
+			(L.L.pandus_speed) (L.S.Timegap) -1 * + (S.L.pandus_speed)
+		{endif}
+		
+
+'	������ ��� ������������ ����.\����.
+		(L.L.pandus_pos) 1 >
+		{if}
+			1 (S.L.pandus_pos)
+'	������
+			(L.L.pandus_speed) /-/ 0.2 * (S.L.pandus_speed)
+		{endif}
+
+		(L.L.pandus_pos) 0 <
+		{if}
+			0 (S.L.pandus_pos)
+'	������
+			(L.L.pandus_speed) /-/ 0.2 * (S.L.pandus_speed)
+		{endif}
+
+'	������������� ��� ���� � �������� �������� (�� ������... ��������))).
+		(L.L.Velocity) 100 / 0.2 min s3
+		
+		(L.L.pandus_pos) 1 = (L.L.Velocity) 0 > &&
+		{if}
+			(L.L.pandus_speed) l3 - (S.L.pandus_speed)
+		{endif}
+
+'	������ ���������.	
+		(L.L.Velocity) 2 > (L.L.pandus_pos) 0.5 > &&
+		{if}
+			0 (S.L.empty_01)
+		{endif}
+		
+		(L.L.pandus_speed) 0 = !
+		{if}
+			(L.L.pandus_pos) 0.005 < (L.L.pandus_pos) 0.995 > ||
+			{if}
+				(L.L.empty_01) 1 <
+				{if}
+					(L.L.empty_01) (L.S.Timegap) + (S.L.empty_01)
+				{else}
+					0 (S.L.pandus_speed)
+				{endif}
+			{else}
+				0 (S.L.empty_01)
+			{endif}
+		{endif}
+	{endif}
+
+'	������ ��� ������ ������.		
+	(L.L.pandus_pos) 0.4 > (L.L.door_3) &&
+	{if}
+		1 (S.L.pandus_opn)
+		0 (S.L.pandus_cls)
+	{endif}
+
+	(L.L.pandus_pos) 0.2 < (L.L.door_3) &&
+	{if}
+		1 (S.L.pandus_cls)
+		0 (S.L.pandus_opn)
+	{endif}
+
+'	������ �� �������� �����.		
+	(L.L.pandus_opn) (L.L.door_3) 0.9 < &&
+	{if}
+		(L.L.pandus_pos) 0.47 < 
+		{if}
+			0.47 (S.L.pandus_pos)
+'	������
+			(L.L.pandus_speed) /-/ 0.2 * (S.L.pandus_speed)
+		{endif}
+	{endif}
+		
+	(L.L.pandus_cls) (L.L.door_3) 0.9 < &&
+	{if}
+		(L.L.pandus_pos) 0.1 > 
+		{if}
+			0.1 (S.L.pandus_pos)
+'	������
+			(L.L.pandus_speed) /-/ 0.2 * (S.L.pandus_speed)
+		{endif}
+	{endif}
+
+	(L.L.pandus_pos) 0.01 >
+	{if}
+		0 (S.L.pandus_close)
+	{endif}
+
+	(L.L.pandus_pos) 0 = (L.L.pandus_close) ! &&
+	{if}
+		1 (S.L.pandus_close)
+		(T.L.ev_pandus_zu)
+	{endif}
+	
+	(L.L.pandus_pos) 0.99 <
+	{if}
+		0 (S.L.pandus_open)
+	{endif}
+
+	(L.L.pandus_pos) 1 = (L.L.pandus_open) ! &&
+	{if}
+		(T.L.ev_pandus_zu)
+		1 (S.L.pandus_open)
+	{endif}
+	
+	(L.L.pandus_pos) 0.48 > (L.L.door_3) ! &&
+	{if}
+		0 (S.L.pandus_door_stuk)
+	{endif}
+
+	(L.L.pandus_pos) 0.47 = (L.L.door_3) ! (L.L.pandus_door_stuk) ! && &&
+	{if}
+		1 (S.L.pandus_door_stuk)
+		(T.L.ev_pandus_zu)
+	{endif}
+	
+	(L.L.pandus_speed) 0 <
+	{if}
+		(L.L.pandus_speed) /-/ (S.L.pandus_stuk_vol)
+	{else}
+		(L.L.pandus_speed) (S.L.pandus_stuk_vol)
+	{endif}
+
+{end}
+
+{macro:visual_addons}
+
+'	Manual door dashboard texture
+
+'	(L.L.cp_door_manual) 1 =
+'	{if}
+		"vdo_0_m.dds" (S.$.cp_door_mode)
+'	{else}
+'		"vdo_0.dds" (S.$.cp_door_mode)
+'	{endif}
+	
+'	AEP cockpit shadows
+
+	(L.L.cp_stamper_ver) 1 =
+	{if}
+		"25_aep.jpg" (S.$.cp_stamper_ver)
+	{else}
+		"25.jpg" (S.$.cp_stamper_ver)
+	{endif}
+	
+'	Matrix colors
+
+(L.L.vis_matrix_color) 1 =
+	{if}
+	"vmatrix_voll_blue.bmp" (S.$.vis_matrix_color)
+	{endif}
+		
+(L.L.vis_matrix_color) 2 =
+	{if}
+	"vmatrix_voll_cyan.bmp" (S.$.vis_matrix_color)
+	{endif}
+				
+(L.L.vis_matrix_color) 3 =
+	{if}
+	"vmatrix_voll_orange.bmp" (S.$.vis_matrix_color)
+	{endif}
+						
+(L.L.vis_matrix_color) 4 =
+	{if}
+	"vmatrix_voll_pink.bmp" (S.$.vis_matrix_color)
+	{endif}
+	
+(L.L.vis_matrix_color) 5 =
+	{if}
+	"vmatrix_voll_red.bmp" (S.$.vis_matrix_color)
+	{endif}
+	
+(L.L.vis_matrix_color) 6 =
+	{if}
+	"vmatrix_voll_yellow.bmp" (S.$.vis_matrix_color)
+	{endif}
+
+{end}
+
+{macro:kippschaltersound}
+	l1
+	{if}
+		(T.L.ev_VDV_on)
+	{else}
+		(T.L.ev_VDV_off)
+	{endif}	
+{end}
+
+{macro:kippschaltersound_toggle}
+	l1
+	{if}
+		(T.L.ev_VDV_toggle_on)
+	{else}
+		(T.L.ev_VDV_toggle_off)
+	{endif}	
+{end}
+
+{macro:klimator_frame}
+{end}
+
+{macro:stampers_disp}
+	(L.L.elec_busbar_main) 1 =
+	{if}
+'  	"01:21"
+	(L.S.Time) 3600 / s0 trunc s1 "02" $IntToStrEnh " " $+
+' 	Minuty:
+  	l0 l1 - 60 * trunc "02" $IntToStrEnh $+ (S.$.pixel_disp)
+		{else}
+		" " (S.$.pixel_disp)
+	{endif}
+{end}
+
+'
+' Mk tu byl
+' Thunder poprawial 
+
+{trigger:retarder_off}
+
+    (C.L.cockpit_has_retarderswitch)
+    {if}
+        (L.L.cp_retarder_sw) ! (S.L.cp_retarder_sw)
+
+        (L.L.cp_retarder_sw) (S.L.retarder_off_anim)
+        (L.L.cp_retarder_sw) (S.L.retarder_off_light)
+
+        (L.L.cp_retarder_sw) 1 =
+        {if}
+            (T.L.ev_VDV_on)
+        {else}
+            (T.L.ev_VDV_off)
+        {endif}
+
+    {else}
+        (L.L.cp_retarder_sw_direkt) ! (S.L.cp_retarder_sw_direkt)
+
+        (L.L.cp_retarder_sw_direkt) (S.L.retarder_off_anim)
+        (L.L.cp_retarder_sw_direkt) (S.L.retarder_off_light)
+
+        (L.L.cp_retarder_sw_direkt) 1 =
+        {if}
+            (T.L.ev_VDV_on)
+        {else}
+            (T.L.ev_VDV_off)
+        {endif}
+    {endif}
+
+{end}
+
+{trigger:retarder_off_off}
+{end}

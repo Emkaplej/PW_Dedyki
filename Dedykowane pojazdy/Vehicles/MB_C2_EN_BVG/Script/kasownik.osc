@@ -1,0 +1,84 @@
+{macro:kasownik_frame}
+(L.L.elec_busbar_main) 0 >
+{if}
+'Timer:
+(L.L.xxx_Timer) (L.S.Timegap) + (S.L.xxx_Timer)
+'ekran 1
+	(L.L.xxx_Timer) 0 >
+	(L.L.xxx_Timer) 3 < &&
+	{if}
+		1 (S.L.Timer_Phase1)
+		0 (S.L.Timer_PhaseZielone)
+		1 (S.L.Timer_PhaseCzerwone)
+	{else}
+'ekran 2
+		0 (S.L.Timer_Phase1)
+		(L.L.xxx_Timer) 3 >
+		(L.L.xxx_Timer) 8 < &&
+		{if}
+			1 (S.L.Timer_Phase2)
+			0 (S.L.Timer_PhaseZielone)
+			1 (S.L.Timer_PhaseCzerwone)
+		{else}
+'ekran 3
+			0 (S.L.Timer_Phase2)
+			(L.L.xxx_Timer) 8 >
+			(L.L.xxx_Timer) 16 < &&
+			{if}
+				1 (S.L.Timer_Phase3)
+				1 (S.L.Timer_PhaseZielone)
+				0 (S.L.Timer_PhaseCzerwone)
+			{else}
+'ekran 4
+				0 (S.L.Timer_Phase3)
+				(L.L.xxx_Timer) 16 >
+				(L.L.xxx_Timer) 24 < &&
+				{if}
+					1 (S.L.Timer_Phase4)
+					1 (S.L.Timer_PhaseZielone)
+					0 (S.L.Timer_PhaseCzerwone)
+				{else}
+'ekran 5
+					0 (S.L.Timer_Phase4)
+					(L.L.xxx_Timer) 24 >
+					(L.L.xxx_Timer) 32 < &&
+					{if}
+						1 (S.L.Timer_Phase5)
+						1 (S.L.Timer_PhaseZielone)
+						0 (S.L.Timer_PhaseCzerwone)
+					{else}
+'ekran 6
+						0 (S.L.Timer_Phase5)
+						(L.L.xxx_Timer) 32 >
+						(L.L.xxx_Timer) 40 < &&
+						{if}
+							1 (S.L.Timer_Phase6)
+							1 (S.L.Timer_PhaseZielone)
+							0 (S.L.Timer_PhaseCzerwone)
+						{else}
+'wraca do ekranu 3
+							0 (S.L.Timer_Phase6)
+							(L.L.xxx_Timer) 40 >
+							{if}
+								8 (S.L.xxx_Timer) 
+							{endif}
+						{endif}
+					{endif}
+				{endif}
+			{endif}
+		{endif}
+	{endif}
+{else}
+'jesli brak pradu
+	0 (S.L.Timer_Phase1)
+	0 (S.L.Timer_Phase2)
+	0 (S.L.Timer_Phase3)
+	0 (S.L.Timer_Phase4)
+	0 (S.L.Timer_Phase5)
+	0 (S.L.Timer_Phase6)
+	0 (S.L.Timer_PhaseZielone)
+	0 (S.L.Timer_PhaseCzerwone)
+    (S.L.xxx_Timer) 0 =
+{endif}
+{end}
+'TomcatPL\Magnet zrobione jak dla obcego ale przynajmniej dziala

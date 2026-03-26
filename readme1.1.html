@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ReadMe - Dedykowane pojazdy</title>
+    <style>
+        * {
+            font-family: 'Bahnschrift';
+            color: white;
+            text-shadow: 2px 2px 3px rgba(0, 0, 0, 0.7);
+        }
+
+        html {
+            margin: 0;
+            padding: 0;
+            min-width: 100%;
+        }
+        
+        body {
+            margin: 0;
+            padding: 0;
+            background: rgb(40, 40, 40);
+            min-width: 600px;
+        }
+
+        .tlo {
+            background-image: url('2.png');
+            background-position: center;
+            min-height: 100vh;
+            height: auto;
+            max-width: 100%;
+            background-size: cover;
+            background-repeat: no-repeat;
+        }
+
+        .ciemne {
+            background-color: rgba(0, 0, 0, 0.4);
+            min-height: 100vh;
+            height: 100%;
+            min-width: 100%;
+        }
+
+        .tresc {
+            background-color: rgba(0, 0, 0, 0.4);
+            padding: 2%;
+        }
+
+        section {
+            margin: 0;
+            padding: 2%;
+            float: left;
+            width: 46%;
+            height: fit-content;
+        }
+
+        #tytul {
+            margin: 0 auto;
+            padding: 25px 15px;
+            font-weight: initial;
+            text-shadow: 4px 7px 7px rgba(0, 0, 0, 0.7);
+            text-align: center;
+            font-size: 125%;
+        }
+        
+        h1, h2, h3 {
+            margin: 0;
+            padding: 0;
+            font-weight: bold;
+        }
+
+        h4 {
+            margin: 0;
+            padding: 0;
+            font-weight: normal;
+        }
+
+        img {
+            display: block;
+            width: 100%;
+            height: auto;
+        }
+
+        #ogloszenie {
+            padding: 25px 15px 0 25px;
+            text-align: center;
+        }
+
+        #ogloszenie p {
+            margin-bottom: 0;
+        }
+
+        h2 {
+            margin: 0;
+            padding: 0;
+            font-size: 150%;
+        }
+
+        #spis {
+            font-size: 125%;
+        }
+
+        #spis li {
+            margin: 0;
+            padding: 5px;
+            font-weight: bold;
+            font-size: 125%;
+        }
+
+        #spis ol {
+            padding-left: 60px;
+        }
+
+        h3 {
+            margin: 0;
+            padding: 0;
+            font-size: 125%;
+        }
+
+        p {
+            padding: 0 20px;
+        }
+
+        .folder {
+            color: rgb(255, 250, 170);
+        }
+
+        .podkresl {
+            text-decoration: underline;
+        }
+
+        .link {
+            color: rgb(0, 170, 255);
+            text-decoration: underline;
+        }
+
+        .strefa {
+            color: rgb(255, 170, 0);
+        }
+    </style>
+</head>
+<body>
+    <main class="tlo">
+        <main class="ciemne">
+            <section>
+                <div class="tresc">
+                    <div id="tytul">
+                        <h4>ReadMe</h4>
+                        <h1>Projekt Wrocław –<br>
+                        – Pojazdy dedykowane<br></h1>
+                        <h4>v1.1</h4>
+                    </div>
+                    <img src="1.png" alt="zdjecie1">
+                </div>
+            </section>
+            <section>
+                <div class="tresc">
+                    <div id="wstep">
+                        <h3>1. Wstęp</h3>
+                        <p>
+                            Do poprawnego działania dedykowanych pojazdów <span class="podkresl">wymagana</span> jest modyfikacja, na bazie której zostały one stworzone.<br>
+                            Można ją pobrać <a class="link" href="https://reboot.omsi-webdisk.de/file/9526-mercedes-benz-c2-2011-2022-berlin-neutral/">tutaj</a>. <i>(https://reboot.omsi-webdisk.de/file/9526-mercedes-benz-c2-2011-2022-berlin-neutral/)</i>
+                        </p>
+                    </div>
+                    <div id="instalacja">
+                        <h3>2. Instalacja</h3>
+                        <p>
+                            Zawartość folderu <span class="folder">Dedykowane pojazdy</span> należy umieścić w folderze gry <span class="folder">OMSI 2</span>.<br>
+                            W przypadku zapytania przez system należy zastąpić pliki.
+                        </p>
+                    </div>
+                    <div id="zawartosc">
+                        <h3>3. Zawartość</h3>
+                        <ul>
+                            <li>5 dedykowanych konfiguracji pojazdów</li>
+                            <li>Realny sterownik SiMS SIL2</li>
+                            <li>Półrealne systemy informacji pasażerskiej</li>
+                            <li>Realne brygadówki</li>
+                            <li>Realny skrypt działania drzwi, w tym ostrzeżenie przed zamknięciem drzwi, przycisk otwierania/zamykania wszystkich drzwi, mruganie przycisków drzwi przy żądaniu otwarcia</li>
+                            <li>Półrealne wyświetlacze (układ, kolor oraz czcionka)</li>
+                            <li>Półrealny układ przycisków deski rozdzielczej, w tym nowe przyciski drzwi oraz poprawione "wysepki" od przycisków drzwi na pulpicie</li>
+                            <li>Półrealny układ siedzień oraz poręczy</li>
+                            <li>Realne kasowniki ze skryptem</li>
+                            <li>Realne przyciski CG ze skryptem</li>
+                            <li>Podział malowań na osobne dedykowane foldery w zależności od numeru taborowego
+                            <br><i>(Texture\Repaints\_MPK_Wroclaw_Dedyki)</i></li>
+                            <li>Poprawione kamery</li>
+                            <li>Zabudowa kabiny, półrealny układ pulpitu oraz inne poprawki kabiny</li>
+                            <li>Polskie tablice rejestracyjne</li>
+                            <li>Spolszczenie komputera pokładowego</li>
+                        </ul>
+                    </div>
+                    <div id="autorzy">
+                        <h3>4. Autorzy</h3>
+                        <ul>
+                            <li><b>Zielu</b> – malowania</li>
+                            <li><b>MkPlay</b> – konfiguracje modeli, wyświetlacze oraz ich czcionki, układ i poprawki pulpitu, dodatki do kabiny, oświetlenie wewnętrzne, przyciski CG, umieszczenie sterownika SiMS SIL2 oraz jego poprawki, umieszczenie SIPów oraz ich poprawki, brygadówki, inne drobne poprawki modelu</li>
+                            <li><b>TomcatPL</b> – kasowniki EM316FO ze skryptem, ładowarki USB, urealnienie skryptu drzwi, zabudowa kabiny kierowcy, odpowiedni układ poręczy, drobne poprawki nadwozia</li>
+                            <li><b>Mieszko Kędzierski</b> – odpowiedni układ siedzeń, przyciski stop</li>
+                            <li><b>TheNixen</b> – umieszczenie sterownika SiMS SIL2</li>
+                            <li><b>Thunder 2-1</b> – doormod z systemem CG, ostrzeżenie przed zamknięciem drzwi, otwieranie/zamykanie wszystkich drzwi, mruganie przycisków drzwi przy żądaniu otwarcia, skrypt oświetlenia wewnętrznego, skrypt przyklęków, skrypt wyłączania retardera, spolszczenie komputera pokładowego, zmiany skryptu SiMS SIL2 oraz SIPów</li>
+                            <li><b>Sobol</b>, <b>Pitoras</b> – sterownik SiMS SIL2</li>
+                            <li><b>kuwwer, Janix, Sobol</b> - systemy informacji pasażerskiej</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </main>
+</body>
+</html>

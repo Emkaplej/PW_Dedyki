@@ -1,0 +1,69 @@
+***************************************
+MPK Wrocław
+***************************************
+
+[item]
+MPK Wroclaw_8438
+farbschema_tex1_main
+MPK/MPKWroc_8438_main.tga
+
+[item]
+MPK Wroclaw_8438
+farbschema_tex1_trail
+MPK/MPKWroc_8438_trail.tga
+
+[item]
+MPK Wroclaw_8438
+Klima
+MPK/Klima_Gross.png
+
+[item]
+MPK Wroclaw_8438
+Dach
+MPK/Dach.png
+
+[item]
+MPK Wroclaw_8438
+Stangen
+MPK/interior_bars_grau.png
+
+[item]
+MPK Wroclaw_8438
+Stangen_2
+MPK/Bar_joints_grau.png
+
+[item]
+MPK Wroclaw_8438
+Sitzbezug
+MPK/Citarosiedzeniampk.png
+
+[item]
+MPK Wroclaw_8438
+Tuerstangen_schwarz
+MPK/Tuer_IST_Bode_BVG_schwarz.dds
+
+[item]
+MPK Wroclaw_8438
+Siedzenia_przegub
+MPK/Citarosiedzeniampk.png
+
+[item]
+MPK Wroclaw_8438
+Tab_rej
+MPK/tab_rej_8438.png
+
+[setvar]
+neue_Decke
+0
+
+[setvar]
+Tuer2_IST_SST
+0
+
+[setvar]
+Tuer3_IST_SST
+0
+
+[setvar]
+Tuer4_IST_SST
+0

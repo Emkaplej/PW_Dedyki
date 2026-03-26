@@ -1,0 +1,59 @@
+***************************************
+MPK Wrocław 7403
+***************************************
+
+[item]
+MPK Wroclaw_7403
+farbschema_tex1
+MPK/MPKWroc_7403.tga
+
+[item]
+MPK Wroclaw_7403
+Klima
+MPK/Klima_Gross.png
+
+[item]
+MPK Wroclaw_7403
+Dach
+MPK/Dach.png
+
+[item]
+MPK Wroclaw_7403
+Stangen
+MPK/interior_bars_grau.png
+
+[item]
+MPK Wroclaw_7403
+Stangen_2
+MPK/Bar_joints_grau.png
+
+[item]
+MPK Wroclaw_7403
+Sitzbezug
+MPK/Citarosiedzeniampk.png
+
+[item]
+MPK Wroclaw_7403
+Boden
+MPK/Boden_EN_3T.png
+
+[item]
+MPK Wroclaw_7403
+Tab_rej
+MPK/tab_rej_7403.png
+
+[CTCTexture]
+Tuerstangen_schwarz
+Tuer_IST_Bode_BVG_schwarz.dds
+
+[setvar]
+neue_Decke
+0
+
+[setvar]
+Tuer2_IST_SST
+0
+
+[setvar]
+Tuer3_IST_SST
+0

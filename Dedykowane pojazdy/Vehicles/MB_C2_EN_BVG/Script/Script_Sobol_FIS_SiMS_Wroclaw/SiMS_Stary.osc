@@ -1,0 +1,685 @@
+'##############
+' SiMS FIS
+'##############
+
+'(c) 2023 Sobol
+'(c) 2025 Janix
+
+'----------------------
+'	Init
+'----------------------
+
+{macro:FIS_init}
+	0 (S.L.SiMS_last_displaymode)
+	0 (S.L.SiMS_Mode_Changed3)
+	-1 (S.L.SiMS_Busstop_last)
+	1 (S.L.SIP_Sufit_Reklama_count)
+	0 (S.L.SIP_Sufit_Reklama_timer)
+	"SIP_Wroclaw_Soft\Sufit_Reklamy\Reklama_1.png" (S.$.SIP_Sufit_Reklama)
+{end}
+
+'----------------------
+'	Frame
+'----------------------
+
+{macro:FIS_frame}
+
+(L.L.SiMS_last_displaymode) 302 =
+(L.L.5000_displaymode) 302 = ! &&
+{if}
+	0 (S.L.ETL_liczenie)
+	0 (S.L.SiMS_Mode)
+	0 (S.L.FIS_Visible_Stop)
+
+	1 (S.L.SIP_Sufit_Reklama_count)
+	0 (S.L.SIP_Sufit_Reklama_timer)
+	"SIP_Wroclaw_Soft\Sufit_Reklamy\Reklama_1.png" (S.$.SIP_Sufit_Reklama)
+
+	0 (S.L.FIS_zalogowany_z_trasa)
+	0 (S.L.FIS_zalogowany_kierunek)
+	0 (S.L.FIS_zalogowany_na_przystanku)
+
+	"SIP_Wroclaw_Soft\Standby.png" (S.$.Pixel_FIS_tex)
+	"SIP_Wroclaw_Soft\Standby2.png" (S.$.Pixel_FIS_tex_2)
+
+	"" (S.$.FIS_Linia)
+	"" (S.$.FIS_Kierunek)
+	"" (S.$.FIS_Podpis)
+	"" (S.$.FIS_Podpis_2)
+
+	"" (S.$.FIS_Stop_0)
+	"" (S.$.FIS_Stop_0_np)
+	"" (S.$.FIS_Stop_1)
+	"" (S.$.FIS_Stop_2)
+	"" (S.$.FIS_Stop_3)
+	"" (S.$.FIS_Stop_4)
+	"" (S.$.FIS_Stop_5)
+	"" (S.$.FIS_Stop_6)
+	"" (S.$.FIS_Stop_7)
+	"" (S.$.FIS_Stop_8)
+{endif}
+
+(L.L.FIS_sterownik_wlaczony)
+{if}
+
+	(L.L.5000_displaymode) 302 =
+	{if}
+		(M.L.XTL_GetTime)
+		(M.L.XTL_GetTimeSec)
+		(M.L.XTL_GetDate)
+		(M.L.Brygadowka_init)
+
+		(L.L.SIP_Sufit_Reklama_timer) (L.S.Timegap) + (S.L.SIP_Sufit_Reklama_timer)
+
+		(L.L.SIP_Sufit_Reklama_timer) 10 >=
+		{if}
+			0 (S.L.SIP_Sufit_Reklama_timer)
+			(L.L.SIP_Sufit_Reklama_count) 1 + (S.L.SIP_Sufit_Reklama_count)
+		{endif}
+
+		(L.L.SIP_Sufit_Reklama_count) 7 >
+		{if}
+			1 (S.L.SIP_Sufit_Reklama_count)
+		{endif}
+
+		(L.L.SIP_Sufit_Reklama_count) 1 =
+		{if}
+			"SIP_Wroclaw_Soft\Sufit_Reklamy\Reklama_1.png" (S.$.SIP_Sufit_Reklama)
+		{endif}
+
+		(L.L.SIP_Sufit_Reklama_count) 2 =
+		{if}
+			"SIP_Wroclaw_Soft\Sufit_Reklamy\Reklama_2.png" (S.$.SIP_Sufit_Reklama)
+		{endif}
+
+		(L.L.SIP_Sufit_Reklama_count) 3 =
+		{if}
+			"SIP_Wroclaw_Soft\Sufit_Reklamy\Reklama_3.png" (S.$.SIP_Sufit_Reklama)
+		{endif}
+
+		(L.L.SIP_Sufit_Reklama_count) 4 =
+		{if}
+			"SIP_Wroclaw_Soft\Sufit_Reklamy\Reklama_4.png" (S.$.SIP_Sufit_Reklama)
+		{endif}
+
+		(L.L.SIP_Sufit_Reklama_count) 5 =
+		{if}
+			"SIP_Wroclaw_Soft\Sufit_Reklamy\Reklama_5.png" (S.$.SIP_Sufit_Reklama)
+		{endif}
+
+		(L.L.SIP_Sufit_Reklama_count) 6 =
+		{if}
+			"SIP_Wroclaw_Soft\Sufit_Reklamy\Reklama_6.png" (S.$.SIP_Sufit_Reklama)
+		{endif}
+
+		(L.L.SIP_Sufit_Reklama_count) 7 =
+		{if}
+			"SIP_Wroclaw_Soft\Sufit_Reklamy\Reklama_7.png" (S.$.SIP_Sufit_Reklama)
+		{endif}
+
+		(L.L.schedule_active)
+		{if}
+				(L.L.IBIS_RouteIndex) (M.V.GetBusstopCount) 1 - (L.L.IBIS_busstop) 0 + >=
+				{if}
+					(L.L.IBIS_RouteIndex) (L.L.IBIS_busstop) 0 + (M.V.GetTTBusstopName) (S.$.FIS_Stop_0) (S.$.FIS_Stop_0_np)
+				{else}
+					"" (S.$.FIS_Stop_0) (S.$.FIS_Stop_0_np)
+				{endif}
+
+				(L.L.IBIS_RouteIndex) (M.V.GetBusstopCount) 1 - (L.L.IBIS_busstop) 1 + >=
+				{if}
+					(L.L.IBIS_RouteIndex) (L.L.IBIS_busstop) 1 + (M.V.GetTTBusstopName) (S.$.FIS_Stop_1)
+				{else}
+					"" (S.$.FIS_Stop_1)
+				{endif}
+
+				(L.L.IBIS_RouteIndex) (M.V.GetBusstopCount) 1 - (L.L.IBIS_busstop) 2 + >=
+				{if}
+					(L.L.IBIS_RouteIndex) (L.L.IBIS_busstop) 2 + (M.V.GetTTBusstopName) (S.$.FIS_Stop_2)
+				{else}
+					"" (S.$.FIS_Stop_2)
+				{endif}
+
+				(L.L.IBIS_RouteIndex) (M.V.GetBusstopCount) 1 - (L.L.IBIS_busstop) 3 + >=
+				{if}
+					(L.L.IBIS_RouteIndex) (L.L.IBIS_busstop) 3 + (M.V.GetTTBusstopName) (S.$.FIS_Stop_3)
+				{else}
+					"" (S.$.FIS_Stop_3)
+				{endif}
+
+				(L.L.IBIS_RouteIndex) (M.V.GetBusstopCount) 1 - (L.L.IBIS_busstop) 4 + >=
+				{if}
+					(L.L.IBIS_RouteIndex) (L.L.IBIS_busstop) 4 + (M.V.GetTTBusstopName) (S.$.FIS_Stop_4)
+				{else}
+					"" (S.$.FIS_Stop_4)
+				{endif}
+
+				(L.L.IBIS_RouteIndex) (M.V.GetBusstopCount) 1 - (L.L.IBIS_busstop) 5 + >=
+				{if}
+					(L.L.IBIS_RouteIndex) (L.L.IBIS_busstop) 5 + (M.V.GetTTBusstopName) (S.$.FIS_Stop_5)
+				{else}
+					"" (S.$.FIS_Stop_5)
+				{endif}
+
+				(L.L.IBIS_RouteIndex) (M.V.GetBusstopCount) 1 - (L.L.IBIS_busstop) 6 + >=
+				{if}
+					(L.L.IBIS_RouteIndex) (L.L.IBIS_busstop) 6 + (M.V.GetTTBusstopName) (S.$.FIS_Stop_6)
+				{else}
+					"" (S.$.FIS_Stop_6)
+				{endif}
+
+				(L.L.IBIS_RouteIndex) (M.V.GetBusstopCount) 1 - (L.L.IBIS_busstop) 7 + >=
+				{if}
+					(L.L.IBIS_RouteIndex) (L.L.IBIS_busstop) 7 + (M.V.GetTTBusstopName) (S.$.FIS_Stop_7)
+				{else}
+					"" (S.$.FIS_Stop_7)
+				{endif}
+
+				(L.L.IBIS_RouteIndex) (M.V.GetBusstopCount) 1 - (L.L.IBIS_busstop) 8 + >=
+				{if}
+					(L.L.IBIS_RouteIndex) (L.L.IBIS_busstop) 8 + (M.V.GetTTBusstopName) (S.$.FIS_Stop_8)
+				{else}
+					"" (S.$.FIS_Stop_8)
+				{endif}
+				(L.L.FIS_zalogowany_kierunek) 
+				{if}
+				(L.L.IBIS_LinieKurs) $IntToStr (S.$.FIS_Linia)
+				{else}
+				"" (S.$.FIS_Linia)
+				{endif}
+		{else}
+				(L.L.IBIS_RouteIndex) (M.V.GetBusstopCount) 1 - (L.L.IBIS_busstop) 0 + >=
+				{if}
+					(L.L.IBIS_RouteIndex) (L.L.IBIS_busstop) 0 + (M.V.GetRouteBusstopIdent) (M.V.GetBusstopIndex) 3 (M.V.GetBusstopString) (S.$.FIS_Stop_0) (S.$.FIS_Stop_0_np)
+				{else}
+					"" (S.$.FIS_Stop_0) (S.$.FIS_Stop_0_np)
+				{endif}
+
+				(L.L.IBIS_RouteIndex) (M.V.GetBusstopCount) 1 - (L.L.IBIS_busstop) 1 + >=
+				{if}
+					(L.L.IBIS_RouteIndex) (L.L.IBIS_busstop) 1 + (M.V.GetRouteBusstopIdent) (M.V.GetBusstopIndex) 3 (M.V.GetBusstopString) (S.$.FIS_Stop_1)
+				{else}
+					"" (S.$.FIS_Stop_1)
+				{endif}
+
+				(L.L.IBIS_RouteIndex) (M.V.GetBusstopCount) 1 - (L.L.IBIS_busstop) 2 + >=
+				{if}
+					(L.L.IBIS_RouteIndex) (L.L.IBIS_busstop) 2 + (M.V.GetRouteBusstopIdent) (M.V.GetBusstopIndex) 3 (M.V.GetBusstopString) (S.$.FIS_Stop_2)
+				{else}
+					"" (S.$.FIS_Stop_2)
+				{endif}
+
+				(L.L.IBIS_RouteIndex) (M.V.GetBusstopCount) 1 - (L.L.IBIS_busstop) 3 + >=
+				{if}
+					(L.L.IBIS_RouteIndex) (L.L.IBIS_busstop) 3 + (M.V.GetRouteBusstopIdent) (M.V.GetBusstopIndex) 3 (M.V.GetBusstopString) (S.$.FIS_Stop_3)
+				{else}
+					"" (S.$.FIS_Stop_3)
+				{endif}
+
+				(L.L.IBIS_RouteIndex) (M.V.GetBusstopCount) 1 - (L.L.IBIS_busstop) 4 + >=
+				{if}
+					(L.L.IBIS_RouteIndex) (L.L.IBIS_busstop) 4 + (M.V.GetRouteBusstopIdent) (M.V.GetBusstopIndex) 3 (M.V.GetBusstopString) (S.$.FIS_Stop_4)
+				{else}
+					"" (S.$.FIS_Stop_4)
+				{endif}
+
+				(L.L.IBIS_RouteIndex) (M.V.GetBusstopCount) 1 - (L.L.IBIS_busstop) 5 + >=
+				{if}
+					(L.L.IBIS_RouteIndex) (L.L.IBIS_busstop) 5 + (M.V.GetRouteBusstopIdent) (M.V.GetBusstopIndex) 3 (M.V.GetBusstopString) (S.$.FIS_Stop_5)
+				{else}
+					"" (S.$.FIS_Stop_5)
+				{endif}
+
+				(L.L.IBIS_RouteIndex) (M.V.GetBusstopCount) 1 - (L.L.IBIS_busstop) 6 + >=
+				{if}
+					(L.L.IBIS_RouteIndex) (L.L.IBIS_busstop) 6 + (M.V.GetRouteBusstopIdent) (M.V.GetBusstopIndex) 3 (M.V.GetBusstopString) (S.$.FIS_Stop_6)
+				{else}
+					"" (S.$.FIS_Stop_6)
+				{endif}
+
+				(L.L.IBIS_RouteIndex) (M.V.GetBusstopCount) 1 - (L.L.IBIS_busstop) 7 + >=
+				{if}
+					(L.L.IBIS_RouteIndex) (L.L.IBIS_busstop) 7 + (M.V.GetRouteBusstopIdent) (M.V.GetBusstopIndex) 3 (M.V.GetBusstopString) (S.$.FIS_Stop_7)
+				{else}
+					"" (S.$.FIS_Stop_7)
+				{endif}
+
+				(L.L.IBIS_RouteIndex) (M.V.GetBusstopCount) 1 - (L.L.IBIS_busstop) 8 + >=
+				{if}
+					(L.L.IBIS_RouteIndex) (L.L.IBIS_busstop) 8 + (M.V.GetRouteBusstopIdent) (M.V.GetBusstopIndex) 3 (M.V.GetBusstopString) (S.$.FIS_Stop_8)
+				{else}
+					"" (S.$.FIS_Stop_8)
+				{endif}
+		{endif}
+				(L.L.FIS_zalogowany_kierunek) 
+				{if}
+				(L.L.IBIS_LinieKurs) $IntToStr (S.$.FIS_Linia)
+				{else}
+				"" (S.$.FIS_Linia)
+				{endif}
+
+		(L.L.FIS_zalogowany_kierunek) 
+		{if}
+		(L.L.IBIS_TerminusIndex) 5 (M.V.GetTerminusString) (S.$.FIS_Kierunek) 
+		{else}
+		"" (S.$.FIS_Kierunek)
+		{endif}
+
+			(L.$.FIS_Stop_0) "" $=
+			{if}
+				"SIP_Wroclaw_Soft\Stary\Route_bez.png" (S.$.Pixel_FIS_tex)
+			{else}
+				(L.$.FIS_Stop_1) "" $=
+				{if}
+					"SIP_Wroclaw_Soft\Stary\Route_przystanek0.png" (S.$.Pixel_FIS_tex)
+				{else}
+					(L.$.FIS_Stop_2) "" $=
+					{if}
+						"SIP_Wroclaw_Soft\Stary\Route_przystanek1.png" (S.$.Pixel_FIS_tex)
+					{else}
+						(L.$.FIS_Stop_3) "" $=
+						{if}
+							"SIP_Wroclaw_Soft\Stary\Route_przystanek2.png" (S.$.Pixel_FIS_tex)
+						{else}
+							(L.$.FIS_Stop_4) "" $=
+							{if}
+								"SIP_Wroclaw_Soft\Stary\Route_przystanek3.png" (S.$.Pixel_FIS_tex)
+							{else}
+								(L.$.FIS_Stop_5) "" $=
+								{if}
+									"SIP_Wroclaw_Soft\Stary\Route_przystanek4.png" (S.$.Pixel_FIS_tex)
+								{else}
+									(L.$.FIS_Stop_6) "" $=
+									{if}
+										"SIP_Wroclaw_Soft\Stary\Route_przystanek5.png" (S.$.Pixel_FIS_tex)
+									{else}
+										(L.$.FIS_Stop_7) "" $=
+										{if}
+											"SIP_Wroclaw_Soft\Stary\Route_przystanek6.png" (S.$.Pixel_FIS_tex)
+										{else}
+											(L.$.FIS_Stop_8) "" $=
+											{if}
+												"SIP_Wroclaw_Soft\Stary\Route_przystanek7.png" (S.$.Pixel_FIS_tex)
+											{else}
+												"SIP_Wroclaw_Soft\Stary\Route_przystanek8.png" (S.$.Pixel_FIS_tex)
+											
+										{endif}
+									{endif}
+								{endif}
+							{endif}
+						{endif}			
+					{endif}
+				{endif}					
+			{endif}
+		{endif}
+
+		1 (S.L.FIS_Visible_Stop)
+
+		(L.L.haltewunsch)
+		{if}
+			2137 (S.L.SiMS_Mode)
+			"SIP_Wroclaw_Soft\Stary\SiMS_screen_zmienny_stop.png" (S.$.Pixel_FIS_tex_2)
+			"" (S.$.FIS_Stop_0_np)
+			"" (S.$.FIS_Podpis_2)
+			"" (S.$.FIS_Podpis)
+			0 (S.L.ETL_liczenie)
+		{else}
+
+			(L.L.SiMS_Mode) 2137 =
+			{if}
+				1 (S.L.SiMS_Mode)
+				0 (S.L.ETL_liczenie)
+			{endif}
+
+			(L.L.FIS_zalogowany_na_przystanku) 1 =
+			(L.L.SiMS_Mode_Changed3) 0 = &&
+			{if}
+				301 (S.L.SiMS_Mode)
+				0 (S.L.ETL_liczenie)
+				1 (S.L.SiMS_Mode_Changed3)
+			{endif}
+
+			(L.L.FIS_zalogowany_na_przystanku) 0 =
+			(L.L.SiMS_Mode_Changed3) 1 = &&
+			{if}
+				1 (S.L.SiMS_Mode)
+				0 (S.L.ETL_liczenie)
+				0 (S.L.SiMS_Mode_Changed3)
+			{endif}
+
+			(L.L.FIS_zalogowany_na_przystanku) 0 =
+			(L.L.SiMS_Busstop_last) (L.L.IBIS_busstop) = ! &&
+			{if}
+				2 (S.L.SiMS_Mode)
+				0 (S.L.ETL_liczenie)
+			{endif}
+
+			(L.L.FIS_zalogowany_na_przystanku) 0 =
+			(L.L.SiMS_Mode) 1 = &&
+			{if}
+				(L.L.ETL_liczenie) (L.S.Timegap) + (S.L.ETL_liczenie)
+				(L.L.ETL_liczenie) 5 >=
+				{if}
+					2 (S.L.SiMS_Mode)
+					0 (S.L.ETL_liczenie)
+				{endif}
+			{endif}
+		
+			(L.L.FIS_zalogowany_na_przystanku) 0 =
+			(L.L.SiMS_Mode) 2 = &&
+			{if}
+				(L.L.ETL_liczenie) (L.S.Timegap) + (S.L.ETL_liczenie)
+				(L.L.ETL_liczenie) 5 >=
+				{if}
+					1 (S.L.SiMS_Mode)
+					0 (S.L.ETL_liczenie)
+				{endif}
+			{endif}
+
+		{endif}
+
+		(L.L.IBIS_busstop) (S.L.SiMS_Busstop_last)
+	{else}
+	0 (S.L.ETL_liczenie) (S.L.SiMS_Mode)
+	(M.L.Brygadowka_init)
+	{endif}
+
+		(L.L.SiMS_Mode) 1 =
+		{if}
+			
+			(L.$.weekday) (S.$.FIS_Podpis)
+		{else}
+			"" (S.$.FIS_Podpis)
+		{endif}
+		(L.L.SiMS_Mode) 1 =
+		{if}
+			(L.S.Day) "02" $IntToStrEnh (L.$.month) $+ (L.S.Year) $IntToStr $+ 
+			(S.$.FIS_Podpis_2)
+			"SIP_Wroclaw_Soft\Stary\SiMS_screen_zmienny.png" (S.$.Pixel_FIS_tex_2)
+			"" (S.$.FIS_Stop_0_np)
+		{endif}	
+
+		(L.L.SiMS_Mode) 2 =
+		{if}
+			"" (S.$.FIS_Podpis_2)
+			"SIP_Wroclaw_Soft\Stary\SiMS_screen_zmienny_np.png" (S.$.Pixel_FIS_tex_2)
+		{endif}
+
+		(L.L.SiMS_Mode) 301 =
+		{if}
+			"" (S.$.FIS_Podpis)
+			"" (S.$.FIS_Podpis_2)
+			"SIP_Wroclaw_Soft\Stary\SiMS_screen_zmienny_p.png" (S.$.Pixel_FIS_tex_2)
+		{endif}
+
+	{else}
+		(M.L.XTL_GetTime)
+		0 (S.L.ETL_liczenie)
+		0 (S.L.SiMS_Mode)
+		0 (S.L.FIS_Visible_Stop)
+
+		1 (S.L.SIP_Sufit_Reklama_count)
+		0 (S.L.SIP_Sufit_Reklama_timer)
+		"SIP_Wroclaw_Soft\Sufit_Reklamy\Reklama_1.png" (S.$.SIP_Sufit_Reklama)
+
+		0 (S.L.SiMS_Mode_Changed3)
+		-1 (S.L.SiMS_Busstop_last)
+
+		"SIP_Wroclaw_Soft\Standby.png" (S.$.Pixel_FIS_tex)
+		"SIP_Wroclaw_Soft\Standby2.png" (S.$.Pixel_FIS_tex_2)
+
+		"" (S.$.FIS_Linia)
+		"" (S.$.FIS_Kierunek)
+		"" (S.$.FIS_Podpis)
+		"" (S.$.FIS_Podpis_2)
+
+		"" (S.$.FIS_Stop_0)
+		"" (S.$.FIS_Stop_0_np)
+		"" (S.$.FIS_Stop_1)
+		"" (S.$.FIS_Stop_2)
+		"" (S.$.FIS_Stop_3)
+		"" (S.$.FIS_Stop_4)
+		"" (S.$.FIS_Stop_5)
+		"" (S.$.FIS_Stop_6)
+		"" (S.$.FIS_Stop_7)
+		"" (S.$.FIS_Stop_8)
+	{endif}
+
+{else}
+	0 (S.L.ETL_liczenie)
+	0 (S.L.SiMS_Mode)
+	0 (S.L.FIS_Visible_Stop)
+
+	1 (S.L.SIP_Sufit_Reklama_count)
+	0 (S.L.SIP_Sufit_Reklama_timer)
+	"SIP_Wroclaw_Soft\Sufit_Reklamy\Reklama_1.png" (S.$.SIP_Sufit_Reklama)
+
+	0 (S.L.SiMS_Mode_Changed3)
+	-1 (S.L.SiMS_Busstop_last)
+
+	"" (S.$.Pixel_FIS_tex)
+	"" (S.$.Pixel_FIS_tex_2)
+
+	"" (S.$.FIS_Linia)
+	"" (S.$.FIS_Kierunek)
+	"" (S.$.FIS_Podpis)
+	"" (S.$.FIS_Podpis_2)
+
+	"" (S.$.FIS_Stop_0)
+	"" (S.$.FIS_Stop_0_np)
+	"" (S.$.FIS_Stop_1)
+	"" (S.$.FIS_Stop_2)
+	"" (S.$.FIS_Stop_3)
+	"" (S.$.FIS_Stop_4)
+	"" (S.$.FIS_Stop_5)
+	"" (S.$.FIS_Stop_6)
+	"" (S.$.FIS_Stop_7)
+	"" (S.$.FIS_Stop_8)
+	"" (S.$.XTL_Godzina)
+	"" (S.$.XTL_GodzinaSec)
+{endif}
+
+	(L.L.dt) 0 >=
+	(L.L.dt) 1 < &&
+	{if}
+		"poniedzia³ek" (S.$.weekday)
+	{endif}
+
+	(L.L.dt) 1 >=
+	(L.L.dt) 2 < &&
+	{if}
+		"wtorek" (S.$.weekday)
+	{endif}
+
+	(L.L.dt) 2 >=
+	(L.L.dt) 3 < &&
+	{if}
+		"œroda" (S.$.weekday)
+	{endif}
+
+	(L.L.dt) 3 >=
+	(L.L.dt) 4 < &&
+	{if} 
+		"czwartek" (S.$.weekday)
+	{endif}
+
+	(L.L.dt) 4 >=
+	(L.L.dt) 5 < &&
+	{if}
+		"pi¹tek" (S.$.weekday)
+	{endif}
+
+	(L.L.dt) 5 >=
+	(L.L.dt) 6 < &&
+	{if}
+		"sobota" (S.$.weekday)
+	{endif}
+
+	(L.L.dt) 6 >=
+	(L.L.dt) 7 < &&
+	{if}
+		"niedziela" (S.$.weekday)
+	{endif}	
+
+	(L.S.Month) 1 =
+	{if}
+		" stycznia " (S.$.month)
+	{endif}
+
+	(L.S.Month) 2 =
+	{if}
+		" lutego " (S.$.month)
+	{endif}
+
+	(L.S.Month) 3 =
+	{if}
+		" marca " (S.$.month)
+	{endif}
+
+	(L.S.Month) 4 =
+	{if} 
+		" kwietnia " (S.$.month)
+	{endif}
+
+	(L.S.Month) 5 =
+	{if}
+		" maja " (S.$.month)
+	{endif}
+
+	(L.S.Month) 6 =
+	{if}
+		" czerwca " (S.$.month)
+	{endif}
+
+	(L.S.Month) 7 =
+	{if}
+		" lipca " (S.$.month)
+	{endif}	
+	(L.S.Month) 8 =
+	{if}
+		" sierpnia " (S.$.month)
+	{endif}
+
+	(L.S.Month) 9 =
+	{if}
+		" wrzeœnia " (S.$.month)
+	{endif}
+
+	(L.S.Month) 10 =
+	{if}
+		" paŸdziernika " (S.$.month)
+	{endif}
+
+	(L.S.Month) 11 =
+	{if} 
+		" listopada " (S.$.month)
+	{endif}
+
+	(L.S.Month) 12 =
+	{if}
+		" grudnia " (S.$.month)
+	{endif}
+
+1 (S.L.Refresh_Strings)
+
+(L.L.5000_displaymode) (S.L.SiMS_last_displaymode)
+
+{end}
+
+{macro:Brygadowka_init}
+	(L.L.5000_displaymode) 302 =
+	{if}
+		(L.L.IBIS_Route) "02" $IntToStrEnh (S.$.Brygadowka)
+	{else}
+		(L.L.5000_displaymode) 401 =
+		{if}
+			"-01" (S.$.Brygadowka)
+		{else}
+			"" (S.$.Brygadowka)
+		{endif}
+	{endif}
+{end}
+	
+{macro:XTL_GetTime}
+    (L.S.Time) 3600 / s0 trunc s1 "02" $IntToStrEnh ":" $+
+    l0 l1 - 60 * s1 trunc s2 "02" $IntToStrEnh $+
+    (S.$.XTL_Godzina)
+{end}
+
+{macro:XTL_GetTimeSec}
+	(L.S.Time) 3600 / s0 trunc s1 "02" $IntToStrEnh ":" $+
+	l0 l1 - 60 * s1 trunc s2 "02" $IntToStrEnh $+ ":" $+
+	l1 l2 - 60 * trunc "02" $IntToStrEnh $+
+	(S.$.XTL_GodzinaSec)
+{end}
+
+{macro:XTL_GetDate}
+
+	"" "" $+ (L.S.Day) "02" $IntToStrEnh $+ "." $+ (L.S.Month) "02" $IntToStrEnh $+ "." $+ (L.S.Year) $IntToStr $+
+	(S.$.XTL_Data)
+
+	(L.S.Month) (S.L.XTL_Miesiac)
+	(L.S.Day) (S.L.XTL_DzienKalendarzowy)
+	(L.S.Year) (S.L.XTL_Rok)
+
+	(L.L.XTL_Miesiac) 1 =
+	{if}
+		"stycznia" (S.$.XTL_MiesiacSformatowany)
+	{endif}
+
+	(L.L.XTL_Miesiac) 2 =
+	{if}
+		"lutego" (S.$.XTL_MiesiacSformatowany)
+	{endif}
+
+	(L.L.XTL_Miesiac) 3 =
+	{if}
+		"marca" (S.$.XTL_MiesiacSformatowany)
+	{endif}
+
+	(L.L.XTL_Miesiac) 4 =
+	{if}
+		"kwietnia" (S.$.XTL_MiesiacSformatowany)
+	{endif}
+
+	(L.L.XTL_Miesiac) 5 =
+	{if}
+		"maja" (S.$.XTL_MiesiacSformatowany)
+	{endif}
+
+	(L.L.XTL_Miesiac) 6 =
+	{if}
+		"czerwca" (S.$.XTL_MiesiacSformatowany)
+	{endif}
+
+	(L.L.XTL_Miesiac) 7 =
+	{if}
+		"lipca" (S.$.XTL_MiesiacSformatowany)
+	{endif}
+
+	(L.L.XTL_Miesiac) 8 =
+	{if}
+		"sierpnia" (S.$.XTL_MiesiacSformatowany)
+	{endif}
+
+	(L.L.XTL_Miesiac) 9 =
+	{if}
+		"wrzeœnia" (S.$.XTL_MiesiacSformatowany)
+	{endif}
+
+	(L.L.XTL_Miesiac) 10 =
+	{if}
+		"paŸdziernika" (S.$.XTL_MiesiacSformatowany)
+	{endif}
+
+	(L.L.XTL_Miesiac) 11 =
+	{if}
+		"listopada" (S.$.XTL_MiesiacSformatowany)
+	{endif}
+
+	(L.L.XTL_Miesiac) 12 =
+	{if}
+		"grudnia" (S.$.XTL_MiesiacSformatowany)
+	{endif}
+
+{end}

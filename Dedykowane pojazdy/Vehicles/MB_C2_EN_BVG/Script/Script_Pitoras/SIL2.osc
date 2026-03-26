@@ -1,0 +1,1412 @@
+{trigger:SIL2_click_WejdzWKurs}
+
+	(L.L.5000_displaymode) 101 =
+	{if}
+		300 (S.L.5000_displaymode)
+		0 (S.L.nrLinii_skan)
+		0 (S.L.nrIndex_linii)
+		1 (S.L.skan_aktywny)
+		" " (S.$.Linia_Linijka0) (S.$.Linia_Linijka1) (S.$.Linia_Linijka2) (S.$.Linia_Linijka3) (S.$.Linia_Linijka4) (S.$.Linia_Linijka5) (S.$.Linia_Linijka6)
+	{endif}
+	
+{end}
+
+{trigger:SIL2_click_WejdzWAkcje}
+	
+	(L.L.5000_displaymode) 101 =
+	{if}
+		400 (S.L.5000_displaymode)
+	{endif}
+	
+{end}
+
+{trigger:SIL2_click_lista_wGore}
+	0 (S.L.nrLinii_skan)
+	0 (S.L.nrIndex_linii)
+	1 (S.L.skan_aktywny)
+	" " (S.$.Linia_Linijka0) (S.$.Linia_Linijka1) (S.$.Linia_Linijka2) (S.$.Linia_Linijka3) (S.$.Linia_Linijka4) (S.$.Linia_Linijka5) (S.$.Linia_Linijka6)
+{end}
+
+{trigger:SIL2_click_lista_wDol}
+	(L.L.Linia_Linijka6Int) 1 + (S.L.nrLinii_skan)
+	0 (S.L.nrIndex_linii)
+	1 (S.L.skan_aktywny)
+	" " (S.$.Linia_Linijka0) (S.$.Linia_Linijka1) (S.$.Linia_Linijka2) (S.$.Linia_Linijka3) (S.$.Linia_Linijka4) (S.$.Linia_Linijka5) (S.$.Linia_Linijka6)
+{end}
+
+{trigger:SIL2_click_lista_wGore_kierunek}
+	0 (S.L.IBIS_Route_cos2137)
+	0 (S.L.nrWariantu_skan)
+	0 (S.L.nrIndex_wariantu)
+	1 (S.L.skan_wariantow_aktywny)
+	" " (S.$.Linia_Linijka0) (S.$.Linia_Linijka1) (S.$.Linia_Linijka2) (S.$.Linia_Linijka3) (S.$.Linia_Linijka4) (S.$.Linia_Linijka5) (S.$.Linia_Linijka6)
+{end}
+
+{trigger:SIL2_click_lista_wDol_kierunek}
+	(L.L.Wariant_Linijka6IntRoute) 1 + (L.L.IBIS_Route_cos2137)
+	0 (S.L.nrIndex_wariantu)
+	1 (S.L.skan_wariantow_aktywny)
+	" " (S.$.Linia_Linijka0) (S.$.Linia_Linijka1) (S.$.Linia_Linijka2) (S.$.Linia_Linijka3) (S.$.Linia_Linijka4) (S.$.Linia_Linijka5) (S.$.Linia_Linijka6)
+{end}
+
+{trigger:wybrano_wiersz1}
+	(L.L.5000_displaymode) 301 =
+	{if}
+		(L.L.Wariant_Linijka0IntRoute) (S.L.IBIS_inputWariant)
+		(M.L.wybor_trasy)
+		1301 (S.L.5000_displaymode)
+	{endif}
+
+	(L.L.5000_displaymode) 300 =
+	{if}
+		(L.L.Linia_Linijka0Int) (S.L.IBIS_LinieKurs) 100 * (S.L.IBIS_Linie_Complex)
+		301 (S.L.5000_displaymode)
+		0 (S.L.nrIndex_wariantu)
+		1 (S.L.IBIS_Route_cos2137)
+		1 (S.L.skan_wariantow_aktywny)
+		" " (S.$.Linia_Linijka0) (S.$.Linia_Linijka1) (S.$.Linia_Linijka2) (S.$.Linia_Linijka3) (S.$.Linia_Linijka4) (S.$.Linia_Linijka5) (S.$.Linia_Linijka6)
+	{endif}
+{end}
+
+{trigger:wybrano_wiersz2}
+
+	(L.L.5000_displaymode) 301 =
+	{if}
+		(L.L.Wariant_Linijka1IntRoute) (S.L.IBIS_inputWariant)
+		(M.L.wybor_trasy)
+		1301 (S.L.5000_displaymode)
+	{endif}
+
+	(L.L.5000_displaymode) 300 =
+	{if}
+		(L.L.Linia_Linijka1Int) (S.L.IBIS_LinieKurs) 100 * (S.L.IBIS_Linie_Complex)
+		301 (S.L.5000_displaymode)
+		0 (S.L.nrIndex_wariantu)
+		1 (S.L.IBIS_Route_cos2137)
+		1 (S.L.skan_wariantow_aktywny)
+		" " (S.$.Linia_Linijka0) (S.$.Linia_Linijka1) (S.$.Linia_Linijka2) (S.$.Linia_Linijka3) (S.$.Linia_Linijka4) (S.$.Linia_Linijka5) (S.$.Linia_Linijka6)
+	{endif}
+	
+
+{end}
+
+{trigger:wybrano_wiersz3}
+	(L.L.5000_displaymode) 301 =
+	{if}
+		(L.L.Wariant_Linijka2IntRoute) (S.L.IBIS_inputWariant)
+		(M.L.wybor_trasy)
+		1301 (S.L.5000_displaymode)
+	{endif}
+
+	(L.L.5000_displaymode) 300 =
+	{if}
+		(L.L.Linia_Linijka2Int) (S.L.IBIS_LinieKurs) 100 * (S.L.IBIS_Linie_Complex)
+		301 (S.L.5000_displaymode)
+		0 (S.L.nrIndex_wariantu)
+		1 (S.L.IBIS_Route_cos2137)
+		1 (S.L.skan_wariantow_aktywny)
+		" " (S.$.Linia_Linijka0) (S.$.Linia_Linijka1) (S.$.Linia_Linijka2) (S.$.Linia_Linijka3) (S.$.Linia_Linijka4) (S.$.Linia_Linijka5) (S.$.Linia_Linijka6)
+	{endif}
+	
+	
+{end}
+
+{trigger:wybrano_wiersz4}
+
+(L.L.5000_displaymode) 301 =
+	{if}
+		(L.L.Wariant_Linijka3IntRoute) (S.L.IBIS_inputWariant)
+		(M.L.wybor_trasy)
+		1301 (S.L.5000_displaymode)
+	{endif}
+	
+	(L.L.5000_displaymode) 300 =
+	{if}
+		(L.L.Linia_Linijka3Int) (S.L.IBIS_LinieKurs) 100 * (S.L.IBIS_Linie_Complex)
+		301 (S.L.5000_displaymode)
+		0 (S.L.nrIndex_wariantu)
+		1 (S.L.IBIS_Route_cos2137)
+		1 (S.L.skan_wariantow_aktywny)
+		" " (S.$.Linia_Linijka0) (S.$.Linia_Linijka1) (S.$.Linia_Linijka2) (S.$.Linia_Linijka3) (S.$.Linia_Linijka4) (S.$.Linia_Linijka5) (S.$.Linia_Linijka6)
+	{endif}
+	
+	
+{end}
+
+{trigger:wybrano_wiersz5}
+
+	(L.L.5000_displaymode) 301 =
+	{if}
+		(L.L.Wariant_Linijka4IntRoute) (S.L.IBIS_inputWariant)
+		(M.L.wybor_trasy)
+		1301 (S.L.5000_displaymode)
+	{endif}
+	
+	(L.L.5000_displaymode) 300 =
+	{if}
+		(L.L.Linia_Linijka4Int) (S.L.IBIS_LinieKurs) 100 * (S.L.IBIS_Linie_Complex)
+		301 (S.L.5000_displaymode)
+		0 (S.L.nrIndex_wariantu)
+		1 (S.L.IBIS_Route_cos2137)
+		1 (S.L.skan_wariantow_aktywny)
+		" " (S.$.Linia_Linijka0) (S.$.Linia_Linijka1) (S.$.Linia_Linijka2) (S.$.Linia_Linijka3) (S.$.Linia_Linijka4) (S.$.Linia_Linijka5) (S.$.Linia_Linijka6)
+	{endif}
+	
+
+{end}
+
+{trigger:wybrano_wiersz6}
+
+	(L.L.5000_displaymode) 301 =
+	{if}
+		(L.L.Wariant_Linijka5IntRoute) (S.L.IBIS_inputWariant)
+		(M.L.wybor_trasy)
+		1301 (S.L.5000_displaymode)
+	{endif}
+	(L.L.5000_displaymode) 300 =
+	{if}
+		(L.L.Linia_Linijka5Int) (S.L.IBIS_LinieKurs) 100 * (S.L.IBIS_Linie_Complex)
+		301 (S.L.5000_displaymode)
+		0 (S.L.nrIndex_wariantu)
+		1 (S.L.IBIS_Route_cos2137)
+		1 (S.L.skan_wariantow_aktywny)
+		" " (S.$.Linia_Linijka0) (S.$.Linia_Linijka1) (S.$.Linia_Linijka2) (S.$.Linia_Linijka3) (S.$.Linia_Linijka4) (S.$.Linia_Linijka5) (S.$.Linia_Linijka6)
+	{endif}
+	
+
+{end}
+
+{trigger:wybrano_wiersz7}
+
+	(L.L.5000_displaymode) 301 =
+	{if}
+		(L.L.Wariant_Linijka6IntRoute) (S.L.IBIS_inputWariant)
+		(M.L.wybor_trasy)
+		1301 (S.L.5000_displaymode)
+	{endif}
+	(L.L.5000_displaymode) 300 =
+	{if}
+		(L.L.Linia_Linijka6Int) (S.L.IBIS_LinieKurs) 100 * (S.L.IBIS_Linie_Complex)
+		301 (S.L.5000_displaymode)
+		0 (S.L.nrIndex_wariantu)
+		1 (S.L.IBIS_Route_cos2137)
+		1 (S.L.skan_wariantow_aktywny)
+		" " (S.$.Linia_Linijka0) (S.$.Linia_Linijka1) (S.$.Linia_Linijka2) (S.$.Linia_Linijka3) (S.$.Linia_Linijka4) (S.$.Linia_Linijka5) (S.$.Linia_Linijka6)
+	{endif}
+	
+
+{end}
+
+{trigger:SIL2_click_kurs_przerwij}
+	(L.L.5000_displaymode) 300 =
+	(L.L.5000_displaymode) 301 = ||
+	(L.L.5000_displaymode) 400 = ||
+	(L.L.5000_displaymode) 1301 = ||
+	{if}
+		101 (S.L.5000_displaymode)
+	{endif}
+	
+	(L.L.5000_displaymode) 302 =
+	{if}
+		"SIL2\SIL2_ekran_czy_przerwac_kurs.jpg" (S.$.SIL2_display_okienko)
+		1 (S.L.SIL2_display_okienko_var)
+	{endif}
+	
+	(L.L.5000_displaymode) 401 =
+	{if}
+		"" (S.$.Matrix_LiniaSpec)
+		"" (S.$.Matrix_KierunekL1)
+		"" (S.$.Matrix_KierunekL2)
+		400 (S.L.5000_displaymode)
+		0 (S.L.IBIS_Linie_Complex)
+		-999 (S.L.Matrix_Nr_Last)
+		-999 (S.L.Matrix_TerminusIndex_Last)
+	{endif}
+{end}
+
+{trigger:okienko_przerwac_TAK}
+	(L.L.5000_displaymode) 302 =
+	(L.L.5000_displaymode) 401 = ||
+	{if}
+		"" (S.$.Matrix_LiniaSpec)
+		"" (S.$.Matrix_KierunekL1)
+		"" (S.$.Matrix_KierunekL2)
+		101 (S.L.5000_displaymode)
+		-999 (S.L.Matrix_Nr_Last)
+		-999 (S.L.Matrix_TerminusIndex_Last)
+	{endif}
+{end}
+
+{trigger:okienko_przerwac_NIE}
+	0 (S.L.SIL2_display_okienko_var)
+{end}
+
+{trigger:zatwierdz_kurs}
+	(L.L.5000_displaymode) 1301 =
+	{if}
+		302 (S.L.5000_displaymode)
+		(M.L.wybor_trasy)
+	{endif}
+{end}
+
+{trigger:SIL2_akcja1}
+
+'MPK WROC£AW
+	"MPK" (S.$.Matrix_LiniaSpec)
+	"WROC£AW" (S.$.Matrix_KierunekL1)
+	"" (S.$.Matrix_KierunekL2)
+
+	401 (S.L.5000_displaymode)
+	-999 (S.L.Matrix_Nr_Last)
+	-999 (S.L.Matrix_TerminusIndex_Last)
+{end}
+
+{trigger:SIL2_akcja2}
+
+'Przerwa
+	"" (S.$.Matrix_LiniaSpec)
+	"PRZERWA :)" (S.$.Matrix_KierunekL1)
+	"" (S.$.Matrix_KierunekL2)
+
+	401 (S.L.5000_displaymode)
+	-999 (S.L.Matrix_Nr_Last)
+	-999 (S.L.Matrix_TerminusIndex_Last)
+{end}
+
+{trigger:SIL2_akcja3}
+
+'Przejazd Techniczny
+	"|		|" (S.$.Matrix_LiniaSpec)
+	"PRZEJAZD" (S.$.Matrix_KierunekL1)
+	"TECHNICZNY" (S.$.Matrix_KierunekL2)
+
+	401 (S.L.5000_displaymode)
+	-999 (S.L.Matrix_Nr_Last)
+	-999 (S.L.Matrix_TerminusIndex_Last)
+{end}
+
+{trigger:SIL2_akcja4}
+
+'Zjazd do zajezdni
+	"" (S.$.Matrix_LiniaSpec)
+	"ZJAZD" (S.$.Matrix_KierunekL1)
+	"DO ZAJEZDNI" (S.$.Matrix_KierunekL2)
+
+	401 (S.L.5000_displaymode)
+	-999 (S.L.Matrix_Nr_Last)
+	-999 (S.L.Matrix_TerminusIndex_Last)
+{end}
+
+{trigger:SIL2_click_przerwac_NIE}
+	(L.L.5000_displaymode) 302 =
+	{if}
+		0 (S.L.SIL2_display_okienko_var)
+	{endif}
+{end}
+
+{trigger:SIL2_click_przerwac_TAK}
+	(L.L.5000_displaymode) 302 =
+	{if}
+		"" (S.$.Matrix_LiniaSpec)
+		"" (S.$.Matrix_KierunekL1)
+		"" (S.$.Matrix_KierunekL2)
+		101 (S.L.5000_displaymode)
+		0 (S.L.IBIS_Linie_Complex) (S.L.IBIS_LinieKurs) (S.L.SIL2_display_okienko_var)
+		-999 (S.L.Matrix_Nr_Last)
+		-999 (S.L.Matrix_TerminusIndex_Last)
+	{endif}
+{end}
+
+{trigger:SIL2_click_przyst_dotylu}
+	(L.L.IBIS_busstop) 0 >
+	{if}
+		(L.L.IBIS_busstop) 1 - (S.L.IBIS_busstop)
+		(M.L.IBIS_RefreshBusstop)
+	{endif}
+{end}
+
+{trigger:SIL2_click_przyst_doprzodu}
+	(L.L.IBIS_busstop) 1 + (S.L.IBIS_busstop)
+	(M.L.IBIS_RefreshBusstop)
+{end}
+
+{trigger:SIL2_click_zap_zewn}
+	(M.L.ZewnetrznaZapowiedz)
+{end}
+
+
+
+{macro:IBIS_init}
+	
+	
+	
+{end}
+
+{macro:IBIS_frame}
+
+'	(S.L.Refresh_Strings)
+	
+	(L.L.elec_busbar_main)
+	{if}
+		1 (S.L.FIS_sterownik_wlaczony)
+		(L.L.5000_kasowniki) 1 =
+		{if}
+			1 (S.L.FIS_zablokowane_kasowniki)
+		{else}
+			0 (S.L.FIS_zablokowane_kasowniki)
+		{endif}
+
+		(L.L.5000_displaymode) 302 =
+		{if}
+			1 (S.L.FIS_zalogowany_kierunek)
+		{else}
+			0 (S.L.FIS_zalogowany_kierunek)
+		{endif}
+
+		(L.L.5000_displaymode) 302 =
+		{if}
+			
+			1 (S.L.FIS_zalogowany_z_trasa)
+
+			(L.L.door_0) 0 >
+			(L.L.door_1) 0 > ||
+			(L.L.door_2) 0 > ||
+			(L.L.door_3) 0 > ||
+			(L.L.door_4) 0 > ||
+			(L.L.door_5) 0 > ||
+			(L.L.door_6) 0 > ||
+			(L.L.door_7) 0 > ||
+			{if}
+				1 (S.L.FIS_zalogowany_na_przystanku)
+			{else}
+				0 (S.L.FIS_zalogowany_na_przystanku)
+			{endif}
+
+		{else}
+			0 (S.L.FIS_zalogowany_z_trasa)
+			0 (S.L.FIS_zalogowany_na_przystanku)
+		{endif}
+		
+'************Uruchamianie************
+
+		(L.L.uruchamianie) (L.S.Timegap) + (S.L.uruchamianie)
+		
+		(L.L.uruchamianie) 2 >=
+		{if}
+			(L.L.5000_displaymode) 0 =
+			{if}
+				1 (S.L.5000_displaymode)
+				0 (S.L.uruchamianie)
+			{endif}
+		{endif}
+		(L.L.uruchamianie) 2 >=
+		{if}
+			(L.L.5000_displaymode) 1 =
+			{if}
+				2 (S.L.5000_displaymode)
+				0 (S.L.uruchamianie)
+			{endif}
+		{endif}
+		(L.L.uruchamianie) 0.5 >=
+		{if}	
+			(L.L.5000_displaymode) 2 =
+			{if}
+				3 (S.L.5000_displaymode)
+				0 (S.L.uruchamianie)
+			{endif}
+		{endif}
+		(L.L.uruchamianie) 0.5 >=
+		{if}	
+			(L.L.5000_displaymode) 3 =
+			{if}
+				4 (S.L.5000_displaymode)
+				0 (S.L.uruchamianie)
+			{endif}
+		{endif}
+		(L.L.uruchamianie) 0.5 >=
+		{if}	
+			(L.L.5000_displaymode) 4 =
+			{if}
+				5 (S.L.5000_displaymode)
+				0 (S.L.uruchamianie)
+			{endif}
+		{endif}
+		(L.L.uruchamianie) 0.5 >=
+		{if}	
+			(L.L.5000_displaymode) 5 =
+			{if}
+				6 (S.L.5000_displaymode)
+				0 (S.L.uruchamianie)
+			{endif}
+		{endif}
+		(L.L.uruchamianie) 2 >=
+		{if}	
+			(L.L.5000_displaymode) 6 =
+			{if}
+				7 (S.L.5000_displaymode)
+				0 (S.L.uruchamianie)
+			{endif}
+		{endif}
+		(L.L.uruchamianie) 1 >=
+		{if}	
+			(L.L.5000_displaymode) 7 =
+			{if}
+				8 (S.L.5000_displaymode)
+				0 (S.L.uruchamianie)
+			{endif}
+		{endif}
+		(L.L.uruchamianie) 1 >=
+		{if}	
+			(L.L.5000_displaymode) 8 =
+			{if}
+				9 (S.L.5000_displaymode)
+				0 (S.L.uruchamianie)
+			{endif}
+		{endif}
+		(L.L.uruchamianie) 0.5 >=
+		{if}	
+			(L.L.5000_displaymode) 9 =
+			{if}
+				10 (S.L.5000_displaymode)
+				0 (S.L.uruchamianie)
+			{endif}
+		{endif}
+		(L.L.uruchamianie) 2 >=
+		{if}	
+			(L.L.5000_displaymode) 10 =
+			{if}
+				11 (S.L.5000_displaymode)
+				0 (S.L.uruchamianie)
+			{endif}
+		{endif}
+		(L.L.uruchamianie) 2 >=
+		{if}	
+			(L.L.5000_displaymode) 11 =
+			{if}
+				12 (S.L.5000_displaymode)
+				0 (S.L.uruchamianie)
+				(M.L.SIMS_startup_sound)
+			{endif}
+		{endif}
+		(L.L.uruchamianie) 1 >=
+		{if}	
+			(L.L.5000_displaymode) 12 =
+			{if}
+				13 (S.L.5000_displaymode)
+				0 (S.L.uruchamianie)
+			{endif}
+		{endif}
+		(L.L.uruchamianie) 0.5 >=
+		{if}	
+			(L.L.5000_displaymode) 13 =
+			{if}
+				14 (S.L.5000_displaymode)
+				0 (S.L.uruchamianie)
+			{endif}
+		{endif}
+		(L.L.uruchamianie) 1 >=
+		{if}	
+			(L.L.5000_displaymode) 14 =
+			{if}
+				101 (S.L.5000_displaymode)
+				0 (S.L.uruchamianie)
+				1 (S.L.SIL2_wlaczony)
+			{endif}	
+		{endif}
+		
+'************Makro wyciagania czasu************
+		
+			(M.L.SIL2_GetDate)
+			(M.L.SIL2_GetTime)
+		
+'************Kiedy ma byc szukanie linii i wariantow************
+
+		(L.L.5000_displaymode) 300 =
+		(L.L.5000_displaymode) 301 = ||
+		{if}
+			(M.L.skan_linii)
+		{endif}
+		
+'************Pierdolnik do wyòwietlania opònienia xD************
+		
+	(L.L.schedule_active) 1 =
+	{if}
+		
+		
+		
+		
+		
+		
+'		(L.L.IBIS_busstop) (M.V.GetTTBusstopDep) (L.S.Time) - 60 / trunc abs $IntToStr (S.$.ITeeF_WYKURWISTE_MINUTY)
+		
+		(L.L.IBIS_busstop) (M.V.GetTTBusstopDep) (L.S.Time) - 60 / (S.L.minuty_z_przecinkiem)
+		(L.L.minuty_z_przecinkiem) trunc (S.L.minuty_bez_przecinka)		
+		(L.L.minuty_z_przecinkiem) (L.L.minuty_bez_przecinka) - 60 * trunc abs "02" $IntToStrEnh (S.$.ITF_SEKUNDY_CHUJOWE)
+		
+		(L.L.minuty_z_przecinkiem) 60 / trunc abs (S.L.godziny_jakies)
+		
+		(L.L.IBIS_busstop) (M.V.GetTTBusstopDep) (L.S.Time) - 60 / trunc abs (S.L.minuty_do_konwersji)
+		
+		(L.L.godziny_jakies) 0 =
+		{if}
+			(L.L.minuty_do_konwersji) $IntToStr (S.$.ITeeF_WYKURWISTE_MINUTY)
+			(L.L.godziny_jakies) $IntToStr (S.$.ITeeF_FAJNE_GODZINY)
+			"0" (L.$.ITeeF_FAJNE_GODZINY) $+ (S.$.ITeeF_FAJNE_GODZINY)
+		{endif}
+		
+		(L.L.godziny_jakies) 1 =
+		{if}
+			(L.L.minuty_do_konwersji) 60 - $IntToStr (S.$.ITeeF_WYKURWISTE_MINUTY)
+			(L.L.godziny_jakies) $IntToStr (S.$.ITeeF_FAJNE_GODZINY)
+			"0" (L.$.ITeeF_FAJNE_GODZINY) $+ (S.$.ITeeF_FAJNE_GODZINY)
+		{endif}
+		
+		(L.L.godziny_jakies) 2 =
+		{if}
+			(L.L.minuty_do_konwersji) 120 - $IntToStr (S.$.ITeeF_WYKURWISTE_MINUTY)
+			(L.L.godziny_jakies) $IntToStr (S.$.ITeeF_FAJNE_GODZINY)
+			"0" (L.$.ITeeF_FAJNE_GODZINY) $+ (S.$.ITeeF_FAJNE_GODZINY)
+		{endif}
+
+		(L.L.godziny_jakies) 3 =
+		{if}
+			(L.L.minuty_do_konwersji) 180 - $IntToStr (S.$.ITeeF_WYKURWISTE_MINUTY)
+			(L.L.godziny_jakies) $IntToStr (S.$.ITeeF_FAJNE_GODZINY)
+			"0" (L.$.ITeeF_FAJNE_GODZINY) $+ (S.$.ITeeF_FAJNE_GODZINY)
+		{endif}
+		
+		(L.L.godziny_jakies) 4 =
+		{if}
+			(L.L.minuty_do_konwersji) 240 - $IntToStr (S.$.ITeeF_WYKURWISTE_MINUTY)
+			(L.L.godziny_jakies) $IntToStr (S.$.ITeeF_FAJNE_GODZINY)
+			"0" (L.$.ITeeF_FAJNE_GODZINY) $+ (S.$.ITeeF_FAJNE_GODZINY)
+		{endif}
+		
+		(L.L.godziny_jakies) 5 =
+		{if}
+			(L.L.minuty_do_konwersji) 300 - $IntToStr (S.$.ITeeF_WYKURWISTE_MINUTY)
+			(L.L.godziny_jakies) $IntToStr (S.$.ITeeF_FAJNE_GODZINY)
+			"0" (L.$.ITeeF_FAJNE_GODZINY) $+ (S.$.ITeeF_FAJNE_GODZINY)
+		{endif}
+		
+		(L.L.godziny_jakies) 6 =
+		{if}
+			(L.L.minuty_do_konwersji) 360 - $IntToStr (S.$.ITeeF_WYKURWISTE_MINUTY)
+			(L.L.godziny_jakies) $IntToStr (S.$.ITeeF_FAJNE_GODZINY)
+			"0" (L.$.ITeeF_FAJNE_GODZINY) $+ (S.$.ITeeF_FAJNE_GODZINY)
+		{endif}
+		
+		(L.L.godziny_jakies) 6 >
+		{if}
+			(L.L.minuty_do_konwersji) $IntToStr (S.$.ITeeF_WYKURWISTE_MINUTY)
+			">6" (S.$.ITeeF_FAJNE_GODZINY)
+		{endif}
+		
+		(L.L.minuty_do_konwersji) 10 <
+		{if}
+			"0" (L.$.ITeeF_WYKURWISTE_MINUTY) $+ (S.$.ITeeF_WYKURWISTE_MINUTY)
+		{endif}
+
+	{endif}
+	
+	
+	(M.V.GetTTBusstopIndex) -1 =
+		{if}
+			(M.V.GetTTBusstopIndex) (S.L.current_stopindex)
+			0 (S.L.Status_Strefy)
+		{endif}
+
+' (2) krotki odcinek po wyjechaniu ze strefy przystanku
+
+		(L.L.current_stopindex) (M.V.GetTTBusstopIndex) = !
+		{if}
+			(L.L.current_stopindex) -1 =
+			{if}
+				(M.V.GetTTBusstopIndex) (S.L.current_stopindex)
+				1 (S.L.Status_Strefy)
+			{else}
+				1 (S.L.IBIS_State)
+				(L.L.kmcounter_m) (S.L.meter_startwert)
+				(M.V.GetTTBusstopIndex) (S.L.current_stopindex)
+'				2 (S.L.Status_Strefy)
+			{endif}
+		{endif}
+		
+' (4) strefa pomiedzy przystankami		
+
+		(L.L.kmcounter_m) (L.L.meter_startwert) - 30 > (L.L.IBIS_State) 1 = &&
+		{if}
+			(L.L.IBIS_busstop) (M.V.GetTTBusstopIndex) =
+			{if}
+				0 (S.L.IBIS_State)
+				
+				(L.L.IBIS_busstop) 0 =
+				{if}
+					6 (S.L.Status_Strefy)
+				{else}
+					4 (S.L.Status_Strefy)
+				{endif}
+			{else}
+				(L.L.IBIS_busstop) 1 + (S.L.IBIS_busstop)
+				(M.L.IBIS_RefreshBusstop)
+				2 (S.L.GRG)
+				(M.L.IBIS_PlayAnnouncement)
+				0 (S.L.ann_arrived_trg)
+				0 (S.L.ann_zewn_played)
+				0 (S.L.ann_zewn_pending)
+				0 (S.L.ann_zewn_delay)
+
+				0 (S.L.IBIS_State)
+				(L.L.IBIS_busstop) 0 =
+				{if}
+					6 (S.L.Status_Strefy)
+				{else}
+					4 (S.L.Status_Strefy)
+				{endif}
+
+' (5) strefa pomiedzy przystankami (w przypadku pominiecia przystanku)
+				
+			{endif}
+		{endif}
+
+
+		(L.L.kmcounter_m) (L.L.meter_startwert) - 0 < (L.L.IBIS_State) 1 = &&
+		{if}
+			(L.L.IBIS_busstop) 1 + (S.L.IBIS_busstop)
+			(M.L.IBIS_RefreshBusstop)
+			2 (S.L.GRG)
+			(M.L.IBIS_PlayAnnouncement)
+			0 (S.L.ann_arrived_trg)
+			0 (S.L.ann_zewn_played)
+			0 (S.L.ann_zewn_pending)
+			0 (S.L.ann_zewn_delay)
+
+			0 (S.L.IBIS_State)
+			(L.L.IBIS_busstop) 0 =
+				{if}
+					6 (S.L.Status_Strefy)
+				{else}
+					5 (S.L.Status_Strefy)
+				{endif}
+
+' (6) Dojazd do przystanku / na przystanku / odegranie zapowiedzi aktualneog przystanku 
+			
+		{endif}
+		
+		(M.V.GetTTBusstopIndex) (M.V.GetTTBusstopArr) (L.S.Time) - (M.V.GetTTDelay) + 12 < (L.L.GRG) 2 = &&
+		{if}
+			(M.L.AktualnyPrzystanekZapowiedz)
+
+			1 (S.L.ann_arrived_trg)
+			0 (S.L.ann_zewn_played)
+			0 (S.L.ann_zewn_pending)
+			0 (S.L.ann_zewn_delay)
+
+			6 (S.L.Status_Strefy)
+			0 (S.L.GRG)
+		{endif}
+		
+		(L.L.bus_dooraft_sw) abs 0.5 >
+		(L.L.door_0) 0.05 > ||
+		(L.L.door_1) 0.05 > ||
+		(L.L.door_2) 0.05 > ||
+		(L.L.door_3) 0.05 > ||
+		(L.L.door_4) 0.05 > ||
+		(L.L.door_5) 0.05 > ||
+		(L.L.door_6) 0.05 > ||
+		(L.L.door_7) 0.05 > ||
+		s0
+
+		(L.L.Status_Strefy) 6 =
+		(L.L.ann_arrived_trg) 1 = &&
+		(L.L.ann_zewn_played) 0 = &&
+		(L.L.Velocity) 0.5 < &&
+		l0 1 = &&
+		{if}
+
+			(L.L.ann_zewn_pending) 0 =
+			{if}
+				1 (S.L.ann_zewn_pending)
+				0 (S.L.ann_zewn_delay)
+			{else}
+				(L.L.ann_zewn_delay) (L.S.Timegap) + (S.L.ann_zewn_delay)
+
+				(L.L.ann_zewn_delay) 2.0 >=
+				{if}
+					(M.L.ZewnetrznaZapowiedz)
+					1 (S.L.ann_zewn_played)
+					0 (S.L.ann_zewn_pending)
+				{endif}
+			{endif}
+
+		{else}
+			0 (S.L.ann_zewn_pending)
+			0 (S.L.ann_zewn_delay)
+		{endif}
+
+
+'************Rozne rzeczy na textfeldy xDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD:DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD************
+
+
+		(L.L.5000_displaymode) 1301 =
+		{if}
+			(L.L.IBIS_busstop) (M.V.GetTTBusstopDep) 3600 / s0 trunc s1 "02" $IntToStrEnh ":" $+
+			l0 l1 - 60 * s1 trunc s2 "02" $IntToStrEnh $+
+			(S.$.SIL2_text_propo_godzina)
+			
+			(L.$.IBIS_terminus_name) (S.$.SIL2_text_propo_kierunek)
+			
+			(L.L.IBIS_LinieKurs) $IntToStr (S.$.SIL2_text_propo_linia)
+			
+			(L.L.IBIS_Route) $IntToStr (S.$.SIL2_text_propo_route)
+		{endif}
+
+		
+		(L.L.5000_displaymode) 302 =
+		{if}
+			(L.L.IBIS_LinieKurs) $IntToStr " " $+ (L.$.IBIS_terminus_name) $+ (S.$.SIL2_text_linia_kierunek)
+			
+
+			(L.L.IBIS_busstop) (M.V.GetTTBusstopDep) (L.S.Time) - 60 / trunc abs (S.L.chuj)
+			(L.L.schedule_active) 1 =
+			{if}
+				(L.L.chuj) 0 =
+				(L.$.ITF_NIE_WYPIERDALAJ_GUNWA_CHUJU) "- " $= &&
+				{if}
+					1 (S.L.pokaz_zielone_opoznienie)
+					0 (S.L.pokaz_czerwone_opoznienie)
+					0 (S.L.pokaz_zolte_opoznienie)
+				{else}
+					(L.L.chuj) 0 =
+					(L.$.ITF_NIE_WYPIERDALAJ_GUNWA_CHUJU) "+ " $= &&
+					{if}
+						1 (S.L.pokaz_zielone_opoznienie)
+						0 (S.L.pokaz_czerwone_opoznienie)
+						0 (S.L.pokaz_zolte_opoznienie)
+					{else}
+						(L.L.chuj) 1 =
+						(L.L.chuj) 2 = ||
+						(L.$.ITF_NIE_WYPIERDALAJ_GUNWA_CHUJU) "- " $= &&
+						{if}
+							0 (S.L.pokaz_zielone_opoznienie)
+							1 (S.L.pokaz_zolte_opoznienie)
+							0 (S.L.pokaz_czerwone_opoznienie)
+						{else}
+						
+							0 (S.L.pokaz_zielone_opoznienie)
+							0 (S.L.pokaz_zolte_opoznienie)
+							(L.L.chuj) 2 >
+							(L.$.ITF_NIE_WYPIERDALAJ_GUNWA_CHUJU) "- " $= &&
+							{if}
+								1 (S.L.pokaz_czerwone_opoznienie)
+								0 (S.L.pokaz_zielone_opoznienie)
+								0 (S.L.pokaz_zolte_opoznienie)
+							{else}
+								(L.L.chuj) 0 >
+								(L.$.ITF_NIE_WYPIERDALAJ_GUNWA_CHUJU) "+ " $= &&
+								{if}
+									1 (S.L.pokaz_czerwone_opoznienie)
+									0 (S.L.pokaz_zielone_opoznienie)
+									0 (S.L.pokaz_zolte_opoznienie)
+								{else}
+									0 (S.L.pokaz_czerwone_opoznienie)
+								{endif}
+							{endif}
+						{endif}
+					{endif}
+				{endif}
+			{else}
+				1 (S.L.pokaz_czerwone_opoznienie)
+			{endif}
+		{else}	
+			0 (S.L.pokaz_czerwone_opoznienie)
+			0 (S.L.pokaz_zielone_opoznienie)
+			0 (S.L.pokaz_zolte_opoznienie)
+		{endif}
+		
+		(L.L.5000_displaymode) 401 =
+		{if}
+			(L.$.Matrix_LiniaSpec) "  " $+ (L.$.Matrix_KierunekL1) $+ " " $+
+			(L.$.Matrix_KierunekL2) $+ (S.$.SIL2_text_linia_kierunek)
+		{endif}
+		
+'		(L.$.act_busstop) 
+		
+'		(L.L.IBIS_busstop) (M.V.GetTTBusstopDep) 3600 / (S.L.DEBUG_VAR_1)
+
+		(L.L.IBIS_RouteIndex) (M.V.GetBusstopCount) 1 - (S.L.ilosc_przystankow)
+		
+		(L.L.ilosc_przystankow) (L.L.IBIS_busstop) =
+		{if}
+			(L.L.IBIS_busstop) (M.V.GetTTBusstopArr) 3600 / s0 trunc s1 "02" $IntToStrEnh ":" $+
+			l0 l1 - 60 * (S.L.minuty_bez_przecinka_od_godziny)
+			(L.L.minuty_bez_przecinka_od_godziny) 0.1 + (S.L.minuty_bez_przecinka_od_godziny) s1
+			(L.L.minuty_bez_przecinka_od_godziny) trunc s2 "02" $IntToStrEnh $+
+			" " $+ (S.$.SIL2_text_godzina_odj_akt_przystanek)
+		{else}
+			(L.L.IBIS_busstop) (M.V.GetTTBusstopDep) 3600 / s0 trunc s1 "02" $IntToStrEnh ":" $+
+			l0 l1 - 60 * (S.L.minuty_bez_przecinka_od_godziny)
+			(L.L.minuty_bez_przecinka_od_godziny) 0.1 + (S.L.minuty_bez_przecinka_od_godziny) s1
+			(L.L.minuty_bez_przecinka_od_godziny) trunc s2 "02" $IntToStrEnh $+
+			" " $+ (S.$.SIL2_text_godzina_odj_akt_przystanek)
+		{endif}
+		
+
+		
+		
+		l1 (S.L.DEBUG_VAR_1)
+		l2 (S.L.DEBUG_VAR_2)
+
+		(L.L.IBIS_RouteIndex) (M.V.GetBusstopCount) 1 - (L.L.IBIS_busstop) 1 + >=
+		{if}
+			(L.L.IBIS_RouteIndex) (L.L.IBIS_busstop) 1 + (M.V.GetRouteBusstopIdent) (M.V.GetBusstopIndex) 3 (M.V.GetBusstopString) (S.$.SIL2_text_nastepny_przystanek)
+			(L.L.IBIS_busstop) 1 + $IntToStr ". " $+ (L.$.SIL2_text_nastepny_przystanek) $+ (S.$.SIL2_text_nastepny_przystanek)
+		{else}
+			"KONIEC TRASY" (S.$.SIL2_text_nastepny_przystanek)
+		{endif}
+
+		(L.L.IBIS_RouteIndex) (L.L.IBIS_busstop) (M.V.GetRouteBusstopIdent) (M.V.GetBusstopIndex) 3 (M.V.GetBusstopString) (S.$.SIL2_text_aktualny_przystanek)
+		
+		(L.L.IBIS_busstop) $IntToStr ". " $+ (L.$.SIL2_text_aktualny_przystanek) $+ 22 $SetLengthL $RemoveSpaces (S.$.SIL2_text_aktualny_przystanek)
+		
+		(L.$.SIL2_text_aktualny_przystanek) " " $+ (S.$.SIL2_text_aktualny_przystanek)
+		
+		"" (L.L.IBIS_Route) $IntToStr "/" $+ (L.L.IBIS_LinieKurs) $IntToStr $+ (S.$.SIL2_text_route_linia)
+		
+'		"-0:21:37" (S.$.SIL2_text_opoznienie)
+
+
+		(M.L.polaryzacja_minut)
+		
+		(L.L.schedule_active) 1 =
+		{if}
+			(L.$.ITF_NIE_WYPIERDALAJ_GUNWA_CHUJU) (L.$.ITeeF_FAJNE_GODZINY) $+ ":" $+ (L.$.ITeeF_WYKURWISTE_MINUTY) $+ ":" $+ (L.$.ITF_SEKUNDY_CHUJOWE) $+ (S.$.SIL2_text_opoznienie)
+		{else}
+			"--:--" (S.$.SIL2_text_opoznienie)
+		{endif}
+		
+	{else}
+		0 (S.L.5000_displaymode)
+		0 (S.L.SIL2_wlaczony)
+	{endif}
+	
+	1 (S.L.Refresh_Strings)
+	
+'***********FreeTex***************
+
+	(L.L.5000_displaymode) 0 =
+	{if}
+		"SIL2\czarny_ekran.dds" (S.$.SIL2_display)
+	{endif}
+
+	(L.L.5000_displaymode) 1 =
+	{if}
+		"SIL2\SiMS_SIL2_scr_boot1.dds" (S.$.SIL2_display)
+	{endif}
+	
+	(L.L.5000_displaymode) 2 =
+	{if}
+		"SIL2\SiMS_SIL2_scr_boot2.dds" (S.$.SIL2_display)
+	{endif}
+	
+	(L.L.5000_displaymode) 3 =
+	{if}
+		"SIL2\SiMS_SIL2_scr_boot3.dds" (S.$.SIL2_display)
+	{endif}
+	
+	(L.L.5000_displaymode) 4 =
+	{if}
+		"SIL2\SiMS_SIL2_scr_boot4.dds" (S.$.SIL2_display)
+	{endif}
+	
+	(L.L.5000_displaymode) 5 =
+	{if}
+		"SIL2\SiMS_SIL2_scr_boot5.dds" (S.$.SIL2_display)
+	{endif}
+	
+	(L.L.5000_displaymode) 6 =
+	{if}
+		"SIL2\SiMS_SIL2_scr_boot6.dds" (S.$.SIL2_display)
+	{endif}
+	
+	(L.L.5000_displaymode) 7 =
+	{if}
+		"SIL2\SiMS_SIL2_scr_boot7.dds" (S.$.SIL2_display)
+	{endif}
+	
+	(L.L.5000_displaymode) 8 =
+	{if}
+		"SIL2\SiMS_SIL2_scr_boot8.dds" (S.$.SIL2_display)
+	{endif}
+	
+	(L.L.5000_displaymode) 9 =
+	{if}
+		"SIL2\SiMS_SIL2_scr_boot9.dds" (S.$.SIL2_display)
+	{endif}
+	
+	(L.L.5000_displaymode) 10 =
+	{if}
+		"SIL2\SiMS_SIL2_scr_boot10.dds" (S.$.SIL2_display)
+	{endif}
+	
+	(L.L.5000_displaymode) 11 =
+	{if}
+		"SIL2\SiMS_SIL2_scr_boot11.dds" (S.$.SIL2_display)
+	{endif}
+	
+	(L.L.5000_displaymode) 12 =
+	{if}
+		"SIL2\SiMS_SIL2_scr_boot12.dds" (S.$.SIL2_display)
+	{endif}
+	
+	(L.L.5000_displaymode) 13 =
+	{if}
+		"SIL2\SiMS_SIL2_scr_boot13.dds" (S.$.SIL2_display)
+	{endif}
+	
+	(L.L.5000_displaymode) 14 =
+	{if}
+		"SIL2\SiMS_SIL2_scr_boot14.dds" (S.$.SIL2_display)
+	{endif}
+	
+	(L.L.5000_displaymode) 101 =
+	{if}
+		"SIL2\SIL2_ekran_glowny.jpg" (S.$.SIL2_display)
+	{endif}
+	
+	(L.L.5000_displaymode) 300 =
+	{if}
+		"SIL2\SIL2_ekran_linia2.jpg" (S.$.SIL2_display)
+	{endif}
+	
+	(L.L.5000_displaymode) 301 =
+	{if}
+		"SIL2\SIL2_ekran_kierunek.jpg" (S.$.SIL2_display)
+	{endif}
+	
+	(L.L.5000_displaymode) 302 =
+	{if}
+		"SIL2\SIL2_ekran_wKursie.jpg" (S.$.SIL2_display)
+	{endif}
+	
+	(L.L.5000_displaymode) 1301 =
+	{if}
+		"SIL2\SIL2_ekran_propozycja.jpg" (S.$.SIL2_display)
+	{endif}
+	
+	
+	(L.L.5000_displaymode) 400 =
+	{if}
+		"SIL2\SIL2_akcje.jpg" (S.$.SIL2_display)
+	{endif}
+	
+	(L.L.5000_displaymode) 401 =
+	{if}
+		"SIL2\SIL2_ekran_wAkcji.jpg" (S.$.SIL2_display)
+	{endif}
+	
+{end}
+
+{macro:SIL2_GetTime}
+
+
+	(L.S.Time) 3600 / s0 trunc s1 "02" $IntToStrEnh ":" $+
+	l0 l1 - 60 * s1 trunc s2 "02" $IntToStrEnh $+
+	(S.$.GodzinaSIL2)
+	
+	(L.S.Time) 3600 / s0 trunc s1 "02" $IntToStrEnh ":" $+
+	l0 l1 - 60 * s1 trunc s2 "02" $IntToStrEnh $+ ":" $+
+	l1 l2 - 60 * trunc "02" $IntToStrEnh $+
+	(S.$.GodzinaSIL2_sama)
+	
+
+{end}
+
+{macro:SIL2_GetDate}
+
+	"" "" $+ (L.S.Day) "02" $IntToStrEnh $+ " " $+ (L.$.nazwa_miesiaca) $+ " " $+ (L.S.Year) $IntToStr $+ (S.$.DataSIL2)
+	
+	(L.S.Month) "02" $IntToStrEnh (S.$.nr_miesiaca)
+	
+	(L.$.nr_miesiaca) "01" $=
+	{if}
+		"stycznia" (S.$.nazwa_miesiaca)
+	{endif}
+	
+	(L.$.nr_miesiaca) "02" $=
+	{if}
+		"lutego" (S.$.nazwa_miesiaca)
+	{endif}
+	
+	(L.$.nr_miesiaca) "03" $=
+	{if}
+		"marca" (S.$.nazwa_miesiaca)
+	{endif}
+	
+	(L.$.nr_miesiaca) "04" $=
+	{if}
+		"kwietnia" (S.$.nazwa_miesiaca)
+	{endif}
+	
+	(L.$.nr_miesiaca) "05" $=
+	{if}
+		"maja" (S.$.nazwa_miesiaca)
+	{endif}
+	
+	(L.$.nr_miesiaca) "06" $=
+	{if}
+		"czerwca" (S.$.nazwa_miesiaca)
+	{endif}
+	
+	(L.$.nr_miesiaca) "07" $=
+	{if}
+		"lipca" (S.$.nazwa_miesiaca)
+	{endif}
+	
+	(L.$.nr_miesiaca) "08" $=
+	{if}
+		"sierpnia" (S.$.nazwa_miesiaca)
+	{endif}
+	
+	(L.$.nr_miesiaca) "09" $=
+	{if}
+		"wrzeúnia" (S.$.nazwa_miesiaca)
+	{endif}
+	
+	(L.$.nr_miesiaca) "10" $=
+	{if}
+		"paüdziernika" (S.$.nazwa_miesiaca)
+	{endif}
+	
+	(L.$.nr_miesiaca) "11" $=
+	{if}
+		"listopada" (S.$.nazwa_miesiaca)
+	{endif}
+	
+	(L.$.nr_miesiaca) "12" $=
+	{if}
+		"grudnia" (S.$.nazwa_miesiaca)
+	{endif}
+		
+{end}
+
+{macro:SIMS_startup_sound}
+	"IBIS_SIL2_Sounds\" "sims_startup" $+ ".wav" $+ (T.F.ev_IBIS_Ansagen)
+{end}
+
+{macro:skan_linii}
+'	" " (S.$.Linia_Linijka0) (S.$.Linia_Linijka1) (S.$.Linia_Linijka2) (S.$.Linia_Linijka3) (S.$.Linia_Linijka4) (S.$.Linia_Linijka5) (S.$.Linia_Linijka6)
+
+
+(L.L.skan_aktywny) 1 =
+{if}
+		1 (S.L.SIL2_display_okienko_var)
+		"SIL2\SIL2_ekran_ladowanie_linii.jpg" (S.$.SIL2_display_okienko)
+		1 (S.L.IBIS_Route_cos)
+		(L.L.nrLinii_skan) 100 * (L.L.IBIS_Route_cos) + (M.V.GetRouteIndex) s1
+		0 <
+		{if}
+
+		{else}
+			
+			(L.L.nrIndex_linii) 0 =
+			{if}
+				(L.L.nrLinii_skan) $IntToStr (S.$.Linia_Linijka0)
+				(L.L.nrLinii_skan) (S.L.Linia_Linijka0Int)
+			{endif}
+			(L.L.nrIndex_linii) 1 =
+			{if}
+				(L.L.nrLinii_skan) $IntToStr (S.$.Linia_Linijka1)
+				(L.L.nrLinii_skan) (S.L.Linia_Linijka1Int)
+			{endif}
+			(L.L.nrIndex_linii) 2 =
+			{if}
+				(L.L.nrLinii_skan) $IntToStr (S.$.Linia_Linijka2)
+				(L.L.nrLinii_skan) (S.L.Linia_Linijka2Int)
+			{endif}
+			(L.L.nrIndex_linii) 3 =
+			{if}
+				(L.L.nrLinii_skan) $IntToStr (S.$.Linia_Linijka3)
+				(L.L.nrLinii_skan) (S.L.Linia_Linijka3Int)
+			{endif}
+			(L.L.nrIndex_linii) 4 =
+			{if}
+				(L.L.nrLinii_skan) $IntToStr (S.$.Linia_Linijka4)
+				(L.L.nrLinii_skan) (S.L.Linia_Linijka4Int)
+			{endif}
+			(L.L.nrIndex_linii) 5 =
+			{if}
+				(L.L.nrLinii_skan) $IntToStr (S.$.Linia_Linijka5)
+				(L.L.nrLinii_skan) (S.L.Linia_Linijka5Int)
+			{endif}
+			(L.L.nrIndex_linii) 6 =
+			{if}
+				(L.L.nrLinii_skan) $IntToStr (S.$.Linia_Linijka6)
+				(L.L.nrLinii_skan) (S.L.Linia_Linijka6Int)
+				0 (S.L.skan_aktywny)
+				0 (S.L.SIL2_display_okienko_var)
+			{endif}
+
+			(L.L.nrIndex_linii) 1 + (S.L.nrIndex_linii)
+			
+		{endif}
+		
+		(L.L.nrLinii_skan) 1 + (S.L.nrLinii_skan)
+		(L.L.nrLinii_skan) 1000 >=
+		{if}
+			0 (S.L.skan_aktywny)
+			0 (S.L.SIL2_display_okienko_var)
+		{endif}
+		
+{endif}
+
+(L.L.skan_wariantow_aktywny) 1 =
+{if}
+		1 (S.L.SIL2_display_okienko_var)
+		"SIL2\SIL2_ekran_ladowanie_linii.jpg" (S.$.SIL2_display_okienko)
+		
+		(L.L.IBIS_LinieKurs) 100 * (L.L.IBIS_Route_cos2137) + (M.V.GetRouteIndex) s1
+		0 <
+		{if}
+
+		{else}
+			(L.L.nrIndex_wariantu) 0 =
+			{if}
+				l1 (M.V.GetRouteTerminusIndex) 5 (M.V.GetTerminusString) (S.$.Linia_Linijka0)
+				(L.L.IBIS_Route_cos2137) $IntToStr ". " $+ (L.$.Linia_Linijka0) $+ (S.$.Linia_Linijka0)
+
+				(L.L.IBIS_Route_cos2137) (S.L.Wariant_Linijka0IntRoute)
+			{endif}
+			(L.L.nrIndex_wariantu) 1 =
+			{if}
+				l1 (M.V.GetRouteTerminusIndex) 5 (M.V.GetTerminusString) (S.$.Linia_Linijka1)
+				(L.L.IBIS_Route_cos2137) $IntToStr ". " $+ (L.$.Linia_Linijka1) $+ (S.$.Linia_Linijka1)
+
+				(L.L.IBIS_Route_cos2137) (S.L.Wariant_Linijka1IntRoute)
+
+			{endif}
+			(L.L.nrIndex_wariantu) 2 =
+			{if}
+				l1 (M.V.GetRouteTerminusIndex) 5 (M.V.GetTerminusString) (S.$.Linia_Linijka2)
+				(L.L.IBIS_Route_cos2137) $IntToStr ". " $+ (L.$.Linia_Linijka2) $+ (S.$.Linia_Linijka2)
+
+				(L.L.IBIS_Route_cos2137) (S.L.Wariant_Linijka2IntRoute)
+			{endif}
+			(L.L.nrIndex_wariantu) 3 =
+			{if}
+				l1 (M.V.GetRouteTerminusIndex) 5 (M.V.GetTerminusString) (S.$.Linia_Linijka3)
+				(L.L.IBIS_Route_cos2137) $IntToStr ". " $+ (L.$.Linia_Linijka3) $+ (S.$.Linia_Linijka3)
+
+				(L.L.IBIS_Route_cos2137) (S.L.Wariant_Linijka3IntRoute)
+			{endif}
+			(L.L.nrIndex_wariantu) 4 =
+			{if}
+				l1 (M.V.GetRouteTerminusIndex) 5 (M.V.GetTerminusString) (S.$.Linia_Linijka4)
+				(L.L.IBIS_Route_cos2137) $IntToStr ". " $+ (L.$.Linia_Linijka4) $+ (S.$.Linia_Linijka4)
+
+				(L.L.IBIS_Route_cos2137) (S.L.Wariant_Linijka4IntRoute)
+			{endif}
+			(L.L.nrIndex_wariantu) 5 =
+			{if}
+				l1 (M.V.GetRouteTerminusIndex) 5 (M.V.GetTerminusString) (S.$.Linia_Linijka5)
+				(L.L.IBIS_Route_cos2137) $IntToStr ". " $+ (L.$.Linia_Linijka5) $+ (S.$.Linia_Linijka5)
+
+				(L.L.IBIS_Route_cos2137) (S.L.Wariant_Linijka5IntRoute)
+			{endif}
+			(L.L.nrIndex_wariantu) 6 =
+			{if}
+				l1 (M.V.GetRouteTerminusIndex) 5 (M.V.GetTerminusString) (S.$.Linia_Linijka6)
+				(L.L.IBIS_Route_cos2137) $IntToStr ". " $+ (L.$.Linia_Linijka6) $+ (S.$.Linia_Linijka6)
+
+				(L.L.IBIS_Route_cos2137) (S.L.Wariant_Linijka6IntRoute)
+				0 (S.L.skan_wariantow_aktywny)
+				0 (S.L.SIL2_display_okienko_var)
+			{endif}
+
+			(L.L.nrIndex_wariantu) 1 + (S.L.nrIndex_wariantu)
+		{endif}
+		
+		(L.L.IBIS_Route_cos2137) 1 + (S.L.IBIS_Route_cos2137)
+		(L.L.IBIS_Route_cos2137) 99 >=
+		{if}
+			0 (S.L.skan_wariantow_aktywny)
+			0 (S.L.SIL2_display_okienko_var)
+		{endif}	
+		
+{endif}
+
+{end}
+
+{macro:wybor_trasy}
+	(L.L.IBIS_inputWariant) s0 (S.L.IBIS_Route)
+	(L.L.IBIS_LinieKurs) 100 * l0 + (M.V.GetRouteIndex) s1
+	0 <
+	{if}
+
+			101 (S.L.5000_displaymode)
+			0 (S.L.IBIS_Linie_Complex)
+'			1 (S.L.liniabrygada)
+	{else}
+		(M.L.IBIS_RefreshBusstop)
+		(M.L.IBIS_SetRoute)
+		0 (S.L.liniabrygada)
+		0 (S.L.IBIS_busstop)
+		(M.L.IBIS_RefreshBusstop)
+		0 (S.L.bylo_rozpoczecie)
+		0 (S.L.RK_Timerek)
+	{endif}
+{end}
+
+{macro:IBIS_RefreshBusstop}
+
+	(L.L.IBIS_RouteIndex) 0 <
+	{if}
+		"" (S.$.act_busstop)
+	{else}
+	(L.L.IBIS_RouteIndex) (M.V.GetBusstopCount) (L.L.IBIS_busstop) <=
+	{if}
+'Wenn der Bushaltestellenindex gròòer oder gleich der Anzahl ist und somit zu groò (der Bushaltestellenindex ist wie alle Indizes nullbasiert), 
+'dann wechsele automatisch auf die Gegenroute, sofern der Index 01 oder 02 ist und der jeweilige andere Index existiert. Sonst belasse die Route.
+		0 (S.L.IBIS_busstop)
+' Entwerter umstellen:
+		(T.L.ev_IBIS_entwerter)
+		(L.L.IBIS_busstop_entwerter_soll) (S.L.IBIS_busstop_entwerter_ist)
+
+		(L.L.IBIS_Route) s5
+		1.5 <
+		{if}
+			2 s6
+		{else}
+			l5 2.5 <
+			{if}
+				1 s6
+			{endif}
+		{endif}
+
+'Suche den Routeindex:
+
+		(L.L.IBIS_LinieKurs) 100 * l6 + (M.V.GetRouteIndex) s1
+		0 >=
+		{if}
+'Wenn gòltig, dann wechsele:
+			(M.L.IBIS_SetRoute)
+			l6 (S.L.IBIS_Route)
+'(M.L.Fahrscheindrucker-Haltestelle)
+		{endif}
+	{else}
+		0 (S.L.IBIS_mode)
+	{endif}
+	{endif}
+
+'Setzen der String-Variable "act_busstop" fòr die OMSI-interne Berechnung und daraus Ableitung des "globalen" Haltestellenindexes:
+
+	(L.L.IBIS_RouteIndex) (L.L.IBIS_busstop) (M.V.GetRouteBusstopIdent) (S.$.act_busstop)
+	(M.V.GetBusstopIndex) (S.L.IBIS_busstop_index)
+
+
+'Sonst zeige die Bushaltestelle
+	(L.L.IBIS_busstop_index) 3 (M.V.GetBusstopString)
+	(S.$.IBIS_busstop_name)
+
+'Ausrechnen der neuen Entwerterposition:
+	(L.L.IBIS_busstop_offset) (L.L.IBIS_busstop) + (S.L.IBIS_busstop_entwerter_soll)
+
+
+{end}
+
+{macro:IBIS_SetRoute}
+
+' Macro setzt den Routeindex auf den Wert von l1 und fòhrt die nòtigen Schritte aus
+
+' Wenn gòltig, dann òbernehmen:
+	l1 (S.L.IBIS_RouteIndex)
+' Finden des zugehòrigen Ziel-Index':
+	(M.V.GetRouteTerminusIndex) (S.L.IBIS_TerminusIndex)
+' Finden des zugehòrigen Ziel-Codes:
+	(M.V.GetTerminusCode) (S.L.IBIS_TerminusCode)
+	
+' Aktualisieren des Zielschild-Textes:
+	(M.L.IBIS_RefreshTerminusText)
+' Ziel anzeigen:
+	0 (S.L.IBIS_modetimer)
+	8 (S.L.IBIS_mode)
+
+' Falls es entweder ein 500, ein 800 oder 900-Code ist, dann bitte beim Complex-Code eine 28 (M), eine 36 (X) bzw. 04 (N) verwenden:
+	(L.L.IBIS_LinieKurs) s2 100 / trunc s3
+	l3 5 =
+	{if}
+		l2 100 * 5 (M.V.GetDepotStringGlobal) $StrToFloat 0 max (S.L.IBIS_Linie_Suffix) + (S.L.IBIS_Linie_Complex)
+	{endif}
+	l3 8 =
+	{if}
+		l2 100 * 4 (M.V.GetDepotStringGlobal) $StrToFloat 0 max (S.L.IBIS_Linie_Suffix) + (S.L.IBIS_Linie_Complex)
+	{endif}
+	l3 9 =
+	{if}
+		l2 100 * 3 (M.V.GetDepotStringGlobal) $StrToFloat 0 max (S.L.IBIS_Linie_Suffix) + (S.L.IBIS_Linie_Complex)
+	{endif}
+'	(M.L.IBIS_SetComplexLineString)
+
+' Entwerter-Busstop-Offset festlegen (pseudo-Zufall aus Linien-Code und Route-Index):
+
+	(L.L.IBIS_LinieKurs) 100 * (L.L.IBIS_RouteIndex) + 10000 * sin 10 * 15 + trunc (S.L.IBIS_busstop_offset)
+
+{end}
+
+{macro:IBIS_RefreshTerminusText}
+	(L.L.IBIS_TerminusIndex) 5 (M.V.GetTerminusString) (S.$.IBIS_terminus_name)
+	(L.L.IBIS_TerminusIndex) (S.L.target_index_int)
+{end}
+
+{macro:polaryzacja_minut}
+	
+		(L.L.IBIS_busstop) (M.V.GetTTBusstopDep) (L.S.Time) <
+		{if}
+			"- " (S.$.ITF_NIE_WYPIERDALAJ_GUNWA_CHUJU)
+		{else}
+			"+ " (S.$.ITF_NIE_WYPIERDALAJ_GUNWA_CHUJU)
+		{endif}
+{end}
+
+{macro:AktualnyPrzystanekZapowiedz}
+
+	(L.L.IBIS_busstop) 0 >
+	{if}
+
+		"..\..\Announcements\" 0 (M.V.GetDepotStringGlobal) "\" $+ $+ (L.$.act_busstop) "_" $+ $+
+
+		(L.L.IBIS_RouteIndex) (M.V.GetBusstopCount) 1 - (L.L.IBIS_busstop) <=
+		{if}
+			"_#terminus" $+
+		{endif}
+
+		".wav" $+
+		(T.F.ev_IBIS_Ansagen)
+	{endif}
+{end}
+
+{macro:IBIS_PlayAnnouncement}
+
+	(L.L.IBIS_busstop) 0 >
+	{if}
+
+		"..\..\Announcements\" 0 (M.V.GetDepotStringGlobal) "\" $+ $+ (L.$.act_busstop) $+ $msg ".wav" $+
+
+		$msg (T.F.ev_IBIS_Ansagen)
+		(T.F.ev_IBIS_Ansagen)
+	{endif}
+{end}
+
+{macro:ZewnetrznaZapowiedz}
+
+	(L.L.IBIS_LinieKurs) 0 >
+	{if}
+		"..\..\Announcements\" 0 (M.V.GetDepotStringGlobal) "\" $+ $+ 
+		(L.L.IBIS_LinieKurs) $IntToStr $+
+		"-" $+ (L.L.IBIS_inputWariant) "02" $IntToStrEnh $+
+		".wav" $+
+		$msg
+		(T.F.ev_IBIS_Ansagen)
+	{endif}
+
+{end}
