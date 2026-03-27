@@ -1271,7 +1271,7 @@
 
 '	Setzen der Haltestellenbremse erst bei Stillstand des Busses:
 	(L.L.bremse_halte_sw) (L.L.bus_dooraft_sw) || (L.L.door_20h_sw) ||
-	(L.L.freigabe) 0 = || (L.L.door_2) 0 > || (L.L.door_3) 0 > || (L.L.door_4) 0 > || (L.L.door_5) 0 > ||
+	(L.L.freigabe) 0 = || (L.L.door_0) 0 > || (L.L.door_1) 0 > || (L.L.door_2) 0 > || (L.L.door_3) 0 > || (L.L.door_4) 0 > || (L.L.door_5) 0 > ||
 	(L.L.bremse_halte) ! (L.L.Velocity) (C.L.Door_Bremse_Halte_MaxKMH) < && &&
 	(L.L.bsb_Error_Count) (C.L.fehlertoleranz) (L.L.wearlifespan) * > ! &&
 	{if}

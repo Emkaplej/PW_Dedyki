@@ -112,7 +112,7 @@ script\Voith_D8X4.5.txt
 script\engine_constfile_om906hla.txt
 script\elec_constfile.txt
 script\bremse_constfile.txt
-script\lights_constfile.txt
+script\lights_constfile_Wroc.txt
 script\Tuerscripts\door_constfile_EEV_SP_3.txt
 script\auspuff_constfile.txt
 script\cockpit_constfile.txt
