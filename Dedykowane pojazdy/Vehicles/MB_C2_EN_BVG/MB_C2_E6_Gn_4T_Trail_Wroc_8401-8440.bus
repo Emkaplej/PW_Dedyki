@@ -1,4 +1,4 @@
-﻿
+
 	[friendlyname]
 Mercedes-Benz
 MB_C2_E6_Solo_BVG GN Wroc
@@ -113,7 +113,7 @@ Passagiersichten
 [set_camera_std]
 3
 
-	Folgender Befehl setzt den Zentrierpunkt der AuЯenkamera:
+	Folgender Befehl setzt den Zentrierpunkt der Au?enkamera:
 
 [set_camera_outside_center]
 0

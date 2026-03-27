@@ -1,4 +1,4 @@
-﻿
+
 [friendlyname]
 Mercedes-Benz Release
 MB_C2_E6_GN_4T_Wroc_8511-8539
@@ -141,7 +141,7 @@ script\churaKrueger\Vmatrix_constfile_24.txt
 55
 -135
 -5
-	1: Blick nach schrдg links
+	1: Blick nach schr?g links
 [add_camera_driver]
 -0.713
 4.65
@@ -181,7 +181,7 @@ script\churaKrueger\Vmatrix_constfile_24.txt
 40
 5
 
-	5: Blick zur Tьr
+	5: Blick zur T?r
 [add_camera_driver]
 -0.713
 4.9
@@ -191,7 +191,7 @@ script\churaKrueger\Vmatrix_constfile_24.txt
 90
 -10
 
-	5b: Blick in den Rückspiegel
+	5b: Blick in den R�ckspiegel
 [add_camera_driver]
 -0.713
 4.65
@@ -339,7 +339,7 @@ Passagiersichten
 [set_camera_std]
 3
 
-	Folgender Befehl setzt den Zentrierpunkt der AuЯenkamera:
+	Folgender Befehl setzt den Zentrierpunkt der Au?enkamera:
 
 [set_camera_outside_center]
 0
@@ -351,7 +351,7 @@ Passagiersichten
 	////////////////////////////////////////////////////////
 		Reflexionskameras *NEU01*
 	////////////////////////////////////////////////////////
-Linker Außenspiegel
+Linker Au�enspiegel
 	
 [add_camera_reflexion]
 -1.348
@@ -363,7 +363,7 @@ Linker Außenspiegel
 -10
 0.15
 
-Rechter Außenspiegel
+Rechter Au�enspiegel
 
 [add_camera_reflexion]
 1.4
@@ -375,7 +375,7 @@ Rechter Außenspiegel
 -10
 0.15
 
-Innenraumrückspiegel
+Innenraumr�ckspiegel
 
 [add_camera_reflexion]
 0.266
@@ -399,7 +399,7 @@ Innenraumrückspiegel
 180 
 
 
-Innenraumrückspiegel
+Innenraumr�ckspiegel
 
 [add_camera_reflexion_2]
 1.4
@@ -411,7 +411,7 @@ Innenraumrückspiegel
 -12.5
 180
 
-Rechter Außenspiegel kurz
+Rechter Au�enspiegel kurz
 
 [add_camera_reflexion]
 1.36
@@ -423,7 +423,7 @@ Rechter Außenspiegel kurz
 -10
 0.15
 
-Rechter Außenspiegel 6
+Rechter Au�enspiegel 6
 
 [add_camera_reflexion]
 1.4
